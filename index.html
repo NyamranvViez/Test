@@ -482,7 +482,6 @@
     const provider = new firebase.auth.GoogleAuthProvider();
     const db = firebase.database();
     const DB_NODE = "logistics_shipments";
-    const USERS_NODE = "logistics_users";
     const ROLES = { ADMIN: 'Admin', EDITOR: 'Editor', VIEWER: 'Viewer' };
 
     let entries = [];
@@ -500,8 +499,6 @@
         projectLabel: "Nanyun Project",
         headerTitle: "Medical Logistics Command Center",
         headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.",
-        authCardSubtitle: "Authentication & Access Control",
-        authCardTitle: "Secure Login, Signup, and Role Enforcement",
         authStatusNote: "Guest users see read-only content.",
         dashboardSectionLabel: "Overview (Except Nanyun Project)",
         dashboardHeading: "Executive Pipeline Dashboard",
@@ -535,18 +532,7 @@
         ledgerEmpty: "No ledger records available.",
         inboundWaybillPlaceholder: "Enter WayBill",
         inboundManifestPlaceholder: "Add raw cargo manifest or notes (Optional)",
-        authLoginLabel: "Log In",
-        authSignupLabel: "Sign Up",
-        authNameLabel: "Full Name",
-        authEmailLabel: "Email Address",
-        authPasswordLabel: "Password",
-        authRoleLabel: "Role (Local Test)",
-        authLoginBtn: "Log In",
-        authSignupBtn: "Create Account",
-        authLogoutBtn: "Log Out",
         authGuestHint: "Guest users have read-only access. Login as Editor or Admin to modify records.",
-        authLoginSuccess: "Login successful. Welcome back!",
-        authSignupSuccess: "Account created successfully. You may now log in.",
         successShipment: "Shipment registered into live dashboard!",
         errorInvalidInput: "Please enter a valid WayBill and Shipped Boxes count.",
         errorDuplicateShipment: "This shipment has already been registered for this project.",
@@ -557,72 +543,58 @@
         notAdmin: "Only Admin can edit or delete ledger entries.",
         deleteConfirm: "Are you sure you want to permanently delete this log entry?",
         readOnlyAction: "Read-only",
-        noPermissionForAction: "Disabled for current role.",
-        confirmDelete: "Are you sure you want to permanently delete this log entry?"
+        noPermissionForAction: "Disabled for current role."
       },
       mm: {
-        tabs: { dashboard: "?????????? ??????????????????", inbound: "??????????? ????????????", transit: "?????????? ?????????????? (Naga ????)", ledger: "?????????????????" },
-        projectLabel: "????????? ????????",
-        headerTitle: "????????????? ???????????????????? ??????????????",
-        headerDesc: "??????????????????????????????????? ???????????????????? ???????????????????????? ????????????????????? ?????????????????",
-        authCardSubtitle: "????????????????? ????????????????",
-        authCardTitle: "????????????????????????????? ???????????????????? ?????????? ?????????????",
-        authStatusNote: "Visitor ??? ???????? ?????????????????",
-        dashboardSectionLabel: "?????????????????? (???????????????????????)",
-        dashboardHeading: "Overview ??????????",
-        pipelineLogicDesc: "<strong>????????????????:</strong> Firebase cloud ????????? ?????????? ?????????????????????????",
-        inboundSectionLabel: "??????????",
-        inboundHeading: "?????????????????? (Data Entry)",
-        originLabel: "???????????????????????",
-        inboundWaybillLabel: "??????? ?????? (WayBill)",
-        inboundTargetLabel: "?????????????? ????????????",
-        inboundTotalBoxesLabel: "?????????? ?????????????????????????",
-        inboundManifestLabel: "????????????? ???????????",
-        inboundRegisterBtn: "???? ????????????",
-        inboundReset: "????????",
-        pipelineInventoryLabel: "?????????????????",
-        pendingArrivalsTitle: "??????????? ???????????????? ???????????????",
-        transitSectionLabel: "???????????",
-        transitHeading: "?????????? ?????????????? (Outbound)",
-        dispatchFromWarehouseLabel: "?????????? ???????????????????????????",
-        ledgerSectionLabel: "?????????????????",
-        ledgerHeading: "????????????? ???????????????????",
-        arrivalTitle: "??????????? ?????????? ??????????????",
-        arrivalBoxesLabel: "????????????? ??????????????",
-        dispatchTitle: "??????? ????????????????????",
-        dispatchDestinationLabel: "????????????? ???????????",
-        dispatchQuantityLabel: "?????????? ??????????????",
-        ledgerEditTitle: "??????????? ??????????",
-        ledgerEditTargetLabel: "???????????????",
-        ledgerEditTotalLabel: "?????????? ????????????????????",
-        pipelineEmpty: "??????????? ????????????????? ??????????",
-        warehouseEmpty: "????????????? ????????? ????????????? ??????????",
-        ledgerEmpty: "????????????? ??????????????",
-        inboundWaybillPlaceholder: "????????????? ???????????",
-        inboundManifestPlaceholder: "????????????????????? ????????? ?????????? (???????? ??????????????)",
-        authLoginLabel: "?????????????",
-        authSignupLabel: "???????????????",
-        authNameLabel: "????",
-        authEmailLabel: "??????? ??????",
-        authPasswordLabel: "????????",
-        authRoleLabel: "?????????? (??????????)",
-        authLoginBtn: "??????",
-        authSignupBtn: "???????????????",
-        authLogoutBtn: "???????",
-        authGuestHint: "Guest ??? ???????? ????????????????? Editor ???? Admin ????? ????????????????????",
-        authLoginSuccess: "????????????? ??????????????? ?????????????",
-        authSignupSuccess: "????????????????? ??????????????? ??? ??????????????????????",
-        successShipment: "Shipment ??? ???????????? ??????????????????",
-        errorInvalidInput: "??????????? ????????? WayBill ????? ?????????????? ???????",
-        errorDuplicateShipment: "? shipment ??? ????? ????????????????????????? ????????",
-        errorDatabase: "??????????????: ",
-        arrivalSuccess: "??????????? ????????? ???????????? ?????????????????????",
-        dispatchSuccess: "???????????? ???????????? ?????????????",
-        notAuthorized: "???????????? ????????????????? Editor ????????? Admin ????????????????????????",
-        notAdmin: "?????? ?????????? Admin ????? ?????? ????????????",
-        deleteConfirm: "???????????? ??????????? ?????????? ????????????",
-        readOnlyAction: "????????",
-        noPermissionForAction: "?????????????"
+        tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)", ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
+        projectLabel: "နာန်ယွန်း ပရောဂျက်",
+        headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
+        headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းနှင့် စစ်ဆေးရန်အဆင်သင့်ဖြစ်စေမည့် စနစ်",
+        authStatusNote: "ဧည့်သည်များ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
+        dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက်",
+        dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
+        pipelineLogicDesc: "<strong>ဒေတာဘေ့စ်အခြေအနေ:</strong> Firebase cloud စနစ်ဖြင့် စိတ်ချစွာ ချိတ်ဆက်ထားပါသည်။",
+        inboundSectionLabel: "အဝင်",
+        inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
+        originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
+        inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
+        inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
+        inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော သေတ္တာအရေအတွက်",
+        inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
+        inboundRegisterBtn: "ဒေတာ မှတ်ပုံတင်ရန်",
+        inboundReset: "ပြန်စတင်ရန်",
+        pipelineInventoryLabel: "လမ်းခရီးရောက်ပစ္စည်းစာရင်း",
+        pendingArrivalsTitle: "ရောက်ရှိရန် စောင့်ဆိုင်းနေသော ပစ္စည်းများ",
+        transitSectionLabel: "အထွက်",
+        transitHeading: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
+        dispatchFromWarehouseLabel: "ဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
+        ledgerSectionLabel: "ဒေတာမှတ်တမ်း",
+        ledgerHeading: "သမိုင်းဝင် ကုန်ပစ္စည်းမှတ်တမ်းများ",
+        arrivalTitle: "ပစ္စည်းရောက်ရှိမှု အဆင့်မြှင့်တင်ရန်",
+        arrivalBoxesLabel: "ရောက်ရှိလာသော သေတ္တာအရေအတွက်",
+        dispatchTitle: "နောက်ထပ် ပို့ဆောင်မည့်နေရာ",
+        dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
+        dispatchQuantityLabel: "ပို့ဆောင်မည့် သေတ္တာအရေအတွက်",
+        ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
+        ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
+        ledgerEditTotalLabel: "စုစုပေါင်းသေတ္တာအရေအတွက်",
+        pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
+        warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
+        ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ။",
+        inboundWaybillPlaceholder: "WayBill နံပါတ်ရိုက်ထည့်ပါ",
+        inboundManifestPlaceholder: "ပစ္စည်းအမျိုးအမည် သို့မဟုတ် မှတ်စုများ ထည့်ရန် (မထည့်လဲရပါ)",
+        authGuestHint: "Guest များသည် ဖတ်ရှုခွင့်သာရှိသည်။ ဒေတာများ ပြင်ဆင်ရန် Editor သို့မဟုတ် Admin အကောင့်ဖြင့် ဝင်ပါ။",
+        successShipment: "Shipment ကို ဒက်ရှ်ဘုတ်ထဲသို့ ထည့်သွင်းပြီးပါပြီ။",
+        errorInvalidInput: "ကျေးဇူးပြု၍ မှန်ကန်သော WayBill နှင့် အရေအတွက်ကို ရိုက်ထည့်ပါ။",
+        errorDuplicateShipment: "ဤ shipment သည် သတ်မှတ်ချက်ထဲတွင် ရှိပြီးသားဖြစ်နေသည်။",
+        errorDatabase: "ဒေတာဘေ့စ်ချို့ယွင်းချက်: ",
+        arrivalSuccess: "ပစ္စည်းရောက်ရှိမှုကို အောင်မြင်စွာ အပ်ဒိတ်လုပ်ပြီးပါပြီ။",
+        dispatchSuccess: "ကုန်ပစ္စည်းလွှဲပြောင်းမှု အောင်မြင်ပါသည်။",
+        notAuthorized: "လုပ်ဆောင်ခွင့် မရှိပါ။ Editor သို့မဟုတ် Admin သာ ခွင့်ပြုသည်။",
+        notAdmin: "Admin အဆင့်သာ ပြင်ဆင်/ဖျက်ပိုင်ခွင့်ရှိသည်။",
+        deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား။",
+        readOnlyAction: "ကြည့်ရှုရန်သာ",
+        noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ။"
       }
     };
 
@@ -692,23 +664,64 @@
       overviewHkamtiBoxes: document.getElementById('overviewHkamtiBoxes')
     };
 
-    function showFeedback(el, text, isError = false) {
-      if (!el) return;
-      el.innerText = text;
-      el.className = isError ? 'text-sm font-semibold text-rose-400 mt-2' : 'text-sm font-semibold text-emerald-400 mt-2';
-      if (text) window.setTimeout(() => { if (el.innerText === text) el.innerText = ''; }, 5000);
+    // ==========================================
+    // CLEAN & UNIFIED LIVE AUTH LOGIC
+    // ==========================================
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        console.log("User Logged In - UID:", user.uid);
+        currentUser = user;
+        currentDisplayName = user.displayName || user.email.split('@')[0];
+
+        // Database ထဲမှာ user ရဲ့ Role ကို သွားစစ်မယ် (မရှိရင် Editor ပေးမယ်)
+        const userRef = db.ref('users/' + user.uid);
+        userRef.once('value').then((snapshot) => {
+          if (!snapshot.exists()) {
+            userRef.set({
+              name: currentDisplayName,
+              email: user.email,
+              role: "Editor"
+            }).then(() => {
+              currentRole = ROLES.EDITOR;
+              updateAuthUI();
+              refreshAllViews();
+            });
+          } else {
+            const userData = snapshot.val();
+            currentRole = userData.role || ROLES.VIEWER;
+            updateAuthUI();
+            refreshAllViews();
+          }
+        });
+      } else {
+        currentUser = null;
+        currentRole = ROLES.VIEWER;
+        currentDisplayName = 'Guest';
+        updateAuthUI();
+        refreshAllViews();
+      }
+    });
+
+    function handleGoogleSignIn() {
+      if (window.location.protocol === 'file:') {
+        alert("သတိပေးချက်: Local HTML ဖိုင်ကို Double Click နှိပ်ပြီး ဖွင့်ထားခြင်း ဖြစ်သည်။ Google Auth စနစ် ကောင်းမွန်စွာ အလုပ်လုပ်ရန် VS Code Live Server (သို့မဟုတ်) HTTPS Hosting တစ်ခုခုပေါ်တင်ပြီးမှ စမ်းသပ်ပေးပါရန်။");
+      }
+
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+
+      auth.signInWithPopup(provider)
+        .then(result => {
+          console.log("Google Login အောင်မြင်ပါပြီ။");
+        })
+        .catch(err => {
+          alert("Error တက်သွားပါသည်: " + err.message);
+          console.error(err);
+        });
     }
 
-    function setElementText(id, text) {
-      const el = document.getElementById(id);
-      if (el) el.innerText = text;
-    }
-
-    function formatDate(value) {
-      if (!value) return '-';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return '-';
-      return new Intl.DateTimeFormat(currentLang === 'mm' ? 'my-MM' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    function handleLogout() {
+      auth.signOut().catch(err => showFeedback(ui.authStatusNote, `${translations[currentLang].errorDatabase}${err.message}`, true));
     }
 
     function getPermissions() {
@@ -721,40 +734,8 @@
       };
     }
 
-    function handleGoogleSignIn() {
-      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-        showFeedback(ui.authStatusNote, 'Google auth requires HTTPS or localhost; run this app from a local server or deploy it online.', true);
-        return;
-      }
-      auth.signInWithPopup(provider).catch(err => {
-        console.error('Google sign-in error:', err);
-        showFeedback(ui.authStatusNote, `Google sign-in failed: ${err.message}`, true);
-      });
-    }
-
-    function checkFirebaseConnection() {
-      db.ref('.info/connected').on('value', snapshot => {
-        if (snapshot.val() === true) {
-          console.log('Firebase Realtime Database connected.');
-        } else {
-          console.warn('Firebase Realtime Database disconnected.');
-        }
-      });
-      db.ref(DB_NODE).limitToFirst(1).once('value')
-        .then(() => {
-          console.log('Firebase DB access OK.');
-        })
-        .catch(err => {
-          console.error('Firebase DB connection failed:', err);
-          showFeedback(ui.authStatusNote, `Firebase DB connection failed: ${err.message}`, true);
-        });
-    }
-
     function updateAuthUI() {
       const perms = getPermissions();
-      window.currentUserRole = currentRole;
-      window.currentUser = currentUser;
-      window.currentUserDisplayName = currentDisplayName;
       ui.authenticatedUserName.innerText = currentUser ? currentDisplayName : 'Guest';
       ui.activeRoleBadge.innerText = currentRole;
       ui.authGoogleBtn.hidden = !!currentUser;
@@ -776,6 +757,25 @@
       renderAllTables();
     }
 
+    function showFeedback(el, text, isError = false) {
+      if (!el) return;
+      el.innerText = text;
+      el.className = isError ? 'text-sm font-semibold text-rose-400 mt-2' : 'text-sm font-semibold text-emerald-400 mt-2';
+      if (text) window.setTimeout(() => { if (el.innerText === text) el.innerText = ''; }, 5000);
+    }
+
+    function setElementText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '-';
+      return new Intl.DateTimeFormat(currentLang === 'mm' ? 'my-MM' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    }
+
     function applyTranslations() {
       const dict = translations[currentLang];
       if (!dict) return;
@@ -793,7 +793,7 @@
       ui.inboundWaybill.placeholder = dict.inboundWaybillPlaceholder;
       ui.inboundManifest.placeholder = dict.inboundManifestPlaceholder;
       if (ui.authGoogleLabel) ui.authGoogleLabel.innerText = currentLang === 'en' ? 'Sign in with Google' : 'Google ဖြင့် ဝင်ပါ';
-      ui.langToggleBtn.innerText = currentLang === 'en' ? '??????????' : 'English';
+      ui.langToggleBtn.innerText = currentLang === 'en' ? 'မြန်မာဘာသာ' : 'English';
       ui.tabs.forEach(btn => {
         const key = btn.dataset.tab;
         if (dict.tabs && dict.tabs[key]) btn.innerText = dict.tabs[key];
@@ -882,7 +882,7 @@
       ui.warehouseEmpty.classList.toggle('hidden', targets.length > 0);
       ui.warehouseTableBody.innerHTML = targets.map(x => {
         const actionCell = x.targetProject === 'Nanyun'
-          ? `<span class="disabled-action">${currentLang === 'mm' ? '?????????' : 'No transit required'}</span>`
+          ? `<span class="disabled-action">${currentLang === 'mm' ? 'မလိုပါ' : 'No transit required'}</span>`
           : perms.canTransit
             ? `<button onclick="openDispatchModal('${x.id}')" class="btn-3d btn-dispatch rounded-xl px-4 py-1 text-xs font-bold text-slate-950">Transit To</button>`
             : `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
@@ -927,44 +927,6 @@
       }).join('');
     }
 
-    auth.onAuthStateChanged((user) => {
-      currentUser = user;
-      if (!user) {
-        currentRole = ROLES.VIEWER;
-        currentDisplayName = 'Guest';
-        updateAuthUI();
-        return;
-      }
-      db.ref(`${USERS_NODE}/${user.uid}`).once('value').then(snapshot => {
-        if (snapshot.exists()) {
-          const profile = snapshot.val();
-          currentRole = profile.role || ROLES.VIEWER;
-          currentDisplayName = profile.displayName || user.displayName || user.email || 'User';
-          updateAuthUI();
-          return;
-        }
-        const fallbackProfile = {
-          displayName: user.displayName || 'User',
-          email: user.email || '',
-          role: ROLES.VIEWER,
-          createdAt: new Date().toISOString()
-        };
-        db.ref(`${USERS_NODE}/${user.uid}`).set(fallbackProfile).then(() => {
-          currentRole = ROLES.VIEWER;
-          currentDisplayName = fallbackProfile.displayName;
-          updateAuthUI();
-        }).catch(() => {
-          currentRole = ROLES.VIEWER;
-          currentDisplayName = fallbackProfile.displayName;
-          updateAuthUI();
-        });
-      }).catch(() => {
-        currentRole = ROLES.VIEWER;
-        currentDisplayName = user.displayName || user.email || 'User';
-        updateAuthUI();
-      });
-    });
-
     db.ref(DB_NODE).on('value', snapshot => {
       const data = snapshot.val() || {};
       entries = Object.keys(data).map(key => ({ id: key, ...data[key] }));
@@ -974,11 +936,6 @@
     function switchTab(id) {
       ui.tabs.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === id));
       ui.panels.forEach(panel => panel.classList.toggle('hidden', panel.id !== id));
-    }
-
-
-    function handleLogout() {
-      auth.signOut().catch(err => showFeedback(ui.authStatusNote, `${translations[currentLang].errorDatabase}${err.message}`, true));
     }
 
     function handleInboundSubmit(event) {
@@ -1113,7 +1070,7 @@
       }
       const nextWarehouse = Math.max(0, (row.warehouseBoxes || 0) - amt);
       const nextDispatched = (row.dispatchedBoxes || 0) + amt;
-      const nextLogs = row.dispatchLogs ? `${row.dispatchLogs}, ${amt} bxs ? ${dest}` : `${amt} bxs ? ${dest}`;
+      const nextLogs = row.dispatchLogs ? `${row.dispatchLogs}, ${amt} bxs → ${dest}` : `${amt} bxs → ${dest}`;
       const nextStatus = nextWarehouse === 0 && (row.pipelineBoxes || 0) === 0 ? 'Fully Dispatched' : (nextWarehouse === 0 ? 'In Pipeline' : 'In Warehouse');
       db.ref(`${DB_NODE}/${activeDispatchId}`).update({
         warehouseBoxes: nextWarehouse,
@@ -1220,7 +1177,6 @@
     function initialize() {
       ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
       applyTranslations();
-      checkFirebaseConnection();
       updateAuthUI();
     }
 
