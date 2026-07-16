@@ -1,1186 +1,1684 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <title>Nanyun Project</title>
-  <meta name="description" content="Nanyun Project - Local medical logistics dashboard" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            nanyun: '#0b1f3c'
-          }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link class="fluid-favicon" rel="icon" type="image/png" href="favicon.png" />
+    <title>Nanyun Project</title>
+    <meta name="description" content="Nanyun Project - Local medical logistics dashboard" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { nanyun: '#0b1f3c' }
+                }
+            }
+        };
+    </script>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-layer: rgba(8, 17, 34, 0.88);
+            --glass-border: rgba(148, 163, 184, 0.08);
         }
-      }
-    };
-  </script>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg-layer: rgba(8, 17, 34, 0.88);
-      --glass-border: rgba(148,163,184,0.08);
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      min-height: 100vh;
-      margin: 0;
-      font-family: Inter, system-ui, sans-serif;
-      background: radial-gradient(circle at top, rgba(16,145,186,0.18), transparent 25%),
-                  radial-gradient(circle at bottom right, rgba(16,185,129,0.16), transparent 22%),
-                  linear-gradient(180deg, #020617 0%, #081323 100%);
-      color: #e2e8f0;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-      pointer-events: none;
-      z-index: -1;
-    }
-    .glass { background: rgba(15,23,42,0.80); backdrop-filter: blur(18px); border: 1px solid var(--glass-border); }
-    .shadow-deep { box-shadow: 0 24px 80px rgba(2,10,25,0.55); }
-    .mm-lang { font-family: 'Noto Sans Myanmar', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }
-    .tab-btn {
-      transition: all 250ms cubic-bezier(.2,.9,.2,1);
-      border: none;
-      background: rgba(15,23,42,0.80);
-      color: #cbd5e1;
-      box-shadow: inset 0 0 0 1px rgba(148,163,184,0.06);
-      border-radius: 24px;
-    }
-    .tab-btn:hover { transform: translateY(-2px); background: rgba(15,23,42,0.95); }
-    .tab-active { background: linear-gradient(90deg,#14b8a6 0%,#0ea5e9 100%); color: #ecfeff; box-shadow: 0 18px 48px rgba(16,185,129,0.22); }
-    .btn-3d { transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease; }
-    .btn-3d:hover { transform: translateY(-1px); }
-    .btn-3d:active { transform: scale(.98); }
-    .form-disabled { opacity: 0.55; pointer-events: none; }
-    .role-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1rem; border-radius: 999px; background: rgba(16,185,129,0.12); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.18); }
-    .sticky-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(15,23,42,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      min-height: 96px;
-      padding-top: 1.5rem;
-      padding-bottom: 1.5rem;
-      transition: box-shadow 160ms ease, transform 160ms ease;
-      will-change: transform;
-    }
-    .table-wrapper { overflow-x: auto; }
-    .data-table { min-width: 1000px; width: 100%; border-collapse: collapse; }
-    .data-table th, .data-table td { border-bottom: 1px solid rgba(148,163,184,0.10); }
-    .data-table th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
-    .data-table td { vertical-align: top; }
-    .disabled-action { border-radius: 999px; padding: 0.55rem 0.85rem; background: rgba(148,163,184,0.08); color: #94a3b8; font-size: 0.78rem; }
-    .auth-tab { min-width: 120px; }
-    .auth-toggle button { min-width: 110px; }
-    .read-only-note { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.18); color: #fecaca; }
-  </style>
+        * {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: radial-gradient(circle at top, rgba(16, 145, 186, 0.18), transparent 25%),
+                radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.16), transparent 22%),
+                linear-gradient(180deg, #020617 0%, #081323 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            pointer-events: none;
+            z-index: -1;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.80);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+        }
+        .shadow-deep {
+            box-shadow: 0 24px 80px rgba(2, 10, 25, 0.55);
+        }
+        .mm-lang {
+            font-family: 'Noto Sans Myanmar', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .tab-btn {
+            transition: all 250ms cubic-bezier(.2, .9, .2, 1);
+            border: none;
+            background: rgba(15, 23, 42, 0.80);
+            color: #cbd5e1;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.06);
+            border-radius: 24px;
+        }
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(15, 23, 42, 0.95);
+        }
+        .tab-active {
+            background: linear-gradient(90deg, #14b8a6 0%, #0ea5e9 100%);
+            color: #ecfeff;
+            box-shadow: 0 18px 48px rgba(16, 185, 129, 0.22);
+        }
+        .btn-3d {
+            transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+        }
+        .btn-3d:hover {
+            transform: translateY(-1px);
+        }
+        .btn-3d:active {
+            transform: scale(.98);
+        }
+        .btn-save {
+            background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+            color: #052e16;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-dispatch {
+            background: linear-gradient(90deg, #38bdf8 0%, #0ea5e9 100%);
+            color: #082f49;
+            box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
+        }
+        .btn-export {
+            background: linear-gradient(90deg, #f59e0b 0%, #fb923c 100%);
+            color: #431407;
+            box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
+        }
+        .form-disabled {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.18);
+        }
+
+        /* Sticky Header */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #mainHeader,
+        #headerTitle,
+        #headerDesc,
+        #projectLabel,
+        .header-right-area,
+        .role-badge,
+        .btn-3d {
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Scroll state: header compact & PERFECT THREE-COLUMN ALIGNMENT */
+        .scrolled-header {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            border-radius: 0 0 24px 24px !important;
+            background: rgba(15, 23, 42, 0.97) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 1rem !important;
+        }
+        .scrolled-header #headerTitle {
+            font-size: 1.05rem !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+        }
+        .scrolled-header #headerDesc,
+        .scrolled-header #projectLabel,
+        .scrolled-header #authStatusNote {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .scrolled-header .header-right-area {
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            gap: 0.5rem !important;
+            flex-shrink: 0 !important;
+        }
+        .scrolled-header .role-badge {
+            padding: 0.25rem 0.6rem !important;
+            font-size: 0.72rem !important;
+        }
+
+        /* STRICT 2-Row 1-Column Layout for Auth & Language Buttons */
+        .auth-buttons-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.35rem !important;
+            width: auto !important;
+            min-width: 120px;
+        }
+        
+        .scrolled-header .auth-buttons-wrapper {
+            margin-top: 0 !important;
+        }
+
+        .auth-buttons-wrapper .btn-3d {
+            width: 100% !important;
+            justify-content: center !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+
+        /* Responsive button sizing when scrolled */
+        .scrolled-header .btn-3d {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.7rem !important;
+        }
+
+        /* Target Container for Scrolled Navigation (CENTERED) */
+        #scrollNavTarget {
+            display: none;
+            flex: 1 1 auto;
+            justify-content: center;
+            align-items: center;
+            padding: 0 0.5rem;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        /* Scroll state: Navigation layout inside Header */
+        .scrolled-nav {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            width: auto !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+        }
+        .scrolled-nav .tab-btn {
+            width: auto !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            padding: 0 12px !important;
+            border-radius: 12px !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            white-space: nowrap !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Default nav (outside header) styling */
+        #mainNavigation:not(.scrolled-nav) {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 0.75rem !important;
+        }
+        #mainNavigation:not(.scrolled-nav) .tab-btn {
+            padding: 0.75rem 1rem !important;
+            text-align: left !important;
+            font-size: 0.875rem !important;
+            border-radius: 24px !important;
+        }
+        @media (max-width: 1280px) {
+            #mainNavigation:not(.scrolled-nav) {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (max-width: 640px) {
+            #mainNavigation:not(.scrolled-nav) {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .data-table {
+            min-width: 1000px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th,
+        .data-table td {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+        }
+        .data-table th {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        .data-table td {
+            vertical-align: top;
+        }
+        .disabled-action {
+            border-radius: 999px;
+            padding: 0.55rem 0.85rem;
+            background: rgba(148, 163, 184, 0.08);
+            color: #94a3b8;
+            font-size: 0.78rem;
+        }
+        .auth-tab {
+            min-width: 120px;
+        }
+        .auth-toggle button {
+            min-width: 110px;
+        }
+        .read-only-note {
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.18);
+            color: #fecaca;
+        }
+    </style>
 </head>
 <body class="min-h-screen text-slate-100 antialiased">
-  <div class="w-full min-h-screen p-4 md:p-8 mx-auto max-w-[1800px]">
-    <header class="mb-6 rounded-[32px] p-6 glass shadow-deep flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between sticky-header">
-      <div class="space-y-3">
-        <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">Nanyun Project</p>
-        <h1 id="headerTitle" class="text-3xl md:text-4xl font-semibold">Medical Logistics Command Center</h1>
-        <p id="headerDesc" class="max-w-3xl text-sm leading-6 text-slate-300">A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.</p>
-      </div>
-      <div class="flex flex-col gap-4 sm:items-end">
-        <div class="rounded-3xl px-5 py-4 role-badge shadow-deep">
-          <div>
-            <p id="authenticatedUserLabel" class="text-[11px] uppercase tracking-[0.22em] text-slate-300">Active Session</p>
-            <p id="authenticatedUserName" class="mt-1 font-semibold text-slate-100">Guest</p>
-          </div>
-          <span id="activeRoleBadge" class="rounded-full border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs uppercase tracking-[0.18em] text-slate-200">Viewer</span>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="flex flex-col gap-2">
-            <div id="authContainer" class="flex items-center gap-3">
-              <button id="authGoogleBtn" type="button" class="btn-3d rounded-3xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-slate-100 inline-flex items-center gap-2">
-                <span class="text-xl">G</span>
-                <span id="authGoogleLabel">Sign in with Google</span>
-              </button>
-              <button id="logoutBtn" type="button" class="btn-3d rounded-3xl bg-rose-500/10 px-5 py-3 text-sm font-semibold text-rose-200 hover:bg-rose-500/15 hidden">Sign Out</button>
-            </div>
-            <p id="authStatusNote" class="text-xs text-slate-400">Guest users see read-only content.</p>
-          </div>
-          <button id="langToggleBtn" type="button" class="btn-3d btn-lang rounded-3xl bg-slate-900/80 px-5 py-3 text-sm font-semibold text-slate-100">မြန်မာဘာသာ</button>
-        </div>
-      </div>
-    </header>
+    <div class="w-full min-h-screen p-4 md:p-8 mx-auto max-w-[1800px]">
 
-    <nav class="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      <button type="button" data-tab="dashboard" class="tab-btn rounded-3xl bg-slate-900/90 px-4 py-3 text-left text-sm font-semibold tab-active">Dashboard Overview</button>
-      <button type="button" data-tab="inbound" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Intake (Inbound)</button>
-      <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga (Outbound)</button>
-      <button type="button" data-tab="ledger" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Data Ledger</button>
-    </nav>
+        <!-- HEADER -->
+        <header id="mainHeader" class="mb-6 rounded-[32px] p-6 glass shadow-deep flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between sticky-header">
+            <!-- Left: Title -->
+            <div class="space-y-1 flex-shrink-0 min-w-0">
+                <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">Nanyun Project</p>
+                <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Logistics Command Center</h1>
+                <p id="headerDesc" class="max-w-3xl text-sm leading-6 text-slate-300">A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.</p>
+            </div>
 
-    <main class="space-y-6">
-      <section id="dashboard" class="tab-panel space-y-6">
-        <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-          <div class="rounded-[32px] glass shadow-deep p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Nanyun Project)</p>
-                <h2 id="dashboardHeading" class="mt-2 text-2xl font-semibold">Executive Pipeline Dashboard</h2>
-              </div>
-              <span class="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Created by Ran Aung</span>
-            </div>
-            <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Boxes Logged</p>
-                <p id="statTotalLogged" class="mt-3 text-3xl font-semibold text-emerald-300">0</p>
-              </div>
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Current Pipeline Boxes</p>
-                <p id="statPipelineBoxes" class="mt-3 text-3xl font-semibold text-sky-300">0</p>
-              </div>
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Kept in Warehouse</p>
-                <p id="statWarehouseBoxes" class="mt-3 text-3xl font-semibold text-emerald-200">0</p>
-              </div>
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Transited Out</p>
-                <p id="statDispatchedBoxes" class="mt-3 text-3xl font-semibold text-slate-100">0</p>
-              </div>
-            </div>
-            <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
-              <p class="text-sm text-slate-400 max-w-2xl">Export the current logistics dataset with all shipment dates, arrival stamps, and transit history for offline review.</p>
-              <button id="exportDashboardBtn" type="button" class="btn-3d btn-export rounded-3xl px-5 py-3 text-sm font-semibold">Export to Excel</button>
-            </div>
-            <div class="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-sm uppercase tracking-[0.2em] text-slate-400 mb-3">Pipeline Snapshot</p>
-                <div class="space-y-4">
-                  <div>
-                    <div class="flex justify-between text-xs text-slate-400"><span>Warehouse</span><span id="barWarehouseLabel">0</span></div>
-                    <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barWarehouse" class="h-3 rounded-full bg-emerald-400" style="width:0%"></div></div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-xs text-slate-400"><span>Pipeline</span><span id="barPipelineLabel">0</span></div>
-                    <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barPipeline" class="h-3 rounded-full bg-sky-400" style="width:0%"></div></div>
-                  </div>
-                  <div>
-                    <div class="flex justify-between text-xs text-slate-400"><span>Dispatched</span><span id="barDispatchedLabel">0</span></div>
-                    <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barDispatched" class="h-3 rounded-full bg-emerald-300" style="width:0%"></div></div>
-                  </div>
+            <!-- Target container for navigation when scrolled (Centered perfectly between Title and Guest Info) -->
+            <div id="scrollNavTarget"></div>
+
+            <!-- Right: Account + Buttons + Note -->
+            <div class="flex flex-col items-end gap-2 header-right-area flex-shrink-0">
+                <div class="flex flex-row items-center gap-3">
+                    <!-- Guest / Account Info Box -->
+                    <div class="rounded-3xl px-3 py-2 role-badge shadow-deep flex items-center gap-2">
+                        <div>
+                            <p id="authenticatedUserLabel" class="text-[9px] uppercase tracking-[0.2em] text-slate-300">Account Information</p>
+                            <p id="authenticatedUserName" class="mt-0.5 font-semibold text-slate-100 text-xs">Guest</p>
+                            <p id="authStatusNote" class="text-[11px] text-slate-400 text-right w-full pr-1">Guest users see read-only content.</p>
+                        </div>
+                        <span id="activeRoleBadge" class="rounded-full border border-slate-700 bg-slate-900/70 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-slate-200">Viewer</span>
+                    </div>
+
+                    <!-- Auth & Language Buttons (Strict 2-rows 1-column layout) -->
+                    <div class="auth-buttons-wrapper">
+                        <div id="authContainer" class="w-full">
+                            <button id="authGoogleBtn" type="button" class="btn-3d rounded-2xl bg-white px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-slate-100 inline-flex items-center justify-center gap-2 w-full">
+                                <span id="authGoogleLabel">Sign in with Google</span>
+                            </button>
+                            <button id="logoutBtn" type="button" class="btn-3d rounded-2xl bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-200 hover:bg-rose-500/15 hidden w-full">Log Out</button>
+                        </div>
+                        <button id="langToggleBtn" type="button" class="btn-3d btn-lang rounded-2xl bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-slate-100 w-full text-center">မြန်မာဘာသာ</button>
+                    </div>
                 </div>
-              </div>
-              <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Quick Status</p>
-                <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                  <li class="flex items-center justify-between"><span>Shipments In Pipeline</span><span id="countPipelineEntries">0</span></li>
-                  <li class="flex items-center justify-between"><span>Shipments In Warehouse</span><span id="countWarehouseEntries">0</span></li>
-                  <li class="flex items-center justify-between"><span>Shipments Dispatched</span><span id="countDispatchedEntries">0</span></li>
-                </ul>
-              </div>
             </div>
-          </div>
+        </header>
 
-          <div class="rounded-[32px] glass shadow-deep p-6 flex flex-col justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Regional Overview (Pipeline + Warehouse)</p>
-              <h3 class="mt-3 text-xl font-semibold">Other Project Cargo Allocations</h3>
-              <p class="text-xs text-slate-400 mt-1">Live tracking of total allocated boxes in queue for destination Projects.</p>
-              <div class="mt-6 space-y-4">
-                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
-                  <div>
-                    <h4 class="font-bold text-slate-100 text-base">Lahe Project</h4>
-                    <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
-                  </div>
-                  <div class="text-right">
-                    <span id="overviewLaheBoxes" class="text-2xl font-bold text-teal-300">0</span>
-                    <span class="text-xs text-slate-400 block">Boxes</span>
-                  </div>
+        <!-- NAVIGATION: outside header by default -->
+        <nav id="mainNavigation" class="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <button type="button" data-tab="dashboard" class="tab-btn rounded-3xl bg-slate-900/90 px-4 py-3 text-left text-sm font-semibold tab-active">Dashboard Overview</button>
+            <button type="button" data-tab="inbound" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Intake (Inbound)</button>
+            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga (Outbound)</button>
+            <button type="button" data-tab="ledger" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Data Ledger</button>
+        </nav>
+
+        <!-- MAIN -->
+        <main class="space-y-6">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="tab-panel space-y-6">
+                <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+                    <div class="rounded-[32px] glass shadow-deep p-6">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Nanyun Project)</p>
+                                <h2 id="dashboardHeading" class="mt-2 text-2xl font-semibold">Executive Pipeline Dashboard</h2>
+                            </div>
+                            <span id="creatorBadge" class="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Created by Ran Aung</span>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="statTotalLoggedLabel" class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Boxes Logged</p>
+                                <p id="statTotalLogged" class="mt-3 text-3xl font-semibold text-emerald-300">0</p>
+                            </div>
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="statPipelineBoxesLabel" class="text-xs uppercase tracking-[0.25em] text-slate-400">Boxes in Pipeline</p>
+                                <p id="statPipelineBoxes" class="mt-3 text-3xl font-semibold text-sky-300">0</p>
+                            </div>
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="statWarehouseBoxesLabel" class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Boxes in Warehouse</p>
+                                <p id="statWarehouseBoxes" class="mt-3 text-3xl font-semibold text-emerald-200">0</p>
+                            </div>
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="statDispatchedBoxesLabel" class="text-xs uppercase tracking-[0.25em] text-slate-400">Total Boxes Dispatched</p>
+                                <p id="statDispatchedBoxes" class="mt-3 text-3xl font-semibold text-slate-100">0</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+                            <p id="exportDescText" class="text-sm text-slate-400 max-w-2xl">Current process data including shipping dates, arrival dates, and dispatch history can be exported to Excel.</p>
+                            <button id="exportDashboardBtn" type="button" class="btn-3d btn-export rounded-3xl px-5 py-3 text-sm font-semibold">Export Live Ledger</button>
+                        </div>
+                        <div class="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="pipelineVisualLabel" class="text-sm uppercase tracking-[0.2em] text-slate-400 mb-3">Pipeline Visualization</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-400"><span id="barWarehouseTitle">Warehouse</span><span id="barWarehouseLabel">0</span></div>
+                                        <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barWarehouse" class="h-3 rounded-full bg-emerald-400" style="width:0%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-400"><span id="barPipelineTitle">Pipeline</span><span id="barPipelineLabel">0</span></div>
+                                        <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barPipeline" class="h-3 rounded-full bg-sky-400" style="width:0%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-slate-400"><span id="barDispatchedTitle">Dispatched</span><span id="barDispatchedLabel">0</span></div>
+                                        <div class="mt-2 h-3 rounded-full bg-slate-800"><div id="barDispatched" class="h-3 rounded-full bg-emerald-300" style="width:0%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
+                                <p id="quickStatusLabel" class="text-sm uppercase tracking-[0.2em] text-slate-400">Quick Status</p>
+                                <ul class="mt-4 space-y-3 text-sm text-slate-300">
+                                    <li class="flex items-center justify-between"><span id="countPipelineEntriesLabel">Active Pipeline Shipments</span><span id="countPipelineEntries">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="countWarehouseEntriesLabel">Active Warehouse Shipments</span><span id="countWarehouseEntries">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="countDispatchedEntriesLabel">Fully Dispatched Shipments</span><span id="countDispatchedEntries">0</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[32px] glass shadow-deep p-6 flex flex-col justify-between">
+                        <div>
+                            <p id="regionalOverviewLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Regional Overview (Pipeline + Warehouse)</p>
+                            <h3 id="regionalHeading" class="mt-3 text-xl font-semibold">Other Project Allocations</h3>
+                            <p id="regionalDesc" class="text-xs text-slate-400 mt-1">Directly monitor the total number of boxes allocated to target projects.</p>
+                            <div class="mt-6 space-y-4">
+                                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-slate-100 text-base">Lahe Project</h4>
+                                        <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span id="overviewLaheBoxes" class="text-2xl font-bold text-teal-300">0</span>
+                                        <span class="text-xs text-slate-400 block">Boxes</span>
+                                    </div>
+                                </div>
+                                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-slate-100 text-base">Layshi Project</h4>
+                                        <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span id="overviewLayshiBoxes" class="text-2xl font-bold text-sky-300">0</span>
+                                        <span class="text-xs text-slate-400 block">Boxes</span>
+                                    </div>
+                                </div>
+                                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-slate-100 text-base">Hkamti Project</h4>
+                                        <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span id="overviewHkamtiBoxes" class="text-2xl font-bold text-amber-300">0</span>
+                                        <span class="text-xs text-slate-400 block">Boxes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="realtimeNote" class="mt-6 text-xs text-center text-slate-500 border-t border-slate-800/60 pt-4">Synchronizing in real-time across the network.</div>
+                    </div>
                 </div>
-                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
-                  <div>
-                    <h4 class="font-bold text-slate-100 text-base">Layshi Project</h4>
-                    <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
-                  </div>
-                  <div class="text-right">
-                    <span id="overviewLayshiBoxes" class="text-2xl font-bold text-sky-300">0</span>
-                    <span class="text-xs text-slate-400 block">Boxes</span>
-                  </div>
+            </section>
+
+            <!-- INBOUND -->
+            <section id="inbound" class="tab-panel hidden space-y-6">
+                <div class="rounded-[32px] glass shadow-deep p-6">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p id="inboundSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Inbound</p>
+                            <h2 id="inboundHeading" class="text-2xl font-semibold">Cargo Intake (Inbound)</h2>
+                        </div>
+                        <span id="originLabel" class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Cargo Process</span>
+                    </div>
+                    <form id="inboundForm" class="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
+                        <div class="space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="block text-sm text-slate-200">
+                                    <span id="inboundWaybillLabel">WayBill Number</span>
+                                    <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
+                                </label>
+                                <label class="block text-sm text-slate-200">
+                                    <span id="shipmentDateLabel">Shipment Date</span>
+                                    <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="block text-sm text-slate-200">
+                                    <span id="inboundTargetLabel">Target Project Allocation</span>
+                                    <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                        <option>Nanyun</option>
+                                        <option>Lahe</option>
+                                        <option>Layshi</option>
+                                        <option>Hkamti</option>
+                                    </select>
+                                </label>
+                                <label class="block text-sm text-slate-200">
+                                    <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
+                                    <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
+                                </label>
+                            </div>
+                            <label class="block text-sm text-slate-200">
+                                <span id="inboundManifestLabel">Description</span>
+                                <textarea id="inboundManifest" rows="4" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" placeholder="Add raw cargo manifest or notes (Optional)"></textarea>
+                            </label>
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <button id="inboundRegisterBtn" type="submit" class="btn-3d btn-save rounded-2xl px-5 py-3 text-sm font-semibold text-slate-950">Register Shipment</button>
+                                <button id="inboundReset" type="button" class="rounded-2xl border border-slate-700 px-5 py-3 text-sm font-semibold">Reset</button>
+                                <span id="inboundAccessNote" class="rounded-2xl border border-rose-500/15 bg-rose-500/10 px-4 py-3 text-sm text-rose-200 hidden">Guest users have read-only access. Login as Editor or Admin to modify records.</span>
+                            </div>
+                            <p id="inboundFeedback" class="text-sm font-semibold transition-all duration-300"></p>
+                        </div>
+                        <div class="rounded-[32px] border border-slate-700 bg-slate-950/80 p-5 text-sm leading-6 text-slate-300">
+                            <p id="pipelineInventoryLabel" class="text-sm uppercase tracking-[0.2em] text-slate-400 mb-3">Pipeline Inventory</p>
+                            <p id="pipelineLogicDesc"><strong>Database Status:</strong> Cloud synchronization is working via Firebase backend connection safely.</p>
+                        </div>
+                    </form>
                 </div>
-                <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
-                  <div>
-                    <h4 class="font-bold text-slate-100 text-base">Hkamti Project</h4>
-                    <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
-                  </div>
-                  <div class="text-right">
-                    <span id="overviewHkamtiBoxes" class="text-2xl font-bold text-amber-300">0</span>
-                    <span class="text-xs text-slate-400 block">Boxes</span>
-                  </div>
+
+                <div class="rounded-[32px] glass shadow-deep p-6">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p id="pipelineSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Pipeline List</p>
+                            <h2 id="pendingArrivalsTitle" class="text-2xl font-semibold">Pending Arrivals</h2>
+                        </div>
+                        <span id="pipelineEntryCount" class="text-sm text-slate-300">0 entries</span>
+                    </div>
+                    <div class="mt-6 table-wrapper">
+                        <table class="data-table text-left text-sm">
+                            <thead class="bg-slate-900 text-slate-400">
+                                <tr>
+                                    <th id="thWaybill" class="px-3 py-3">WayBill</th>
+                                    <th id="thProject" class="px-3 py-3">Project</th>
+                                    <th id="thShipped" class="px-3 py-3">Shipped</th>
+                                    <th id="thArrived" class="px-3 py-3">Arrived</th>
+                                    <th id="thPipeline" class="px-3 py-3">Pipeline</th>
+                                    <th id="thShipDate" class="px-3 py-3">Ship Date</th>
+                                    <th id="thRcvDate" class="px-3 py-3">Rcv Date</th>
+                                    <th id="thStatus" class="px-3 py-3">Status</th>
+                                    <th id="thAction" class="px-3 py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pipelineTableBody" class="bg-slate-950/60"></tbody>
+                        </table>
+                        <div id="pipelineEmpty" class="p-4 text-slate-400">No inbound pipeline entries yet.</div>
+                    </div>
                 </div>
-              </div>
-            </div>
-            <div id="realtimeNote" class="mt-6 text-xs text-center text-slate-500 border-t border-slate-800/60 pt-4">Realtime synced across network.</div>
-          </div>
-        </div>
-      </section>
+            </section>
 
-      <section id="inbound" class="tab-panel hidden space-y-6">
-        <div class="rounded-[32px] glass shadow-deep p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Inbound</p>
-              <h2 class="text-2xl font-semibold">Cargo Intake (Inbound)</h2>
+            <!-- TRANSIT -->
+            <section id="transit" class="tab-panel hidden space-y-6">
+                <div class="rounded-[32px] glass shadow-deep p-6">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p id="transitSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Outbound</p>
+                            <h2 id="transitHeading" class="text-2xl font-semibold">Transit to Naga (Outbound)</h2>
+                        </div>
+                        <span id="dispatchFromWarehouseLabel" class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Transit from Warehouse</span>
+                    </div>
+                    <div class="mt-6 table-wrapper">
+                        <table class="data-table text-left text-sm">
+                            <thead class="bg-slate-900 text-slate-400">
+                                <tr>
+                                    <th id="thTransitWaybill" class="px-3 py-3">WayBill</th>
+                                    <th id="thTransitProject" class="px-3 py-3">Project</th>
+                                    <th id="thTransitWarehouse" class="px-3 py-3">In Warehouse</th>
+                                    <th id="thTransitDesc" class="px-3 py-3">Description</th>
+                                    <th id="thTransitShipDate" class="px-3 py-3">Ship Date</th>
+                                    <th id="thTransitRcvDate" class="px-3 py-3">Received Date</th>
+                                    <th id="thTransitLastLog" class="px-3 py-3">Transit Date</th>
+                                    <th id="thTransitAction" class="px-3 py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warehouseTableBody" class="bg-slate-950/60"></tbody>
+                        </table>
+                        <div id="warehouseEmpty" class="p-4 text-slate-400">No warehouse shipments available for dispatch.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEDGER -->
+            <section id="ledger" class="tab-panel hidden space-y-6">
+                <div class="rounded-[32px] glass shadow-deep p-6">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="space-y-3 sm:space-y-0">
+                            <p id="ledgerSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Data Ledger</p>
+                            <h2 id="ledgerHeading" class="text-2xl font-semibold">Historic Logs & Audit Records</h2>
+                        </div>
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            <input id="ledgerSearchInput" type="text" class="w-full max-w-xs rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Search by WayBill...(eg. 012345)" />
+                            <button id="exportLedgerBtn" type="button" class="btn-3d btn-export rounded-2xl px-4 py-3 text-sm font-semibold">Export Live Ledger</button>
+                        </div>
+                    </div>
+                    <div class="mt-6 table-wrapper">
+                        <table class="data-table text-left text-sm">
+                            <thead class="bg-slate-900 text-slate-400">
+                                <tr>
+                                    <th class="px-3 py-3">WayBill</th>
+                                    <th class="px-3 py-3">Project</th>
+                                    <th class="px-3 py-3">Description</th>
+                                    <th class="px-3 py-3">Shipped</th>
+                                    <th class="px-3 py-3">Arrived</th>
+                                    <th class="px-3 py-3">Ship Date</th>
+                                    <th class="px-3 py-3">Received Date</th>
+                                    <th class="px-3 py-3">Warehouse</th>
+                                    <th class="px-3 py-3">Pipeline</th>
+                                    <th class="px-3 py-3">Dispatched</th>
+                                    <th class="px-3 py-3">Transit Date</th>
+                                    <th class="px-3 py-3">Status</th>
+                                    <th class="px-3 py-3">Dispatch Summary</th>
+                                    <th class="px-3 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody" class="bg-slate-950/60"></tbody>
+                        </table>
+                        <div id="ledgerEmpty" class="p-4 text-slate-400">No ledger records available.</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- MODALS -->
+        <div id="arrivalModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
+            <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
+                <div class="flex items-center justify-between">
+                    <h3 id="arrivalTitle" class="text-xl font-semibold">Update Arrival</h3>
+                    <button id="closeArrivalModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
+                </div>
+                <div class="mt-5 space-y-4">
+                    <label class="block text-sm text-slate-200">
+                        <span id="arrivalBoxesLabel">Boxes Arrived</span>
+                        <input id="arrivalInput" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                    </label>
+                    <div class="flex justify-end gap-3">
+                        <button id="cancelArrival" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm">Cancel</button>
+                        <button id="confirmArrival" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Confirm</button>
+                    </div>
+                    <p id="arrivalFeedback" class="text-sm text-rose-300"></p>
+                </div>
             </div>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Cargo Process</span>
-          </div>
-          <form id="inboundForm" class="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-            <div class="space-y-5">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label class="block text-sm text-slate-200">
-                  <span>WayBill Number</span>
-                  <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
-                </label>
-                <label class="block text-sm text-slate-200">
-                  <span>Shipment Date</span>
-                  <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
-                </label>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label class="block text-sm text-slate-200">
-                  <span>Target Project Allocation</span>
-                  <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
-                    <option>Nanyun</option>
-                    <option>Lahe</option>
-                    <option>Layshi</option>
-                    <option>Hkamti</option>
-                  </select>
-                </label>
-                <label class="block text-sm text-slate-200">
-                  <span>Total Shipped Boxes</span>
-                  <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
-                </label>
-              </div>
-              <label class="block text-sm text-slate-200">
-                <span>Description</span>
-                <textarea id="inboundManifest" rows="4" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" placeholder="Add raw cargo manifest or notes (Optional)"></textarea>
-              </label>
-              <div class="flex flex-wrap gap-3 items-center">
-                <button id="inboundRegisterBtn" type="submit" class="btn-3d btn-save rounded-2xl px-5 py-3 text-sm font-semibold text-slate-950">Register Shipment</button>
-                <button id="inboundReset" type="button" class="rounded-2xl border border-slate-700 px-5 py-3 text-sm font-semibold">Reset</button>
-                <span id="inboundAccessNote" class="rounded-2xl border border-rose-500/15 bg-rose-500/10 px-4 py-3 text-sm text-rose-200 hidden">Read-only mode: login as Editor or Admin to add shipments.</span>
-              </div>
-              <p id="inboundFeedback" class="text-sm font-semibold transition-all duration-300"></p>
-            </div>
-            <div class="rounded-[32px] border border-slate-700 bg-slate-950/80 p-5 text-sm leading-6 text-slate-300">
-              <p class="text-sm uppercase tracking-[0.2em] text-slate-400 mb-3">Pipeline Logic</p>
-              <p id="pipelineLogicDesc"><strong>Database Status:</strong> Cloud synchronization is working via Firebase backend connection safely.</p>
-            </div>
-          </form>
         </div>
 
-        <div class="rounded-[32px] glass shadow-deep p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Pipeline Inventory</p>
-              <h2 class="text-2xl font-semibold">Pending Arrivals</h2>
+        <div id="dispatchModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
+            <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
+                <div class="flex items-center justify-between">
+                    <h3 id="dispatchTitle" class="text-xl font-semibold">Dispatch Transit</h3>
+                    <button id="closeDispatchModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
+                </div>
+                <div class="mt-5 space-y-4">
+                    <label class="block text-sm text-slate-200">
+                        <span id="dispatchDestinationLabel">Destination Location</span>
+                        <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                            <option>Lahe</option>
+                            <option>Layshi</option>
+                            <option>Hkamti</option>
+                        </select>
+                    </label>
+                    <label class="block text-sm text-slate-200">
+                        <span id="dispatchQuantityLabel">Transit Box Quantity</span>
+                        <input id="dispatchQuantityInput" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                    </label>
+                    <div class="flex justify-end gap-3">
+                        <button id="cancelDispatch" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm">Cancel</button>
+                        <button id="confirmDispatchBtn" class="btn-3d btn-dispatch rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Dispatch</button>
+                    </div>
+                    <p id="dispatchFeedback" class="text-sm text-rose-300"></p>
+                </div>
             </div>
-            <span id="pipelineEntryCount" class="text-sm text-slate-300">0 entries</span>
-          </div>
-          <div class="mt-6 table-wrapper">
-            <table class="data-table text-left text-sm">
-              <thead class="bg-slate-900 text-slate-400">
-                <tr>
-                  <th class="px-3 py-3">WayBill</th>
-                  <th class="px-3 py-3">Project</th>
-                  <th class="px-3 py-3">Shipped</th>
-                  <th class="px-3 py-3">Arrived</th>
-                  <th class="px-3 py-3">Pipeline</th>
-                  <th class="px-3 py-3">Shipment Date</th>
-                  <th class="px-3 py-3">Received Date</th>
-                  <th class="px-3 py-3">Status</th>
-                  <th class="px-3 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody id="pipelineTableBody" class="bg-slate-950/60"></tbody>
-            </table>
-            <div id="pipelineEmpty" class="p-4 text-slate-400">No inbound pipeline entries yet.</div>
-          </div>
         </div>
-      </section>
 
-      <section id="transit" class="tab-panel hidden space-y-6">
-        <div class="rounded-[32px] glass shadow-deep p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Outbound</p>
-              <h2 class="text-2xl font-semibold">Transit to Naga (Outbound)</h2>
+        <div id="ledgerEditModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
+            <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
+                <div class="flex items-center justify-between">
+                    <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Ledger Entry</h3>
+                    <button id="ledgerEditCancel" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Cancel</button>
+                </div>
+                <div class="mt-5 space-y-4">
+                    <label class="block text-sm text-slate-200">
+                        <span id="ledgerEditTargetLabel">Target Project</span>
+                        <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                            <option>Nanyun</option>
+                            <option>Lahe</option>
+                            <option>Layshi</option>
+                            <option>Hkamti</option>
+                        </select>
+                    </label>
+                    <label class="block text-sm text-slate-200">
+                        <span id="ledgerEditTotalLabel">Total Shipped Boxes</span>
+                        <input id="ledgerEditTotal" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                    </label>
+                    <div class="flex justify-end gap-3">
+                        <button id="ledgerEditSave" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Save</button>
+                    </div>
+                    <p id="ledgerEditFeedback" class="text-sm text-rose-300"></p>
+                </div>
             </div>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Transit from Warehouse</span>
-          </div>
-          <div class="mt-6 table-wrapper">
-            <table class="data-table text-left text-sm">
-              <thead class="bg-slate-900 text-slate-400">
-                <tr>
-                  <th class="px-3 py-3">WayBill</th>
-                  <th class="px-3 py-3">Project</th>
-                  <th class="px-3 py-3">In Warehouse</th>
-                  <th class="px-3 py-3">Description</th>
-                  <th class="px-3 py-3">Shipment Date</th>
-                  <th class="px-3 py-3">Received Date</th>
-                  <th class="px-3 py-3">Last Transit</th>
-                  <th class="px-3 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody id="warehouseTableBody" class="bg-slate-950/60"></tbody>
-            </table>
-            <div id="warehouseEmpty" class="p-4 text-slate-400">No warehouse shipments available for dispatch.</div>
-          </div>
         </div>
-      </section>
 
-      <section id="ledger" class="tab-panel hidden space-y-6">
-        <div class="rounded-[32px] glass shadow-deep p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div class="space-y-3 sm:space-y-0">
-              <p class="text-xs uppercase tracking-[0.25em] text-emerald-300">Data Ledger</p>
-              <h2 class="text-2xl font-semibold">Historic Logs & Audit Records</h2>
-            </div>
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <input id="ledgerSearchInput" type="text" class="w-full max-w-xs rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Search WayBill..." />
-              <button id="exportLedgerBtn" type="button" class="btn-3d btn-export rounded-2xl px-4 py-3 text-sm font-semibold">Export to Excel</button>
-            </div>
-          </div>
-          <div class="mt-6 table-wrapper">
-            <table class="data-table text-left text-sm">
-              <thead class="bg-slate-900 text-slate-400">
-                <tr>
-                  <th class="px-3 py-3">WayBill</th>
-                  <th class="px-3 py-3">Project</th>
-                  <th class="px-3 py-3">Description</th>
-                  <th class="px-3 py-3">Shipped</th>
-                  <th class="px-3 py-3">Arrived</th>
-                  <th class="px-3 py-3">Shipment Date</th>
-                  <th class="px-3 py-3">Received Date</th>
-                  <th class="px-3 py-3">Warehouse</th>
-                  <th class="px-3 py-3">Pipeline</th>
-                  <th class="px-3 py-3">Dispatched</th>
-                  <th class="px-3 py-3">Last Transit</th>
-                  <th class="px-3 py-3">Status</th>
-                  <th class="px-3 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="ledgerTableBody" class="bg-slate-950/60"></tbody>
-            </table>
-            <div id="ledgerEmpty" class="p-4 text-slate-400">No ledger records available.</div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <div id="arrivalModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
-      <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
-        <div class="flex items-center justify-between">
-          <h3 id="arrivalTitle" class="text-xl font-semibold">Update Arrival</h3>
-          <button id="closeArrivalModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
-        </div>
-        <div class="mt-5 space-y-4">
-          <label class="block text-sm text-slate-200">
-            <span>Boxes Arrived</span>
-            <input id="arrivalInput" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
-          </label>
-          <div class="flex justify-end gap-3">
-            <button id="cancelArrival" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm">Cancel</button>
-            <button id="confirmArrival" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Confirm</button>
-          </div>
-          <p id="arrivalFeedback" class="text-sm text-rose-300"></p>
-        </div>
-      </div>
     </div>
 
-    <div id="dispatchModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
-      <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
-        <div class="flex items-center justify-between">
-          <h3 id="dispatchTitle" class="text-xl font-semibold">Dispatch Transit</h3>
-          <button id="closeDispatchModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
-        </div>
-        <div class="mt-5 space-y-4">
-          <label class="block text-sm text-slate-200">
-            <span>Destination Location</span>
-            <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-              <option>Lahe</option>
-              <option>Layshi</option>
-              <option>Hkamti</option>
-            </select>
-          </label>
-          <label class="block text-sm text-slate-200">
-            <span>Transit Box Quantity</span>
-            <input id="dispatchQuantityInput" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
-          </label>
-          <div class="flex justify-end gap-3">
-            <button id="cancelDispatch" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm">Cancel</button>
-            <button id="confirmDispatchBtn" class="btn-3d btn-dispatch rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Transit</button>
-          </div>
-          <p id="dispatchFeedback" class="text-sm text-rose-300"></p>
-        </div>
-      </div>
-    </div>
+    <script>
+        // ===== FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5GuDLb-BG6BNfJG7nbB_PARXZlmeavaA",
+            authDomain: "ran-space-social.firebaseapp.com",
+            databaseURL: "https://ran-space-social-default-rtdb.firebaseio.com/",
+            projectId: "ran-space-social",
+            storageBucket: "ran-space-social.firebasestorage.app",
+            messagingSenderId: "682950893913",
+            appId: "1:682950893913:web:02a311cb9434317d1a6c48",
+            measurementId: "G-LXHLZTBF1H"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const db = firebase.database();
+        const DB_NODE = "logistics_shipments";
+        const ROLES = { ADMIN: 'Admin', EDITOR: 'Editor', VIEWER: 'Viewer' };
 
-    <div id="ledgerEditModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
-      <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
-        <div class="flex items-center justify-between">
-          <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Ledger Entry</h3>
-          <button id="ledgerEditCancel" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Cancel</button>
-        </div>
-        <div class="mt-5 space-y-4">
-          <label class="block text-sm text-slate-200">
-            <span>Target Project</span>
-            <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-              <option>Nanyun</option>
-              <option>Lahe</option>
-              <option>Layshi</option>
-              <option>Hkamti</option>
-            </select>
-          </label>
-          <label class="block text-sm text-slate-200">
-            <span>Total Shipped Boxes</span>
-            <input id="ledgerEditTotal" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
-          </label>
-          <div class="flex justify-end gap-3">
-            <button id="ledgerEditSave" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Save</button>
-          </div>
-          <p id="ledgerEditFeedback" class="text-sm text-rose-300"></p>
-        </div>
-      </div>
-    </div>
-  </div>
+        let entries = [];
+        let activeArrivalId = null;
+        let activeDispatchId = null;
+        let activeLedgerEditId = null;
+        let currentLang = 'en';
+        let currentUser = null;
+        let currentRole = ROLES.VIEWER;
+        let currentDisplayName = 'Guest';
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA5GuDLb-BG6BNfJG7nbB_PARXZlmeavaA",
-      authDomain: "ran-space-social.firebaseapp.com",
-      databaseURL: "https://ran-space-social-default-rtdb.firebaseio.com/",
-      projectId: "ran-space-social",
-      storageBucket: "ran-space-social.firebasestorage.app",
-      messagingSenderId: "682950893913",
-      appId: "1:682950893913:web:02a311cb9434317d1a6c48",
-      measurementId: "G-LXHLZTBF1H"
-    };
+        // ===== TRANSLATIONS =====
+        const translations = {
+            en: {
+                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga (Outbound)",
+                    ledger: "Data Ledger" },
+                tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
+                projectLabel: "Nanyun Project (Cargo Process Between Myitkyina and Naga Projects)",
+                headerTitle: "Medical Logistics Command Center",
+                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Myitkyina to Naga Projects)",
+                authenticatedUserLabel: "Account Information",
+                activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "Viewer" },
+                authStatusNote: "Guest users see read-only content.",
+                dashboardSectionLabel: "Overview (Except Nanyun Project)",
+                dashboardHeading: "Executive Pipeline Dashboard",
+                creatorBadge: "Created by Ran Aung",
+                statTotalLoggedLabel: "Total Boxes Logged",
+                statPipelineBoxesLabel: "Boxes in Pipeline",
+                statWarehouseBoxesLabel: "Total Boxes in Warehouse",
+                statDispatchedBoxesLabel: "Total Boxes Dispatched",
+                exportDescText: "Current process data including shipping dates, arrival dates, and dispatch history can be exported to Excel.",
+                exportDashboardBtn: "Export Live Ledger",
+                pipelineVisualLabel: "Pipeline Visualization",
+                barWarehouseTitle: "Warehouse",
+                barPipelineTitle: "Pipeline",
+                barDispatchedTitle: "Dispatched",
+                quickStatusLabel: "Quick Status",
+                countPipelineEntriesLabel: "Active Pipeline Shipments",
+                countWarehouseEntriesLabel: "Active Warehouse Shipments",
+                countDispatchedEntriesLabel: "Fully Dispatched Shipments",
+                regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
+                regionalHeading: "Other Project Allocations",
+                regionalDesc: "Directly monitor the total number of boxes allocated to target projects.",
+                realtimeNote: "Synchronizing in real-time across the network.",
+                pipelineLogicDesc: "Online Cloud synchronization is working backend connection safely.",
+                inboundSectionLabel: "Inbound",
+                inboundHeading: "Cargo Intake (Inbound)",
+                originLabel: "Cargo Process",
+                inboundWaybillLabel: "WayBill Number",
+                shipmentDateLabel: "Shipment Date",
+                inboundTargetLabel: "Target Project Allocation",
+                inboundTotalBoxesLabel: "Total Shipped Boxes",
+                inboundManifestLabel: "Description",
+                inboundRegisterBtn: "Register Shipment",
+                inboundReset: "Reset",
+                pipelineInventoryLabel: "Pipeline Inventory",
+                pipelineSectionLabel: "Pipeline List",
+                pendingArrivalsTitle: "Pending Arrivals",
+                thWaybill: "WayBill",
+                thProject: "Project",
+                thShipped: "Shipped",
+                thArrived: "Arrived",
+                thPipeline: "Pipeline",
+                thShipDate: "Ship Date",
+                thRcvDate: "Received Date",
+                thStatus: "Status",
+                thAction: "Action",
+                transitSectionLabel: "Outbound",
+                transitHeading: "Transit to Naga (Outbound)",
+                dispatchFromWarehouseLabel: "Transit from Nanyun Warehouse",
+                thTransitWaybill: "WayBill",
+                thTransitProject: "Project",
+                thTransitWarehouse: "In Warehouse",
+                thTransitDesc: "Description",
+                thTransitShipDate: "Ship Date",
+                thTransitRcvDate: "Received Date",
+                thTransitLastLog: "Transit Date",
+                thTransitAction: "Action",
+                ledgerSectionLabel: "Data Ledger",
+                ledgerHeading: "History Records",
+                arrivalTitle: "Update Arrival",
+                arrivalBoxesLabel: "Boxes Arrived",
+                dispatchTitle: "Dispatch Transit",
+                dispatchDestinationLabel: "Destination Location",
+                dispatchQuantityLabel: "Transit Box Quantity",
+                ledgerEditTitle: "Edit Ledger Entry",
+                ledgerEditTargetLabel: "Target Project",
+                ledgerEditTotalLabel: "Total Shipped Boxes",
+                pipelineEmpty: "No inbound pipeline entries yet.",
+                warehouseEmpty: "No warehouse shipments available for dispatch.",
+                ledgerEmpty: "No ledger records available.",
+                inboundWaybillPlaceholder: "Enter WayBill",
+                inboundManifestPlaceholder: "Add raw cargo manifest or notes (Optional)",
+                authGuestHint: "Guest users have read-only access. Login as Editor or Admin to modify records.",
+                successShipment: "Shipment registered into live dashboard!",
+                errorInvalidInput: "Please enter a valid WayBill and Shipped Boxes count.",
+                errorDuplicateShipment: "This shipment has already been registered for this project.",
+                errorDatabase: "Database Error: ",
+                arrivalSuccess: "Arrival updated successfully.",
+                dispatchSuccess: "Dispatch completed successfully.",
+                notAuthorized: "Access denied. This action requires Editor or Admin privileges.",
+                notAdmin: "Only Admin can edit or delete ledger entries.",
+                deleteConfirm: "Are you sure you want permanently delete this log entry?",
+                readOnlyAction: "Role restricted",
+                noPermissionForAction: "Role restricted",
+                noTransitRequired: "Not required"
+            },
+            mm: {
+                tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
+                    ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
+                tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
+                projectLabel: "နာန်ယွန်း ပရောဂျက် (မြစ်ကြီးနားနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
+                headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
+                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (မြစ်ကြီးနားမှ နာဂပရောဂျက်များသို့)",
+                authenticatedUserLabel: "Account အချက်အလက်များ",
+                activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
+                authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
+                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (နာန်ယွန်း ပရောဂျက်မပါဝင်ပါ)",
+                dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
+                creatorBadge: "Ran Aung မှ ဖန်တီးခဲ့သည်",
+                statTotalLoggedLabel: "စုစုပေါင်း ဂျက်ဖါစာရင်းသွင်းပြီး",
+                statPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ",
+                statWarehouseBoxesLabel: "ဂိုဒေါင်တွင် သိမ်းဆည်းထားသော ဂျက်ဖါစုစုပေါင်း",
+                statDispatchedBoxesLabel: "ပို့ဆောင်ပြီး ဂျက်ဖါစုစုပေါင်း",
+                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက် ((From MKN)၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
+                exportDashboardBtn: "Excel မှတ်တမ်းထုတ်ရန်",
+                pipelineVisualLabel: "လမ်းကြောင်း အမြင်ချင်း",
+                barWarehouseTitle: "ဂိုဒေါင်",
+                barPipelineTitle: "လမ်းကြောင်း",
+                barDispatchedTitle: "ပို့ဆောင်ပြီး",
+                quickStatusLabel: "အမြန်အခြေအနေ",
+                countPipelineEntriesLabel: "လမ်းကြောင်းတွင် ရှိသော ပို့ဆောင်မှုများ",
+                countWarehouseEntriesLabel: "ဂိုဒေါင်တွင် ရှိသော ပို့ဆောင်မှုများ",
+                countDispatchedEntriesLabel: "ပို့ဆောင်ပြီး ပို့ဆောင်မှုများ",
+                regionalOverviewLabel: "ဒေသဆိုင်ရာ အကျဉ်းချုပ် (လမ်းကြောင်း + ဂိုဒေါင်)",
+                regionalHeading: "အခြားပရောဂျက်များ၏ ကုန်ပစ္စည်းခွဲတမ်း",
+                regionalDesc: "ပစ်မှတ်ပရောဂျက်များသို့ ထားရှိနေသော ဂျက်ဖါအရေအတွက်ကို တိုက်ရိုက်စောင့်ကြည့်နိုင်ပါသည်။",
+                realtimeNote: "ကွန်ရက်တစ်လျှောက် လက်တင်အချိန်လိုက် စင့်ခ်လုပ်နေသည်။",
+                pipelineLogicDesc: "Online Cloud စနစ်ဖြင့် စိတ်ချစွာ ချိတ်ဆက်ထားပါသည်။",
+                inboundSectionLabel: "အဝင်",
+                inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
+                originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
+                inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
+                shipmentDateLabel: "ပို့ဆောင်ရက် ((From MKN)",
+                inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
+                inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော ဂျက်ဖါအရေအတွက်",
+                inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
+                inboundRegisterBtn: "ဒေတာ မှတ်ပုံတင်ရန်",
+                inboundReset: "ပြန်စတင်ရန်",
+                pipelineInventoryLabel: "လမ်းခရီးရောက်ပစ္စည်းစာရင်း",
+                pipelineSectionLabel: "လမ်းကြောင်းစာရင်း",
+                pendingArrivalsTitle: "ရောက်ရှိရန် စောင့်ဆိုင်းနေသော ပစ္စည်းများ",
+                thWaybill: "WayBill",
+                thProject: "ပရောဂျက်",
+                thShipped: "ပေးပို့ပြီး",
+                thArrived: "ရောက်ရှိပြီး",
+                thPipeline: "လမ်းကြောင်း",
+                thShipDate: "ပို့ဆောင်ရက် ((From MKN)",
+                thRcvDate: "ရရှိရက်",
+                thStatus: "အခြေအနေ",
+                thAction: "လုပ်ဆောင်ချက်",
+                transitSectionLabel: "အထွက်",
+                transitHeading: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
+                dispatchFromWarehouseLabel: "နန်းယွန်းဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
+                thTransitWaybill: "WayBill",
+                thTransitProject: "ပရောဂျက်",
+                thTransitWarehouse: "ဂိုဒေါင်ထဲရှိ",
+                thTransitDesc: "အသေးစိတ်ဖော်ပြချက်",
+                thTransitShipDate: "ပို့ဆောင်ရက် (From MKN)",
+                thTransitRcvDate: "ရရှိရက်",
+                thTransitLastLog: "နောက်ဆုံး ပို့ဆောင်ခြင်း",
+                thTransitAction: "လုပ်ဆောင်ချက်",
+                ledgerSectionLabel: "ဒေတာမှတ်တမ်း",
+                ledgerHeading: "ကုန်ပစ္စည်းမှတ်တမ်းများ",
+                arrivalTitle: "ပစ္စည်းရောက်ရှိမှု အဆင့်မြှင့်တင်ရန်",
+                arrivalBoxesLabel: "ရောက်ရှိလာသော ဂျက်ဖါအရေအတွက်",
+                dispatchTitle: "နောက်ထပ် ပို့ဆောင်မည့်နေရာ",
+                dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
+                dispatchQuantityLabel: "ပို့ဆောင်မည့် ဂျက်ဖါအရေအတွက်",
+                ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
+                ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
+                ledgerEditTotalLabel: "စုစုပေါင်းဂျက်ဖါအရေအတွက်",
+                pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
+                warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
+                ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ။",
+                inboundWaybillPlaceholder: "WayBill နံပါတ်ရိုက်ထည့်ပါ",
+                inboundManifestPlaceholder: "ပစ္စည်းအမျိုးအမည် သို့မဟုတ် မှတ်စုများ ထည့်ရန် (မထည့်လဲရပါ)",
+                authGuestHint: "Guest များသည် ဖတ်ရှုခွင့်သာရှိသည်။ ဒေတာများ ပြင်ဆင်ရန် Editor သို့မဟုတ် Admin အကောင့်ဖြင့် ဝင်ပါ။",
+                successShipment: "Shipment ကို ဒက်ရှ်ဘုတ်ထဲသို့ ထည့်သွင်းပြီးပါပြီ။",
+                errorInvalidInput: "ကျေးဇူးပြု၍ မှန်ကန်သော WayBill နှင့် အရေအတွက်ကို ရိုက်ထည့်ပါ။",
+                errorDuplicateShipment: "ဤ shipment သည် သတ်မှတ်ချက်ထဲတွင် ရှိပြီးသားဖြစ်နေသည်။",
+                errorDatabase: "ဒေတာဘေ့စ်ချို့ယွင်းချက်: ",
+                arrivalSuccess: "ပစ္စည်းရောက်ရှိမှုကို အောင်မြင်စွာ အပ်ဒိတ်လုပ်ပြီးပါပြီ။",
+                dispatchSuccess: "ကုန်ပစ္စည်းလွှဲပြောင်းမှု အောင်မြင်ပါသည်။",
+                notAuthorized: "လုပ်ဆောင်ခွင့် မရှိပါ။ Editor သို့မဟုတ် Admin သာ ခွင့်ပြုသည်။",
+                notAdmin: "Admin အဆင့်သာ ပြင်ဆင်/ဖျက်ပိုင်ခွင့်ရှိသည်။",
+                deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား။",
+                readOnlyAction: "ဝင်ရောက်ခွင့်မရှိပါ။",
+                noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ။",
+                noTransitRequired: "မလိုပါ။ "
+            }
+        };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const db = firebase.database();
-    const DB_NODE = "logistics_shipments";
-    const ROLES = { ADMIN: 'Admin', EDITOR: 'Editor', VIEWER: 'Viewer' };
+        // ===== UI REFS =====
+        const ui = {
+            tabs: document.querySelectorAll('nav [data-tab]'),
+            panels: document.querySelectorAll('main .tab-panel'),
+            inboundForm: document.getElementById('inboundForm'),
+            inboundWaybill: document.getElementById('inboundWaybill'),
+            inboundTarget: document.getElementById('inboundTarget'),
+            inboundTotalBoxes: document.getElementById('inboundTotalBoxes'),
+            inboundManifest: document.getElementById('inboundManifest'),
+            inboundRegisterBtn: document.getElementById('inboundRegisterBtn'),
+            inboundReset: document.getElementById('inboundReset'),
+            inboundFeedback: document.getElementById('inboundFeedback'),
+            inboundAccessNote: document.getElementById('inboundAccessNote'),
+            shipmentDate: document.getElementById('shipmentDate'),
+            pipelineTableBody: document.getElementById('pipelineTableBody'),
+            pipelineEmpty: document.getElementById('pipelineEmpty'),
+            warehouseTableBody: document.getElementById('warehouseTableBody'),
+            warehouseEmpty: document.getElementById('warehouseEmpty'),
+            ledgerTableBody: document.getElementById('ledgerTableBody'),
+            ledgerEmpty: document.getElementById('ledgerEmpty'),
+            arrivalModal: document.getElementById('arrivalModal'),
+            arrivalInput: document.getElementById('arrivalInput'),
+            confirmArrival: document.getElementById('confirmArrival'),
+            cancelArrival: document.getElementById('cancelArrival'),
+            closeArrivalModal: document.getElementById('closeArrivalModal'),
+            arrivalFeedback: document.getElementById('arrivalFeedback'),
+            dispatchModal: document.getElementById('dispatchModal'),
+            dispatchDestination: document.getElementById('dispatchDestination'),
+            dispatchQuantityInput: document.getElementById('dispatchQuantityInput'),
+            confirmDispatchBtn: document.getElementById('confirmDispatchBtn'),
+            cancelDispatch: document.getElementById('cancelDispatch'),
+            closeDispatchModal: document.getElementById('closeDispatchModal'),
+            dispatchFeedback: document.getElementById('dispatchFeedback'),
+            ledgerEditModal: document.getElementById('ledgerEditModal'),
+            ledgerEditTarget: document.getElementById('ledgerEditTarget'),
+            ledgerEditTotal: document.getElementById('ledgerEditTotal'),
+            ledgerEditSave: document.getElementById('ledgerEditSave'),
+            ledgerEditCancel: document.getElementById('ledgerEditCancel'),
+            ledgerEditFeedback: document.getElementById('ledgerEditFeedback'),
+            exportDashboardBtn: document.getElementById('exportDashboardBtn'),
+            exportLedgerBtn: document.getElementById('exportLedgerBtn'),
+            ledgerSearchInput: document.getElementById('ledgerSearchInput'),
+            langToggleBtn: document.getElementById('langToggleBtn'),
+            authGoogleBtn: document.getElementById('authGoogleBtn'),
+            authGoogleLabel: document.getElementById('authGoogleLabel'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            authenticatedUserName: document.getElementById('authenticatedUserName'),
+            activeRoleBadge: document.getElementById('activeRoleBadge'),
+            authStatusNote: document.getElementById('authStatusNote'),
+            pipelineEntryCount: document.getElementById('pipelineEntryCount'),
+            statTotalLogged: document.getElementById('statTotalLogged'),
+            statPipelineBoxes: document.getElementById('statPipelineBoxes'),
+            statWarehouseBoxes: document.getElementById('statWarehouseBoxes'),
+            statDispatchedBoxes: document.getElementById('statDispatchedBoxes'),
+            barWarehouse: document.getElementById('barWarehouse'),
+            barWarehouseLabel: document.getElementById('barWarehouseLabel'),
+            barPipeline: document.getElementById('barPipeline'),
+            barPipelineLabel: document.getElementById('barPipelineLabel'),
+            barDispatched: document.getElementById('barDispatched'),
+            barDispatchedLabel: document.getElementById('barDispatchedLabel'),
+            countPipelineEntries: document.getElementById('countPipelineEntries'),
+            countWarehouseEntries: document.getElementById('countWarehouseEntries'),
+            countDispatchedEntries: document.getElementById('countDispatchedEntries'),
+            overviewLaheBoxes: document.getElementById('overviewLaheBoxes'),
+            overviewLayshiBoxes: document.getElementById('overviewLayshiBoxes'),
+            overviewHkamtiBoxes: document.getElementById('overviewHkamtiBoxes'),
+            mainNavigation: document.getElementById('mainNavigation'),
+            scrollNavTarget: document.getElementById('scrollNavTarget'),
+            mainHeader: document.getElementById('mainHeader')
+        };
 
-    let entries = [];
-    let activeArrivalId = null;
-    let activeDispatchId = null;
-    let activeLedgerEditId = null;
-    let currentLang = 'en';
-    let currentUser = null;
-    let currentRole = ROLES.VIEWER;
-    let currentDisplayName = 'Guest';
+        // ===== AUTH =====
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                currentDisplayName = user.displayName || user.email.split('@')[0];
+                const userRef = db.ref('users/' + user.uid);
+                userRef.once('value').then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        userRef.set({ name: currentDisplayName, email: user.email, role: "Viewer" }).then(() => {
+                            currentRole = ROLES.VIEWER;
+                            updateAuthUI();
+                            refreshAllViews();
+                        });
+                    } else {
+                        const userData = snapshot.val();
+                        currentRole = userData.role || ROLES.VIEWER;
+                        updateAuthUI();
+                        refreshAllViews();
+                    }
+                });
+            } else {
+                currentUser = null;
+                currentRole = ROLES.VIEWER;
+                currentDisplayName = 'Guest';
+                updateAuthUI();
+                refreshAllViews();
+            }
+        });
 
-    const translations = {
-      en: {
-        tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga (Outbound)", ledger: "Data Ledger" },
-        projectLabel: "Nanyun Project",
-        headerTitle: "Medical Logistics Command Center",
-        headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.",
-        authStatusNote: "Guest users see read-only content.",
-        dashboardSectionLabel: "Overview (Except Nanyun Project)",
-        dashboardHeading: "Executive Pipeline Dashboard",
-        pipelineLogicDesc: "<strong>Database Status:</strong> Cloud synchronization is working via Firebase backend connection safely.",
-        inboundSectionLabel: "Inbound",
-        inboundHeading: "Cargo Intake (Inbound)",
-        originLabel: "Cargo Process",
-        inboundWaybillLabel: "WayBill Number",
-        inboundTargetLabel: "Target Project Allocation",
-        inboundTotalBoxesLabel: "Total Shipped Boxes",
-        inboundManifestLabel: "Description",
-        inboundRegisterBtn: "Register Shipment",
-        inboundReset: "Reset",
-        pipelineInventoryLabel: "Pipeline Inventory",
-        pendingArrivalsTitle: "Pending Arrivals",
-        transitSectionLabel: "Outbound",
-        transitHeading: "Transit to Naga (Outbound)",
-        dispatchFromWarehouseLabel: "Transit from Warehouse",
-        ledgerSectionLabel: "Data Ledger",
-        ledgerHeading: "Historic Logs & Audit Records",
-        arrivalTitle: "Update Arrival",
-        arrivalBoxesLabel: "Boxes Arrived",
-        dispatchTitle: "Dispatch Transit",
-        dispatchDestinationLabel: "Destination Location",
-        dispatchQuantityLabel: "Transit Box Quantity",
-        ledgerEditTitle: "Edit Ledger Entry",
-        ledgerEditTargetLabel: "Target Project",
-        ledgerEditTotalLabel: "Total Shipped Boxes",
-        pipelineEmpty: "No inbound pipeline entries yet.",
-        warehouseEmpty: "No warehouse shipments available for dispatch.",
-        ledgerEmpty: "No ledger records available.",
-        inboundWaybillPlaceholder: "Enter WayBill",
-        inboundManifestPlaceholder: "Add raw cargo manifest or notes (Optional)",
-        authGuestHint: "Guest users have read-only access. Login as Editor or Admin to modify records.",
-        successShipment: "Shipment registered into live dashboard!",
-        errorInvalidInput: "Please enter a valid WayBill and Shipped Boxes count.",
-        errorDuplicateShipment: "This shipment has already been registered for this project.",
-        errorDatabase: "Database Error: ",
-        arrivalSuccess: "Arrival updated successfully.",
-        dispatchSuccess: "Dispatch completed successfully.",
-        notAuthorized: "Access denied. This action requires Editor or Admin privileges.",
-        notAdmin: "Only Admin can edit or delete ledger entries.",
-        deleteConfirm: "Are you sure you want to permanently delete this log entry?",
-        readOnlyAction: "Read-only",
-        noPermissionForAction: "Disabled for current role."
-      },
-      mm: {
-        tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)", ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
-        projectLabel: "နာန်ယွန်း ပရောဂျက်",
-        headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
-        headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းနှင့် စစ်ဆေးရန်အဆင်သင့်ဖြစ်စေမည့် စနစ်",
-        authStatusNote: "ဧည့်သည်များ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
-        dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက်",
-        dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
-        pipelineLogicDesc: "<strong>ဒေတာဘေ့စ်အခြေအနေ:</strong> Firebase cloud စနစ်ဖြင့် စိတ်ချစွာ ချိတ်ဆက်ထားပါသည်။",
-        inboundSectionLabel: "အဝင်",
-        inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
-        originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
-        inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
-        inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
-        inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော သေတ္တာအရေအတွက်",
-        inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
-        inboundRegisterBtn: "ဒေတာ မှတ်ပုံတင်ရန်",
-        inboundReset: "ပြန်စတင်ရန်",
-        pipelineInventoryLabel: "လမ်းခရီးရောက်ပစ္စည်းစာရင်း",
-        pendingArrivalsTitle: "ရောက်ရှိရန် စောင့်ဆိုင်းနေသော ပစ္စည်းများ",
-        transitSectionLabel: "အထွက်",
-        transitHeading: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
-        dispatchFromWarehouseLabel: "ဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
-        ledgerSectionLabel: "ဒေတာမှတ်တမ်း",
-        ledgerHeading: "သမိုင်းဝင် ကုန်ပစ္စည်းမှတ်တမ်းများ",
-        arrivalTitle: "ပစ္စည်းရောက်ရှိမှု အဆင့်မြှင့်တင်ရန်",
-        arrivalBoxesLabel: "ရောက်ရှိလာသော သေတ္တာအရေအတွက်",
-        dispatchTitle: "နောက်ထပ် ပို့ဆောင်မည့်နေရာ",
-        dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
-        dispatchQuantityLabel: "ပို့ဆောင်မည့် သေတ္တာအရေအတွက်",
-        ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
-        ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
-        ledgerEditTotalLabel: "စုစုပေါင်းသေတ္တာအရေအတွက်",
-        pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
-        warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
-        ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ။",
-        inboundWaybillPlaceholder: "WayBill နံပါတ်ရိုက်ထည့်ပါ",
-        inboundManifestPlaceholder: "ပစ္စည်းအမျိုးအမည် သို့မဟုတ် မှတ်စုများ ထည့်ရန် (မထည့်လဲရပါ)",
-        authGuestHint: "Guest များသည် ဖတ်ရှုခွင့်သာရှိသည်။ ဒေတာများ ပြင်ဆင်ရန် Editor သို့မဟုတ် Admin အကောင့်ဖြင့် ဝင်ပါ။",
-        successShipment: "Shipment ကို ဒက်ရှ်ဘုတ်ထဲသို့ ထည့်သွင်းပြီးပါပြီ။",
-        errorInvalidInput: "ကျေးဇူးပြု၍ မှန်ကန်သော WayBill နှင့် အရေအတွက်ကို ရိုက်ထည့်ပါ။",
-        errorDuplicateShipment: "ဤ shipment သည် သတ်မှတ်ချက်ထဲတွင် ရှိပြီးသားဖြစ်နေသည်။",
-        errorDatabase: "ဒေတာဘေ့စ်ချို့ယွင်းချက်: ",
-        arrivalSuccess: "ပစ္စည်းရောက်ရှိမှုကို အောင်မြင်စွာ အပ်ဒိတ်လုပ်ပြီးပါပြီ။",
-        dispatchSuccess: "ကုန်ပစ္စည်းလွှဲပြောင်းမှု အောင်မြင်ပါသည်။",
-        notAuthorized: "လုပ်ဆောင်ခွင့် မရှိပါ။ Editor သို့မဟုတ် Admin သာ ခွင့်ပြုသည်။",
-        notAdmin: "Admin အဆင့်သာ ပြင်ဆင်/ဖျက်ပိုင်ခွင့်ရှိသည်။",
-        deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား။",
-        readOnlyAction: "ကြည့်ရှုရန်သာ",
-        noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ။"
-      }
-    };
-
-    const ui = {
-      tabs: document.querySelectorAll('nav [data-tab]'),
-      panels: document.querySelectorAll('main .tab-panel'),
-      inboundForm: document.getElementById('inboundForm'),
-      inboundWaybill: document.getElementById('inboundWaybill'),
-      inboundTarget: document.getElementById('inboundTarget'),
-      inboundTotalBoxes: document.getElementById('inboundTotalBoxes'),
-      inboundManifest: document.getElementById('inboundManifest'),
-      inboundRegisterBtn: document.getElementById('inboundRegisterBtn'),
-      inboundReset: document.getElementById('inboundReset'),
-      inboundFeedback: document.getElementById('inboundFeedback'),
-      inboundAccessNote: document.getElementById('inboundAccessNote'),
-      shipmentDate: document.getElementById('shipmentDate'),
-      pipelineTableBody: document.getElementById('pipelineTableBody'),
-      pipelineEmpty: document.getElementById('pipelineEmpty'),
-      warehouseTableBody: document.getElementById('warehouseTableBody'),
-      warehouseEmpty: document.getElementById('warehouseEmpty'),
-      ledgerTableBody: document.getElementById('ledgerTableBody'),
-      ledgerEmpty: document.getElementById('ledgerEmpty'),
-      arrivalModal: document.getElementById('arrivalModal'),
-      arrivalInput: document.getElementById('arrivalInput'),
-      confirmArrival: document.getElementById('confirmArrival'),
-      cancelArrival: document.getElementById('cancelArrival'),
-      closeArrivalModal: document.getElementById('closeArrivalModal'),
-      arrivalFeedback: document.getElementById('arrivalFeedback'),
-      dispatchModal: document.getElementById('dispatchModal'),
-      dispatchDestination: document.getElementById('dispatchDestination'),
-      dispatchQuantityInput: document.getElementById('dispatchQuantityInput'),
-      confirmDispatchBtn: document.getElementById('confirmDispatchBtn'),
-      cancelDispatch: document.getElementById('cancelDispatch'),
-      closeDispatchModal: document.getElementById('closeDispatchModal'),
-      dispatchFeedback: document.getElementById('dispatchFeedback'),
-      ledgerEditModal: document.getElementById('ledgerEditModal'),
-      ledgerEditTarget: document.getElementById('ledgerEditTarget'),
-      ledgerEditTotal: document.getElementById('ledgerEditTotal'),
-      ledgerEditSave: document.getElementById('ledgerEditSave'),
-      ledgerEditCancel: document.getElementById('ledgerEditCancel'),
-      ledgerEditFeedback: document.getElementById('ledgerEditFeedback'),
-      exportDashboardBtn: document.getElementById('exportDashboardBtn'),
-      exportLedgerBtn: document.getElementById('exportLedgerBtn'),
-      langToggleBtn: document.getElementById('langToggleBtn'),
-      authGoogleBtn: document.getElementById('authGoogleBtn'),
-      authGoogleLabel: document.getElementById('authGoogleLabel'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      authenticatedUserName: document.getElementById('authenticatedUserName'),
-      activeRoleBadge: document.getElementById('activeRoleBadge'),
-      authStatusNote: document.getElementById('authStatusNote'),
-      pipelineEntryCount: document.getElementById('pipelineEntryCount'),
-      statTotalLogged: document.getElementById('statTotalLogged'),
-      statPipelineBoxes: document.getElementById('statPipelineBoxes'),
-      statWarehouseBoxes: document.getElementById('statWarehouseBoxes'),
-      statDispatchedBoxes: document.getElementById('statDispatchedBoxes'),
-      barWarehouse: document.getElementById('barWarehouse'),
-      barWarehouseLabel: document.getElementById('barWarehouseLabel'),
-      barPipeline: document.getElementById('barPipeline'),
-      barPipelineLabel: document.getElementById('barPipelineLabel'),
-      barDispatched: document.getElementById('barDispatched'),
-      barDispatchedLabel: document.getElementById('barDispatchedLabel'),
-      countPipelineEntries: document.getElementById('countPipelineEntries'),
-      countWarehouseEntries: document.getElementById('countWarehouseEntries'),
-      countDispatchedEntries: document.getElementById('countDispatchedEntries'),
-      overviewLaheBoxes: document.getElementById('overviewLaheBoxes'),
-      overviewLayshiBoxes: document.getElementById('overviewLayshiBoxes'),
-      overviewHkamtiBoxes: document.getElementById('overviewHkamtiBoxes')
-    };
-
-    // ==========================================
-    // CLEAN & UNIFIED LIVE AUTH LOGIC
-    // ==========================================
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        console.log("User Logged In - UID:", user.uid);
-        currentUser = user;
-        currentDisplayName = user.displayName || user.email.split('@')[0];
-
-        // Database ထဲမှာ user ရဲ့ Role ကို သွားစစ်မယ် (မရှိရင် Editor ပေးမယ်)
-        const userRef = db.ref('users/' + user.uid);
-        userRef.once('value').then((snapshot) => {
-          if (!snapshot.exists()) {
-            userRef.set({
-              name: currentDisplayName,
-              email: user.email,
-              role: "Editor"
-            }).then(() => {
-              currentRole = ROLES.EDITOR;
-              updateAuthUI();
-              refreshAllViews();
+        function handleGoogleSignIn() {
+            const isSecure = window.isSecureContext || window.location.protocol === 'https:' ||
+                window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            if (window.location.protocol === 'file:' || !isSecure) {
+                showFeedback(ui.authStatusNote, 'Google sign-in needs a secure page. Please open the app with VS Code Live Server, localhost, or HTTPS hosting.',
+                    true);
+                return;
+            }
+            showFeedback(ui.authStatusNote, 'Signing in with Google...', false);
+            const p = new firebase.auth.GoogleAuthProvider();
+            p.addScope('profile');
+            p.addScope('email');
+            p.setCustomParameters({ prompt: 'select_account' });
+            auth.signInWithPopup(p).catch(err => {
+                if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+                    showFeedback(ui.authStatusNote, 'Popup was blocked. Please allow popups and try again.', true);
+                } else if (err.code === 'auth/operation-not-supported-in-this-environment') {
+                    auth.signInWithRedirect(p).catch(redirectErr => {
+                        showFeedback(ui.authStatusNote, `Google sign-in failed: ${redirectErr.message}`, true);
+                    });
+                } else {
+                    showFeedback(ui.authStatusNote, `Google sign-in failed: ${err.message}`, true);
+                }
             });
-          } else {
-            const userData = snapshot.val();
-            currentRole = userData.role || ROLES.VIEWER;
-            updateAuthUI();
+        }
+
+        function handleLogout() {
+            auth.signOut().catch(err => showFeedback(ui.authStatusNote, `${translations[currentLang].errorDatabase}${err.message}`,
+                true));
+        }
+
+        function getPermissions() {
+            const loggedIn = !!currentUser;
+            return {
+                canRegister: loggedIn && (currentRole === ROLES.EDITOR || currentRole === ROLES.ADMIN),
+                canTransit: loggedIn && (currentRole === ROLES.EDITOR || currentRole === ROLES.ADMIN),
+                canEdit: loggedIn && currentRole === ROLES.ADMIN,
+                isViewer: !loggedIn || currentRole === ROLES.VIEWER
+            };
+        }
+
+        function updateAuthUI() {
+            const perms = getPermissions();
+            ui.authenticatedUserName.innerText = currentUser ? currentDisplayName : 'Guest';
+            ui.activeRoleBadge.innerText = translations[currentLang].activeRoleBadge[currentRole] || currentRole;
+            ui.authGoogleBtn.classList.toggle('hidden', !!currentUser);
+            ui.logoutBtn.classList.toggle('hidden', !currentUser);
+            ui.authStatusNote.innerText = currentUser ?
+                `Signed in as ${currentDisplayName} (${translations[currentLang].activeRoleBadge[currentRole] || currentRole})` :
+                translations[currentLang].authStatusNote;
+            const readOnly = perms.isViewer;
+            ['inboundWaybill', 'inboundTarget', 'inboundTotalBoxes', 'inboundManifest', 'shipmentDate'].forEach(id => {
+                const field = document.getElementById(id);
+                if (field) field.disabled = readOnly;
+            });
+            ui.inboundRegisterBtn.disabled = readOnly;
+            ui.inboundReset.disabled = readOnly;
+            ui.inboundForm.classList.toggle('form-disabled', readOnly);
+            ui.inboundAccessNote.classList.toggle('hidden', !readOnly);
+            renderAllTables();
+        }
+
+        function showFeedback(el, text, isError = false) {
+            if (!el) return;
+            el.innerText = text;
+            el.className = isError ? 'text-sm font-semibold text-rose-400 mt-2' :
+                'text-sm font-semibold text-emerald-400 mt-2';
+            if (text) window.setTimeout(() => { if (el.innerText === text) el.innerText = ''; }, 5000);
+        }
+
+        function setElementText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        }
+
+        function formatDate(value) {
+            if (!value) return '-';
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return '-';
+            return new Intl.DateTimeFormat(currentLang === 'mm' ? 'my-MM' : 'en-US', { year: 'numeric', month: 'short',
+                day: 'numeric' }).format(d);
+        }
+
+        // ===== TRANSLATION =====
+        function applyTranslations() {
+            const dict = translations[currentLang];
+            if (!dict) return;
+            document.body.classList.toggle('mm-lang', currentLang === 'mm');
+
+            const set = (id, val) => { const e = document.getElementById(id); if (e) e.innerText = val; };
+            set('projectLabel', dict.projectLabel);
+            set('headerTitle', dict.headerTitle);
+            set('headerDesc', dict.headerDesc);
+            set('authenticatedUserLabel', dict.authenticatedUserLabel);
+            set('authStatusNote', dict.authStatusNote);
+            set('dashboardSectionLabel', dict.dashboardSectionLabel);
+            set('dashboardHeading', dict.dashboardHeading);
+            set('creatorBadge', dict.creatorBadge);
+            set('statTotalLoggedLabel', dict.statTotalLoggedLabel);
+            set('statPipelineBoxesLabel', dict.statPipelineBoxesLabel);
+            set('statWarehouseBoxesLabel', dict.statWarehouseBoxesLabel);
+            set('statDispatchedBoxesLabel', dict.statDispatchedBoxesLabel);
+            set('exportDescText', dict.exportDescText);
+            set('exportDashboardBtn', dict.exportDashboardBtn);
+            set('pipelineVisualLabel', dict.pipelineVisualLabel);
+            set('barWarehouseTitle', dict.barWarehouseTitle);
+            set('barPipelineTitle', dict.barPipelineTitle);
+            set('barDispatchedTitle', dict.barDispatchedTitle);
+            set('quickStatusLabel', dict.quickStatusLabel);
+            set('countPipelineEntriesLabel', dict.countPipelineEntriesLabel);
+            set('countWarehouseEntriesLabel', dict.countWarehouseEntriesLabel);
+            set('countDispatchedEntriesLabel', dict.countDispatchedEntriesLabel);
+            set('regionalOverviewLabel', dict.regionalOverviewLabel);
+            set('regionalHeading', dict.regionalHeading);
+            set('regionalDesc', dict.regionalDesc);
+            set('realtimeNote', dict.realtimeNote);
+            set('pipelineLogicDesc', dict.pipelineLogicDesc);
+            set('inboundSectionLabel', dict.inboundSectionLabel);
+            set('inboundHeading', dict.inboundHeading);
+            set('originLabel', dict.originLabel);
+            set('inboundWaybillLabel', dict.inboundWaybillLabel);
+            set('shipmentDateLabel', dict.shipmentDateLabel);
+            set('inboundTargetLabel', dict.inboundTargetLabel);
+            set('inboundTotalBoxesLabel', dict.inboundTotalBoxesLabel);
+            set('inboundManifestLabel', dict.inboundManifestLabel);
+            set('inboundRegisterBtn', dict.inboundRegisterBtn);
+            set('inboundReset', dict.inboundReset);
+            set('pipelineInventoryLabel', dict.pipelineInventoryLabel);
+            set('pipelineSectionLabel', dict.pipelineSectionLabel);
+            set('pendingArrivalsTitle', dict.pendingArrivalsTitle);
+            set('thWaybill', dict.thWaybill);
+            set('thProject', dict.thProject);
+            set('thShipped', dict.thShipped);
+            set('thArrived', dict.thArrived);
+            set('thPipeline', dict.thPipeline);
+            set('thShipDate', dict.thShipDate);
+            set('thRcvDate', dict.thRcvDate);
+            set('thStatus', dict.thStatus);
+            set('thAction', dict.thAction);
+            set('transitSectionLabel', dict.transitSectionLabel);
+            set('transitHeading', dict.transitHeading);
+            set('dispatchFromWarehouseLabel', dict.dispatchFromWarehouseLabel);
+            set('thTransitWaybill', dict.thTransitWaybill);
+            set('thTransitProject', dict.thTransitProject);
+            set('thTransitWarehouse', dict.thTransitWarehouse);
+            set('thTransitDesc', dict.thTransitDesc);
+            set('thTransitShipDate', dict.thTransitShipDate);
+            set('thTransitRcvDate', dict.thTransitRcvDate);
+            set('thTransitLastLog', dict.thTransitLastLog);
+            set('thTransitAction', dict.thTransitAction);
+            set('ledgerSectionLabel', dict.ledgerSectionLabel);
+            set('ledgerHeading', dict.ledgerHeading);
+            set('arrivalTitle', dict.arrivalTitle);
+            set('arrivalBoxesLabel', dict.arrivalBoxesLabel);
+            set('dispatchTitle', dict.dispatchTitle);
+            set('dispatchDestinationLabel', dict.dispatchDestinationLabel);
+            set('dispatchQuantityLabel', dict.dispatchQuantityLabel);
+            set('ledgerEditTitle', dict.ledgerEditTitle);
+            set('ledgerEditTargetLabel', dict.ledgerEditTargetLabel);
+            set('ledgerEditTotalLabel', dict.ledgerEditTotalLabel);
+
+            ui.inboundWaybill.placeholder = dict.inboundWaybillPlaceholder;
+            ui.inboundManifest.placeholder = dict.inboundManifestPlaceholder;
+            if (ui.authGoogleLabel) ui.authGoogleLabel.innerText = dict.inboundRegisterBtn === "Register Shipment" ?
+                'Sign in with Google' : 'Google အကောင့်ဖြင့် ဝင်ရန်';
+            ui.langToggleBtn.innerText = currentLang === 'en' ? 'မြန်မာဘာသာ' : 'English';
+
+            updateNavigationLabels();
+            refreshStaticText();
+        }
+
+        function updateNavigationLabels() {
+            const isScrolled = ui.mainNavigation.classList.contains('scrolled-nav');
+            const dict = translations[currentLang];
+            const source = isScrolled ? dict.tabsShort : dict.tabs;
+            ui.tabs.forEach(btn => {
+                const key = btn.dataset.tab;
+                if (source && source[key]) {
+                    btn.innerText = source[key];
+                }
+            });
+        }
+
+        function refreshStaticText() {
+            setElementText('logoutBtn', currentLang === 'en' ? 'Log Out' : 'Account ထွက်ရန်');
+            setElementText('inboundAccessNote', translations[currentLang].authGuestHint);
+            setElementText('pipelineEmpty', translations[currentLang].pipelineEmpty);
+            setElementText('warehouseEmpty', translations[currentLang].warehouseEmpty);
+            setElementText('ledgerEmpty', translations[currentLang].ledgerEmpty);
+            const cancelBtns = ['cancelArrival', 'closeArrivalModal', 'cancelDispatch', 'closeDispatchModal',
+                'ledgerEditCancel'
+            ];
+            cancelBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang ===
+                    'en' ? 'Cancel' : 'မလုပ်တော့ပါ'; });
+            const confirmBtns = ['confirmArrival', 'confirmDispatchBtn', 'ledgerEditSave'];
+            confirmBtns.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === 'confirmArrival') el.innerText = currentLang === 'en' ? 'Confirm' : 'အတည်ပြုရန်';
+                    else if (id === 'confirmDispatchBtn') el.innerText = currentLang === 'en' ? 'Dispatch' :
+                        'ပို့ဆောင်ရန်';
+                    else if (id === 'ledgerEditSave') el.innerText = currentLang === 'en' ? 'Save' : 'သိမ်းရန်';
+                }
+            });
+        }
+
+        // ===== DATA =====
+        function refreshAllViews() {
+            let tLogged = 0,
+                tPipeline = 0,
+                tWarehouse = 0,
+                tDispatched = 0;
+            let cPipeline = 0,
+                cWarehouse = 0,
+                cDispatched = 0;
+            let laheTotal = 0,
+                layshiTotal = 0,
+                hkamtiTotal = 0;
+
+            entries.forEach(x => {
+                if (x.targetProject === 'Nanyun') return;
+                tLogged += (x.totalShippedBoxes || 0);
+                tPipeline += (x.pipelineBoxes || 0);
+                tWarehouse += (x.warehouseBoxes || 0);
+                tDispatched += (x.dispatchedBoxes || 0);
+                if (x.pipelineBoxes > 0) cPipeline++;
+                if (x.warehouseBoxes > 0) cWarehouse++;
+                if (x.status === 'Fully Dispatched') cDispatched++;
+                if (x.targetProject === 'Lahe') laheTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
+                if (x.targetProject === 'Layshi') layshiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
+                if (x.targetProject === 'Hkamti') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
+            });
+
+            ui.statTotalLogged.innerText = tLogged;
+            ui.statPipelineBoxes.innerText = tPipeline;
+            ui.statWarehouseBoxes.innerText = tWarehouse;
+            ui.statDispatchedBoxes.innerText = tDispatched;
+            ui.countPipelineEntries.innerText = cPipeline;
+            ui.countWarehouseEntries.innerText = cWarehouse;
+            ui.countDispatchedEntries.innerText = cDispatched;
+            ui.pipelineEntryCount.innerText = `${entries.filter(x => x.pipelineBoxes > 0).length} ${currentLang === 'en' ? 'entries' : 'ခု'}`;
+            const maxVal = Math.max(tWarehouse, tPipeline, tDispatched, 1);
+            ui.barWarehouse.style.width = `${Math.min(100, (tWarehouse / maxVal) * 100)}%`;
+            ui.barWarehouseLabel.innerText = tWarehouse;
+            ui.barPipeline.style.width = `${Math.min(100, (tPipeline / maxVal) * 100)}%`;
+            ui.barPipelineLabel.innerText = tPipeline;
+            ui.barDispatched.style.width = `${Math.min(100, (tDispatched / maxVal) * 100)}%`;
+            ui.barDispatchedLabel.innerText = tDispatched;
+            if (ui.overviewLaheBoxes) ui.overviewLaheBoxes.innerText = laheTotal;
+            if (ui.overviewLayshiBoxes) ui.overviewLayshiBoxes.innerText = layshiTotal;
+            if (ui.overviewHkamtiBoxes) ui.overviewHkamtiBoxes.innerText = hkamtiTotal;
+            renderAllTables();
+        }
+
+        function renderAllTables() {
+            renderPipelineTable();
+            renderWarehouseTable();
+            renderLedgerTable();
+        }
+
+        function renderPipelineTable() {
+            const perms = getPermissions();
+            const targets = entries.filter(x => x.pipelineBoxes > 0);
+            ui.pipelineEmpty.classList.toggle('hidden', targets.length > 0);
+            ui.pipelineTableBody.innerHTML = targets.map(x => {
+                const action = perms.canTransit ?
+                    `<button onclick="openArrivalModal('${x.id}')" class="btn-3d btn-save rounded-xl px-3 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Receive Boxes' : 'သေတ္တာများလက်ခံရန်'}</button>` :
+                    `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
+                return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
+              <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
+              <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
+              <td class="px-3 py-3 text-slate-300">${x.totalShippedBoxes}</td>
+              <td class="px-3 py-3 text-emerald-300">${x.arrivedBoxes}</td>
+              <td class="px-3 py-3 text-sky-300 font-bold">${x.pipelineBoxes}</td>
+              <td class="px-3 py-3 text-slate-300">${formatDate(x.shipmentDate)}</td>
+              <td class="px-3 py-3 text-slate-300">${formatDate(x.receivedDate)}</td>
+              <td class="px-3 py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
+              <td class="px-3 py-3">${action}</td>
+            </tr>`;
+            }).join('');
+        }
+
+        function renderWarehouseTable() {
+            const perms = getPermissions();
+            const targets = entries.filter(x => x.warehouseBoxes > 0);
+            ui.warehouseEmpty.classList.toggle('hidden', targets.length > 0);
+            ui.warehouseTableBody.innerHTML = targets.map(x => {
+                const action = x.targetProject === 'Nanyun' ?
+                    `<span class="disabled-action">${translations[currentLang].noTransitRequired}</span>` :
+                    perms.canTransit ?
+                    `<button onclick="openDispatchModal('${x.id}')" class="btn-3d btn-dispatch rounded-xl px-4 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Transit To' : 'လွှဲပြောင်းရန်'}</button>` :
+                    `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
+                return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
+              <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
+              <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
+              <td class="px-3 py-3 font-bold text-emerald-300">${x.warehouseBoxes}</td>
+              <td class="px-3 py-3 text-slate-400 truncate max-w-[150px]">${x.manifestSummary}</td>
+              <td class="px-3 py-3 text-slate-300">${formatDate(x.shipmentDate)}</td>
+              <td class="px-3 py-3 text-slate-300">${formatDate(x.receivedDate)}</td>
+              <td class="px-3 py-3 text-slate-300">${formatDate(x.lastTransitDate)}</td>
+              <td class="px-3 py-3">${action}</td>
+            </tr>`;
+            }).join('');
+        }
+
+        function renderLedgerTable() {
+            const perms = getPermissions();
+            const q = document.getElementById('ledgerSearchInput').value.trim().toLowerCase();
+            const filtered = entries.filter(x => !q || (x.waybill || '').toLowerCase().includes(q));
+            ui.ledgerEmpty.classList.toggle('hidden', filtered.length > 0);
+            ui.ledgerTableBody.innerHTML = filtered.map(x => {
+                const actions = perms.canEdit ?
+                    `<button onclick="openLedgerEditModal('${x.id}')" class="rounded bg-slate-800 px-2 py-1 hover:bg-slate-700 text-slate-200">Edit</button><button onclick="deleteLedgerEntry('${x.id}')" class="rounded bg-rose-950/40 text-rose-300 px-2 py-1 hover:bg-rose-900/60">Delete</button>` :
+                    `<span class="disabled-action">${translations[currentLang].noPermissionForAction}</span>`;
+                return `<tr class="border-b border-slate-800 text-xs hover:bg-slate-900/40">
+              <td class="px-3 py-2 font-mono text-emerald-400 font-bold">${x.waybill}</td>
+              <td class="px-3 py-2 text-slate-300">${x.targetProject}</td>
+              <td class="px-3 py-2 text-slate-400 truncate max-w-[120px]">${x.manifestSummary}</td>
+              <td class="px-3 py-2 font-bold">${x.totalShippedBoxes}</td>
+              <td class="px-3 py-2 font-bold text-emerald-300">${x.arrivedBoxes}</td>
+              <td class="px-3 py-2 text-slate-300">${formatDate(x.shipmentDate)}</td>
+              <td class="px-3 py-2 text-slate-300">${formatDate(x.receivedDate)}</td>
+              <td class="px-3 py-2 text-teal-300">${x.warehouseBoxes}</td>
+              <td class="px-3 py-2 text-sky-300">${x.pipelineBoxes}</td>
+              <td class="px-3 py-2 text-purple-300">${x.dispatchedBoxes}</td>
+              <td class="px-3 py-2 text-slate-300">${formatDate(x.lastTransitDate)}</td>
+              <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
+              <td class="px-3 py-2 text-slate-400 truncate max-w-[140px]">${x.dispatchLogs || '-'}</td>
+              <td class="px-3 py-2 flex flex-wrap gap-1">${actions}</td>
+            </tr>`;
+            }).join('');
+        }
+
+        db.ref(DB_NODE).on('value', snapshot => {
+            const data = snapshot.val() || {};
+            entries = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             refreshAllViews();
-          }
         });
-      } else {
-        currentUser = null;
-        currentRole = ROLES.VIEWER;
-        currentDisplayName = 'Guest';
-        updateAuthUI();
-        refreshAllViews();
-      }
-    });
 
-    function handleGoogleSignIn() {
-      if (window.location.protocol === 'file:') {
-        alert("သတိပေးချက်: Local HTML ဖိုင်ကို Double Click နှိပ်ပြီး ဖွင့်ထားခြင်း ဖြစ်သည်။ Google Auth စနစ် ကောင်းမွန်စွာ အလုပ်လုပ်ရန် VS Code Live Server (သို့မဟုတ်) HTTPS Hosting တစ်ခုခုပေါ်တင်ပြီးမှ စမ်းသပ်ပေးပါရန်။");
-      }
+        // ===== TAB SWITCH =====
+        function switchTab(id) {
+            ui.tabs.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === id));
+            ui.panels.forEach(panel => panel.classList.toggle('hidden', panel.id !== id));
+        }
 
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
+        // ===== INBOUND =====
+        function handleInboundSubmit(e) {
+            e.preventDefault();
+            const perms = getPermissions();
+            if (!perms.canRegister) {
+                showFeedback(ui.inboundFeedback, translations[currentLang].notAuthorized, true);
+                return;
+            }
+            const waybill = ui.inboundWaybill.value.trim();
+            const target = ui.inboundTarget.value;
+            const total = parseInt(ui.inboundTotalBoxes.value, 10);
+            const manifest = ui.inboundManifest.value.trim();
+            const shipDate = ui.shipmentDate.value || new Date().toISOString().slice(0, 10);
+            if (!waybill || isNaN(total) || total < 1) {
+                showFeedback(ui.inboundFeedback, translations[currentLang].errorInvalidInput, true);
+                return;
+            }
+            if (entries.find(x => x.waybill.toLowerCase() === waybill.toLowerCase() && x.targetProject === target)) {
+                showFeedback(ui.inboundFeedback, translations[currentLang].errorDuplicateShipment, true);
+                return;
+            }
+            const payload = {
+                waybill,
+                targetProject: target,
+                totalShippedBoxes: total,
+                arrivedBoxes: 0,
+                warehouseBoxes: 0,
+                pipelineBoxes: total,
+                dispatchedBoxes: 0,
+                manifestSummary: manifest || '-',
+                status: 'In Pipeline',
+                shipmentDate: shipDate,
+                receivedDate: null,
+                lastTransitDate: null,
+                dispatchLogs: '',
+                createdAt: new Date().toISOString()
+            };
+            db.ref(DB_NODE).push(payload)
+                .then(() => {
+                    showFeedback(ui.inboundFeedback, translations[currentLang].successShipment, false);
+                    clearInboundForm();
+                })
+                .catch(err => showFeedback(ui.inboundFeedback, translations[currentLang].errorDatabase + err.message,
+                true));
+        }
 
-      auth.signInWithPopup(provider)
-        .then(result => {
-          console.log("Google Login အောင်မြင်ပါပြီ။");
-        })
-        .catch(err => {
-          alert("Error တက်သွားပါသည်: " + err.message);
-          console.error(err);
+        function clearInboundForm() {
+            ui.inboundWaybill.value = '';
+            ui.inboundTotalBoxes.value = '1';
+            ui.inboundManifest.value = '';
+            ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
+        }
+
+        // ===== ARRIVAL MODAL =====
+        window.openArrivalModal = function(id) {
+            if (!getPermissions().canTransit) return;
+            activeArrivalId = id;
+            const row = entries.find(x => x.id === id);
+            if (!row) return;
+            ui.arrivalInput.value = row.pipelineBoxes || 0;
+            ui.arrivalInput.max = row.pipelineBoxes || 0;
+            ui.arrivalModal.classList.remove('hidden');
+            ui.arrivalModal.classList.add('flex');
+        };
+
+        function closeArrivalModal() {
+            ui.arrivalModal.classList.remove('flex');
+            ui.arrivalModal.classList.add('hidden');
+            ui.arrivalFeedback.innerText = '';
+        }
+
+        function handleArrivalConfirm() {
+            if (!getPermissions().canTransit) {
+                showFeedback(ui.arrivalFeedback, translations[currentLang].notAuthorized, true);
+                return;
+            }
+            const amt = parseInt(ui.arrivalInput.value, 10);
+            if (isNaN(amt) || amt < 1) return;
+            const row = entries.find(x => x.id === activeArrivalId);
+            if (!row) return;
+            if (amt > row.pipelineBoxes) {
+                ui.arrivalFeedback.innerText = translations[currentLang].errorInvalidInput;
+                return;
+            }
+            const nextArrived = (row.arrivedBoxes || 0) + amt;
+            const nextWarehouse = (row.warehouseBoxes || 0) + amt;
+            const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) - amt);
+            const nextStatus = nextPipeline === 0 ? 'In Warehouse' : 'Partial Arrival';
+            db.ref(`${DB_NODE}/${activeArrivalId}`).update({
+                arrivedBoxes: nextArrived,
+                warehouseBoxes: nextWarehouse,
+                pipelineBoxes: nextPipeline,
+                status: nextStatus,
+                receivedDate: new Date().toISOString()
+            }).then(() => { closeArrivalModal();
+                showFeedback(ui.inboundFeedback, translations[currentLang].arrivalSuccess, false); });
+        }
+
+        // ===== DISPATCH MODAL =====
+        window.openDispatchModal = function(id) {
+            if (!getPermissions().canTransit) return;
+            activeDispatchId = id;
+            const row = entries.find(x => x.id === id);
+            if (!row) return;
+            ui.dispatchQuantityInput.value = row.warehouseBoxes || 0;
+            ui.dispatchQuantityInput.max = row.warehouseBoxes || 0;
+            ui.dispatchModal.classList.remove('hidden');
+            ui.dispatchModal.classList.add('flex');
+        };
+
+        function closeDispatchModal() {
+            ui.dispatchModal.classList.remove('flex');
+            ui.dispatchModal.classList.add('hidden');
+            ui.dispatchFeedback.innerText = '';
+        }
+
+        function handleDispatchConfirm() {
+            if (!getPermissions().canTransit) {
+                showFeedback(ui.dispatchFeedback, translations[currentLang].notAuthorized, true);
+                return;
+            }
+            const amt = parseInt(ui.dispatchQuantityInput.value, 10);
+            const dest = ui.dispatchDestination.value;
+            if (isNaN(amt) || amt < 1) return;
+            const row = entries.find(x => x.id === activeDispatchId);
+            if (!row) return;
+            if (amt > row.warehouseBoxes) {
+                ui.dispatchFeedback.innerText = translations[currentLang].errorInvalidInput;
+                return;
+            }
+            const nextWarehouse = Math.max(0, (row.warehouseBoxes || 0) - amt);
+            const nextDispatched = (row.dispatchedBoxes || 0) + amt;
+            const nextLogs = row.dispatchLogs ? `${row.dispatchLogs}, ${amt} bxs → ${dest}` : `${amt} bxs → ${dest}`;
+            const nextStatus = nextWarehouse === 0 && (row.pipelineBoxes || 0) === 0 ? 'Fully Dispatched' :
+                (nextWarehouse === 0 ? 'In Pipeline' : 'In Warehouse');
+            db.ref(`${DB_NODE}/${activeDispatchId}`).update({
+                warehouseBoxes: nextWarehouse,
+                dispatchedBoxes: nextDispatched,
+                dispatchLogs: nextLogs,
+                lastTransitDate: new Date().toISOString(),
+                status: nextStatus
+            }).then(() => { closeDispatchModal();
+                showFeedback(ui.inboundFeedback, translations[currentLang].dispatchSuccess, false); });
+        }
+
+        // ===== LEDGER EDIT =====
+        window.openLedgerEditModal = function(id) {
+            if (!getPermissions().canEdit) return;
+            activeLedgerEditId = id;
+            const row = entries.find(x => x.id === id);
+            if (!row) return;
+            ui.ledgerEditTarget.value = row.targetProject;
+            ui.ledgerEditTotal.value = row.totalShippedBoxes;
+            ui.ledgerEditModal.classList.remove('hidden');
+            ui.ledgerEditModal.classList.add('flex');
+        };
+
+        function closeLedgerEditModal() {
+            ui.ledgerEditModal.classList.remove('flex');
+            ui.ledgerEditModal.classList.add('hidden');
+            ui.ledgerEditFeedback.innerText = '';
+        }
+
+        function handleLedgerEditSave() {
+            if (!getPermissions().canEdit) {
+                showFeedback(ui.ledgerEditFeedback, translations[currentLang].notAdmin, true);
+                return;
+            }
+            const nextTarget = ui.ledgerEditTarget.value;
+            const nextTotal = parseInt(ui.ledgerEditTotal.value, 10);
+            if (isNaN(nextTotal) || nextTotal < 1) return;
+            const row = entries.find(x => x.id === activeLedgerEditId);
+            if (!row) return;
+            const delta = nextTotal - (row.totalShippedBoxes || 0);
+            const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) + delta);
+            db.ref(`${DB_NODE}/${activeLedgerEditId}`).update({
+                targetProject: nextTarget,
+                totalShippedBoxes: nextTotal,
+                pipelineBoxes: nextPipeline
+            }).then(() => closeLedgerEditModal());
+        }
+
+        window.deleteLedgerEntry = function(id) {
+            if (!getPermissions().canEdit) { alert(translations[currentLang].notAdmin); return; }
+            if (confirm(translations[currentLang].deleteConfirm)) {
+                db.ref(`${DB_NODE}/${id}`).remove();
+            }
+        };
+
+        // ===== EXPORT =====
+        function exportInventoryToExcel() {
+            if (!entries.length) return;
+            const rows = entries.map(x => ({
+                WayBill: x.waybill,
+                Project: x.targetProject,
+                TotalShipped: x.totalShippedBoxes,
+                ShipmentDate: formatDate(x.shipmentDate),
+                ReceivedDate: formatDate(x.receivedDate),
+                LastTransitDate: formatDate(x.lastTransitDate),
+                Arrived: x.arrivedBoxes,
+                Warehouse: x.warehouseBoxes,
+                Pipeline: x.pipelineBoxes,
+                Dispatched: x.dispatchedBoxes,
+                Status: x.status,
+                DispatchSummary: x.dispatchLogs || '-'
+            }));
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Logistics Data');
+            XLSX.writeFile(wb, 'Medical_Logistics_Report.xlsx');
+        }
+
+        // ===== SCROLL: NAV MOVES INSIDE HEADER (PERFECTLY CENTERED) =====
+        let scrollTimeout;
+        let navPlaceholder = null;
+
+        function handleScroll() {
+            if (scrollTimeout) return;
+            scrollTimeout = setTimeout(() => {
+                scrollTimeout = null;
+                const header = ui.mainHeader;
+                const nav = ui.mainNavigation;
+                const target = ui.scrollNavTarget;
+                const scrolled = window.scrollY;
+
+                if (!navPlaceholder) {
+                    navPlaceholder = document.createElement('div');
+                    navPlaceholder.id = 'navPlaceholder';
+                    navPlaceholder.style.display = 'none';
+                    nav.parentNode.insertBefore(navPlaceholder, nav);
+                }
+
+                if (scrolled > 120) {
+                    if (!header.classList.contains('scrolled-header')) {
+                        navPlaceholder.style.height = nav.offsetHeight + 'px';
+                        const navStyle = window.getComputedStyle(nav);
+                        navPlaceholder.style.marginTop = navStyle.marginTop;
+                        navPlaceholder.style.marginBottom = navStyle.marginBottom;
+                        navPlaceholder.style.display = 'block';
+
+                        header.classList.add('scrolled-header');
+                        nav.classList.add('scrolled-nav');
+                        
+                        target.style.display = 'flex';
+                        
+                        if (nav.parentNode !== target) {
+                            target.appendChild(nav);
+                        }
+                        updateNavigationLabels();
+                    }
+                } else if (scrolled < 30) {
+                    if (header.classList.contains('scrolled-header')) {
+                        header.classList.remove('scrolled-header');
+                        nav.classList.remove('scrolled-nav');
+                        
+                        target.style.display = 'none';
+                        
+                        if (nav.parentNode !== header.parentNode) {
+                            navPlaceholder.parentNode.insertBefore(nav, navPlaceholder.nextSibling);
+                        }
+                        navPlaceholder.style.display = 'none';
+                        updateNavigationLabels();
+                    }
+                }
+            }, 16);
+        }
+
+        // ===== EVENT LISTENERS =====
+        ui.tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        ui.langToggleBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'mm' : 'en';
+            applyTranslations();
+            updateAuthUI();
         });
-    }
+        ui.inboundForm.addEventListener('submit', handleInboundSubmit);
+        ui.inboundReset.addEventListener('click', clearInboundForm);
+        ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
+        ui.cancelArrival.addEventListener('click', closeArrivalModal);
+        ui.closeArrivalModal.addEventListener('click', closeArrivalModal);
+        ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
+        ui.cancelDispatch.addEventListener('click', closeDispatchModal);
+        ui.closeDispatchModal.addEventListener('click', closeDispatchModal);
+        ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
+        ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
+        ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
+        ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
+        ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
+        ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
+        ui.logoutBtn.addEventListener('click', handleLogout);
 
-    function handleLogout() {
-      auth.signOut().catch(err => showFeedback(ui.authStatusNote, `${translations[currentLang].errorDatabase}${err.message}`, true));
-    }
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
-    function getPermissions() {
-      const loggedIn = !!currentUser;
-      return {
-        canRegister: loggedIn && (currentRole === ROLES.EDITOR || currentRole === ROLES.ADMIN),
-        canTransit: loggedIn && (currentRole === ROLES.EDITOR || currentRole === ROLES.ADMIN),
-        canEdit: loggedIn && currentRole === ROLES.ADMIN,
-        isViewer: !loggedIn || currentRole === ROLES.VIEWER
-      };
-    }
+        // ===== INIT =====
+        function initialize() {
+            ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
+            applyTranslations();
+            updateAuthUI();
+            
+            const target = ui.scrollNavTarget;
+            const nav = ui.mainNavigation;
+            if (nav.parentNode === target) {
+                target.style.display = 'none';
+                ui.mainHeader.parentNode.insertBefore(nav, ui.mainHeader.nextSibling);
+            }
+        }
 
-    function updateAuthUI() {
-      const perms = getPermissions();
-      ui.authenticatedUserName.innerText = currentUser ? currentDisplayName : 'Guest';
-      ui.activeRoleBadge.innerText = currentRole;
-      ui.authGoogleBtn.hidden = !!currentUser;
-      ui.logoutBtn.hidden = !currentUser;
-      ui.authStatusNote.innerText = currentUser
-        ? `Signed in as ${currentDisplayName} (${currentRole})`
-        : translations[currentLang].authStatusNote;
-
-      const readOnly = perms.isViewer;
-      ['inboundWaybill','inboundTarget','inboundTotalBoxes','inboundManifest','shipmentDate'].forEach(id => {
-        const field = document.getElementById(id);
-        if (field) field.disabled = readOnly;
-      });
-      ui.inboundRegisterBtn.disabled = readOnly;
-      ui.inboundReset.disabled = readOnly;
-      ui.inboundForm.classList.toggle('form-disabled', readOnly);
-      ui.inboundAccessNote.classList.toggle('hidden', !readOnly);
-
-      renderAllTables();
-    }
-
-    function showFeedback(el, text, isError = false) {
-      if (!el) return;
-      el.innerText = text;
-      el.className = isError ? 'text-sm font-semibold text-rose-400 mt-2' : 'text-sm font-semibold text-emerald-400 mt-2';
-      if (text) window.setTimeout(() => { if (el.innerText === text) el.innerText = ''; }, 5000);
-    }
-
-    function setElementText(id, text) {
-      const el = document.getElementById(id);
-      if (el) el.innerText = text;
-    }
-
-    function formatDate(value) {
-      if (!value) return '-';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return '-';
-      return new Intl.DateTimeFormat(currentLang === 'mm' ? 'my-MM' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
-    }
-
-    function applyTranslations() {
-      const dict = translations[currentLang];
-      if (!dict) return;
-      document.body.classList.toggle('mm-lang', currentLang === 'mm');
-      setElementText('projectLabel', dict.projectLabel);
-      setElementText('headerTitle', dict.headerTitle);
-      setElementText('headerDesc', dict.headerDesc);
-      setElementText('authStatusNote', dict.authStatusNote);
-      setElementText('dashboardSectionLabel', dict.dashboardSectionLabel);
-      setElementText('dashboardHeading', dict.dashboardHeading);
-      setElementText('pipelineLogicDesc', dict.pipelineLogicDesc);
-      setElementText('inboundSectionLabel', dict.inboundSectionLabel);
-      setElementText('inboundHeading', dict.inboundHeading);
-      setElementText('originLabel', dict.originLabel);
-      ui.inboundWaybill.placeholder = dict.inboundWaybillPlaceholder;
-      ui.inboundManifest.placeholder = dict.inboundManifestPlaceholder;
-      if (ui.authGoogleLabel) ui.authGoogleLabel.innerText = currentLang === 'en' ? 'Sign in with Google' : 'Google ဖြင့် ဝင်ပါ';
-      ui.langToggleBtn.innerText = currentLang === 'en' ? 'မြန်မာဘာသာ' : 'English';
-      ui.tabs.forEach(btn => {
-        const key = btn.dataset.tab;
-        if (dict.tabs && dict.tabs[key]) btn.innerText = dict.tabs[key];
-      });
-      refreshStaticText();
-    }
-
-    function refreshStaticText() {
-      setElementText('logoutBtn', translations[currentLang].authLogoutBtn || 'Log Out');
-      setElementText('inboundAccessNote', translations[currentLang].authGuestHint);
-      setElementText('pipelineEmpty', translations[currentLang].pipelineEmpty);
-      setElementText('warehouseEmpty', translations[currentLang].warehouseEmpty);
-      setElementText('ledgerEmpty', translations[currentLang].ledgerEmpty);
-    }
-
-    function refreshAllViews() {
-      let tLogged = 0, tPipeline = 0, tWarehouse = 0, tDispatched = 0;
-      let cPipeline = 0, cWarehouse = 0, cDispatched = 0;
-      let laheTotal = 0, layshiTotal = 0, hkamtiTotal = 0;
-
-      entries.forEach(x => {
-        if (x.targetProject === 'Nanyun') return;
-        tLogged += (x.totalShippedBoxes || 0);
-        tPipeline += (x.pipelineBoxes || 0);
-        tWarehouse += (x.warehouseBoxes || 0);
-        tDispatched += (x.dispatchedBoxes || 0);
-        if (x.pipelineBoxes > 0) cPipeline++;
-        if (x.warehouseBoxes > 0) cWarehouse++;
-        if (x.status === 'Fully Dispatched') cDispatched++;
-        if (x.targetProject === 'Lahe') laheTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
-        if (x.targetProject === 'Layshi') layshiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
-        if (x.targetProject === 'Hkamti') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
-      });
-
-      ui.statTotalLogged.innerText = tLogged;
-      ui.statPipelineBoxes.innerText = tPipeline;
-      ui.statWarehouseBoxes.innerText = tWarehouse;
-      ui.statDispatchedBoxes.innerText = tDispatched;
-      ui.countPipelineEntries.innerText = cPipeline;
-      ui.countWarehouseEntries.innerText = cWarehouse;
-      ui.countDispatchedEntries.innerText = cDispatched;
-      ui.pipelineEntryCount.innerText = `${entries.filter(x => x.pipelineBoxes > 0).length} entries`;
-      ui.barWarehouse.style.width = `${Math.min(100, (tWarehouse / Math.max(tWarehouse, tPipeline, tDispatched, 1)) * 100)}%`;
-      ui.barWarehouseLabel.innerText = tWarehouse;
-      ui.barPipeline.style.width = `${Math.min(100, (tPipeline / Math.max(tWarehouse, tPipeline, tDispatched, 1)) * 100)}%`;
-      ui.barPipelineLabel.innerText = tPipeline;
-      ui.barDispatched.style.width = `${Math.min(100, (tDispatched / Math.max(tWarehouse, tPipeline, tDispatched, 1)) * 100)}%`;
-      ui.barDispatchedLabel.innerText = tDispatched;
-      if (ui.overviewLaheBoxes) ui.overviewLaheBoxes.innerText = laheTotal;
-      if (ui.overviewLayshiBoxes) ui.overviewLayshiBoxes.innerText = layshiTotal;
-      if (ui.overviewHkamtiBoxes) ui.overviewHkamtiBoxes.innerText = hkamtiTotal;
-      renderAllTables();
-    }
-
-    function renderAllTables() {
-      renderPipelineTable();
-      renderWarehouseTable();
-      renderLedgerTable();
-    }
-
-    function renderPipelineTable() {
-      const perms = getPermissions();
-      const targets = entries.filter(x => x.pipelineBoxes > 0);
-      ui.pipelineEmpty.classList.toggle('hidden', targets.length > 0);
-      ui.pipelineTableBody.innerHTML = targets.map(x => {
-        const actionCell = perms.canTransit
-          ? `<button onclick="openArrivalModal('${x.id}')" class="btn-3d btn-save rounded-xl px-3 py-1 text-xs font-bold text-slate-950">Receive Boxes</button>`
-          : `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
-        return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
-          <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
-          <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
-          <td class="px-3 py-3 text-slate-300">${x.totalShippedBoxes}</td>
-          <td class="px-3 py-3 text-emerald-300">${x.arrivedBoxes}</td>
-          <td class="px-3 py-3 text-sky-300 font-bold">${x.pipelineBoxes}</td>
-          <td class="px-3 py-3 text-slate-300">${formatDate(x.shipmentDate)}</td>
-          <td class="px-3 py-3 text-slate-300">${formatDate(x.receivedDate)}</td>
-          <td class="px-3 py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
-          <td class="px-3 py-3">${actionCell}</td>
-        </tr>`;
-      }).join('');
-    }
-
-    function renderWarehouseTable() {
-      const perms = getPermissions();
-      const targets = entries.filter(x => x.warehouseBoxes > 0);
-      ui.warehouseEmpty.classList.toggle('hidden', targets.length > 0);
-      ui.warehouseTableBody.innerHTML = targets.map(x => {
-        const actionCell = x.targetProject === 'Nanyun'
-          ? `<span class="disabled-action">${currentLang === 'mm' ? 'မလိုပါ' : 'No transit required'}</span>`
-          : perms.canTransit
-            ? `<button onclick="openDispatchModal('${x.id}')" class="btn-3d btn-dispatch rounded-xl px-4 py-1 text-xs font-bold text-slate-950">Transit To</button>`
-            : `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
-        return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
-          <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
-          <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
-          <td class="px-3 py-3 font-bold text-emerald-300">${x.warehouseBoxes}</td>
-          <td class="px-3 py-3 text-slate-400 truncate max-w-[150px]">${x.manifestSummary}</td>
-          <td class="px-3 py-3 text-slate-300">${formatDate(x.shipmentDate)}</td>
-          <td class="px-3 py-3 text-slate-300">${formatDate(x.receivedDate)}</td>
-          <td class="px-3 py-3 text-slate-300">${formatDate(x.lastTransitDate)}</td>
-          <td class="px-3 py-3">${actionCell}</td>
-        </tr>`;
-      }).join('');
-    }
-
-    function renderLedgerTable() {
-      const perms = getPermissions();
-      const searchQuery = document.getElementById('ledgerSearchInput').value.trim().toLowerCase();
-      const filteredEntries = entries.filter(x => !searchQuery || (x.waybill || '').toLowerCase().includes(searchQuery));
-      ui.ledgerEmpty.classList.toggle('hidden', filteredEntries.length > 0);
-      ui.ledgerTableBody.innerHTML = filteredEntries.map(x => {
-        const actionButtons = perms.canEdit
-          ? `<button onclick="openLedgerEditModal('${x.id}')" class="rounded bg-slate-800 px-2 py-1 hover:bg-slate-700 text-slate-200">Edit</button><button onclick="deleteLedgerEntry('${x.id}')" class="rounded bg-rose-950/40 text-rose-300 px-2 py-1 hover:bg-rose-900/60">Delete</button>`
-          : `<span class="disabled-action">${translations[currentLang].noPermissionForAction}</span>`;
-        return `<tr class="border-b border-slate-800 text-xs hover:bg-slate-900/40">
-          <td class="px-3 py-2 font-mono text-emerald-400 font-bold">${x.waybill}</td>
-          <td class="px-3 py-2 text-slate-300">${x.targetProject}</td>
-          <td class="px-3 py-2 text-slate-400 truncate max-w-[120px]">${x.manifestSummary}</td>
-          <td class="px-3 py-2 font-bold">${x.totalShippedBoxes}</td>
-          <td class="px-3 py-2 font-bold text-emerald-300">${x.arrivedBoxes}</td>
-          <td class="px-3 py-2 text-slate-300">${formatDate(x.shipmentDate)}</td>
-          <td class="px-3 py-2 text-slate-300">${formatDate(x.receivedDate)}</td>
-          <td class="px-3 py-2 text-teal-300">${x.warehouseBoxes}</td>
-          <td class="px-3 py-2 text-sky-300">${x.pipelineBoxes}</td>
-          <td class="px-3 py-2 text-purple-300">${x.dispatchedBoxes}</td>
-          <td class="px-3 py-2 text-slate-300">${formatDate(x.lastTransitDate)}</td>
-          <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
-          <td class="px-3 py-2 text-slate-400 truncate max-w-[140px]">${x.dispatchLogs || '-'}</td>
-          <td class="px-3 py-2 flex flex-wrap gap-1">${actionButtons}</td>
-        </tr>`;
-      }).join('');
-    }
-
-    db.ref(DB_NODE).on('value', snapshot => {
-      const data = snapshot.val() || {};
-      entries = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-      refreshAllViews();
-    });
-
-    function switchTab(id) {
-      ui.tabs.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === id));
-      ui.panels.forEach(panel => panel.classList.toggle('hidden', panel.id !== id));
-    }
-
-    function handleInboundSubmit(event) {
-      event.preventDefault();
-      const perms = getPermissions();
-      if (!perms.canRegister) {
-        showFeedback(ui.inboundFeedback, translations[currentLang].notAuthorized, true);
-        return;
-      }
-      const waybill = ui.inboundWaybill.value.trim();
-      const targetProject = ui.inboundTarget.value;
-      const totalBoxes = parseInt(ui.inboundTotalBoxes.value, 10);
-      const manifest = ui.inboundManifest.value.trim();
-      const shipmentDate = ui.shipmentDate.value || new Date().toISOString().slice(0, 10);
-      if (!waybill || isNaN(totalBoxes) || totalBoxes < 1) {
-        showFeedback(ui.inboundFeedback, translations[currentLang].errorInvalidInput, true);
-        return;
-      }
-      const duplicate = entries.find(x => x.waybill.toLowerCase() === waybill.toLowerCase() && x.targetProject === targetProject);
-      if (duplicate) {
-        showFeedback(ui.inboundFeedback, translations[currentLang].errorDuplicateShipment, true);
-        return;
-      }
-      const payload = {
-        waybill,
-        targetProject,
-        totalShippedBoxes: totalBoxes,
-        arrivedBoxes: 0,
-        warehouseBoxes: 0,
-        pipelineBoxes: totalBoxes,
-        dispatchedBoxes: 0,
-        manifestSummary: manifest || '-',
-        status: 'In Pipeline',
-        shipmentDate,
-        receivedDate: null,
-        lastTransitDate: null,
-        dispatchLogs: '',
-        createdAt: new Date().toISOString()
-      };
-      db.ref(DB_NODE).push(payload)
-        .then(() => {
-          showFeedback(ui.inboundFeedback, translations[currentLang].successShipment, false);
-          clearInboundForm();
-        })
-        .catch(err => showFeedback(ui.inboundFeedback, translations[currentLang].errorDatabase + err.message, true));
-    }
-
-    function clearInboundForm() {
-      ui.inboundWaybill.value = '';
-      ui.inboundTotalBoxes.value = '1';
-      ui.inboundManifest.value = '';
-      ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
-    }
-
-    window.openArrivalModal = function(id) {
-      const perms = getPermissions();
-      if (!perms.canTransit) return;
-      activeArrivalId = id;
-      const row = entries.find(x => x.id === id);
-      if (!row) return;
-      ui.arrivalInput.value = row.pipelineBoxes || 0;
-      ui.arrivalInput.max = row.pipelineBoxes || 0;
-      ui.arrivalModal.classList.remove('hidden');
-      ui.arrivalModal.classList.add('flex');
-    };
-
-    function closeArrivalModal() {
-      ui.arrivalModal.classList.remove('flex');
-      ui.arrivalModal.classList.add('hidden');
-      ui.arrivalFeedback.innerText = '';
-    }
-
-    function handleArrivalConfirm() {
-      const perms = getPermissions();
-      if (!perms.canTransit) {
-        showFeedback(ui.arrivalFeedback, translations[currentLang].notAuthorized, true);
-        return;
-      }
-      const amt = parseInt(ui.arrivalInput.value, 10);
-      if (isNaN(amt) || amt < 1) return;
-      const row = entries.find(x => x.id === activeArrivalId);
-      if (!row) return;
-      if (amt > row.pipelineBoxes) {
-        ui.arrivalFeedback.innerText = translations[currentLang].errorInvalidInput;
-        return;
-      }
-      const nextArrived = (row.arrivedBoxes || 0) + amt;
-      const nextWarehouse = (row.warehouseBoxes || 0) + amt;
-      const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) - amt);
-      const nextStatus = nextPipeline === 0 ? 'In Warehouse' : 'Partial Arrival';
-      db.ref(`${DB_NODE}/${activeArrivalId}`).update({
-        arrivedBoxes: nextArrived,
-        warehouseBoxes: nextWarehouse,
-        pipelineBoxes: nextPipeline,
-        status: nextStatus,
-        receivedDate: new Date().toISOString()
-      }).then(() => { closeArrivalModal(); showFeedback(ui.inboundFeedback, translations[currentLang].arrivalSuccess, false); });
-    }
-
-    window.openDispatchModal = function(id) {
-      const perms = getPermissions();
-      if (!perms.canTransit) return;
-      activeDispatchId = id;
-      const row = entries.find(x => x.id === id);
-      if (!row) return;
-      ui.dispatchQuantityInput.value = row.warehouseBoxes || 0;
-      ui.dispatchQuantityInput.max = row.warehouseBoxes || 0;
-      ui.dispatchModal.classList.remove('hidden');
-      ui.dispatchModal.classList.add('flex');
-    };
-
-    function closeDispatchModal() {
-      ui.dispatchModal.classList.remove('flex');
-      ui.dispatchModal.classList.add('hidden');
-      ui.dispatchFeedback.innerText = '';
-    }
-
-    function handleDispatchConfirm() {
-      const perms = getPermissions();
-      if (!perms.canTransit) {
-        showFeedback(ui.dispatchFeedback, translations[currentLang].notAuthorized, true);
-        return;
-      }
-      const amt = parseInt(ui.dispatchQuantityInput.value, 10);
-      const dest = ui.dispatchDestination.value;
-      if (isNaN(amt) || amt < 1) return;
-      const row = entries.find(x => x.id === activeDispatchId);
-      if (!row) return;
-      if (amt > row.warehouseBoxes) {
-        ui.dispatchFeedback.innerText = translations[currentLang].errorInvalidInput;
-        return;
-      }
-      const nextWarehouse = Math.max(0, (row.warehouseBoxes || 0) - amt);
-      const nextDispatched = (row.dispatchedBoxes || 0) + amt;
-      const nextLogs = row.dispatchLogs ? `${row.dispatchLogs}, ${amt} bxs → ${dest}` : `${amt} bxs → ${dest}`;
-      const nextStatus = nextWarehouse === 0 && (row.pipelineBoxes || 0) === 0 ? 'Fully Dispatched' : (nextWarehouse === 0 ? 'In Pipeline' : 'In Warehouse');
-      db.ref(`${DB_NODE}/${activeDispatchId}`).update({
-        warehouseBoxes: nextWarehouse,
-        dispatchedBoxes: nextDispatched,
-        dispatchLogs: nextLogs,
-        lastTransitDate: new Date().toISOString(),
-        status: nextStatus
-      }).then(() => { closeDispatchModal(); showFeedback(ui.inboundFeedback, translations[currentLang].dispatchSuccess, false); });
-    }
-
-    window.openLedgerEditModal = function(id) {
-      const perms = getPermissions();
-      if (!perms.canEdit) return;
-      activeLedgerEditId = id;
-      const row = entries.find(x => x.id === id);
-      if (!row) return;
-      ui.ledgerEditTarget.value = row.targetProject;
-      ui.ledgerEditTotal.value = row.totalShippedBoxes;
-      ui.ledgerEditModal.classList.remove('hidden');
-      ui.ledgerEditModal.classList.add('flex');
-    };
-
-    function closeLedgerEditModal() {
-      ui.ledgerEditModal.classList.remove('flex');
-      ui.ledgerEditModal.classList.add('hidden');
-      ui.ledgerEditFeedback.innerText = '';
-    }
-
-    function handleLedgerEditSave() {
-      const perms = getPermissions();
-      if (!perms.canEdit) {
-        showFeedback(ui.ledgerEditFeedback, translations[currentLang].notAdmin, true);
-        return;
-      }
-      const nextTarget = ui.ledgerEditTarget.value;
-      const nextTotal = parseInt(ui.ledgerEditTotal.value, 10);
-      if (isNaN(nextTotal) || nextTotal < 1) return;
-      const row = entries.find(x => x.id === activeLedgerEditId);
-      if (!row) return;
-      const delta = nextTotal - (row.totalShippedBoxes || 0);
-      const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) + delta);
-      db.ref(`${DB_NODE}/${activeLedgerEditId}`).update({
-        targetProject: nextTarget,
-        totalShippedBoxes: nextTotal,
-        pipelineBoxes: nextPipeline
-      }).then(() => closeLedgerEditModal());
-    }
-
-    window.deleteLedgerEntry = function(id) {
-      const perms = getPermissions();
-      if (!perms.canEdit) {
-        alert(translations[currentLang].notAdmin);
-        return;
-      }
-      if (confirm(translations[currentLang].deleteConfirm)) {
-        db.ref(`${DB_NODE}/${id}`).remove();
-      }
-    };
-
-    function exportInventoryToExcel() {
-      if (!entries.length) return;
-      const rows = entries.map(x => ({
-        WayBill: x.waybill,
-        Project: x.targetProject,
-        TotalShipped: x.totalShippedBoxes,
-        ShipmentDate: formatDate(x.shipmentDate),
-        ReceivedDate: formatDate(x.receivedDate),
-        LastTransitDate: formatDate(x.lastTransitDate),
-        Arrived: x.arrivedBoxes,
-        Warehouse: x.warehouseBoxes,
-        Pipeline: x.pipelineBoxes,
-        Dispatched: x.dispatchedBoxes,
-        Status: x.status,
-        DispatchSummary: x.dispatchLogs || '-'
-      }));
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Logistics Data');
-      XLSX.writeFile(wb, 'Medical_Logistics_Report.xlsx');
-    }
-
-    ui.tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
-    ui.langToggleBtn.addEventListener('click', () => {
-      currentLang = currentLang === 'en' ? 'mm' : 'en';
-      applyTranslations();
-      updateAuthUI();
-    });
-    ui.inboundForm.addEventListener('submit', handleInboundSubmit);
-    ui.inboundReset.addEventListener('click', clearInboundForm);
-    ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
-    ui.cancelArrival.addEventListener('click', closeArrivalModal);
-    ui.closeArrivalModal.addEventListener('click', closeArrivalModal);
-    ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
-    ui.cancelDispatch.addEventListener('click', closeDispatchModal);
-    ui.closeDispatchModal.addEventListener('click', closeDispatchModal);
-    ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
-    ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
-    ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
-    ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
-    ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
-    ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
-    ui.logoutBtn.addEventListener('click', handleLogout);
-
-    function initialize() {
-      ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
-      applyTranslations();
-      updateAuthUI();
-    }
-
-    initialize();
-  </script>
+        initialize();
+    </script>
 </body>
 </html>
