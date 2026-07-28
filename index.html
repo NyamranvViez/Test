@@ -677,8 +677,9 @@
             </div>
         </div>
 
+        <!-- LEDGER EDIT MODAL (UPDATED WITH ALL REQUIRED EDIT FIELDS) -->
         <div id="ledgerEditModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
-            <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
+            <div class="w-full max-w-lg rounded-[32px] glass shadow-deep p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
                     <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Ledger Entry</h3>
                     <button id="ledgerEditCancel" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Cancel</button>
@@ -693,11 +694,41 @@
                             <option>Hkamti</option>
                         </select>
                     </label>
-                    <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditTotalLabel">Total Shipped Boxes</span>
-                        <input id="ledgerEditTotal" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
-                    </label>
-                    <div class="flex justify-end gap-3">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditTotalLabel">Shipped Box</span>
+                            <input id="ledgerEditTotal" type="number" min="0" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                        </label>
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditShipmentDateLabel">Shipped Date</span>
+                            <input id="ledgerEditShipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100" />
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditArrivedBoxesLabel">Arrived Box</span>
+                            <input id="ledgerEditArrivedBoxes" type="number" min="0" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                        </label>
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditReceivedDateLabel">Arrived Date</span>
+                            <input id="ledgerEditReceivedDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100" />
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditDispatchedBoxesLabel">Dispatched Box</span>
+                            <input id="ledgerEditDispatchedBoxes" type="number" min="0" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
+                        </label>
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditLastTransitDateLabel">Dispatched Date</span>
+                            <input id="ledgerEditLastTransitDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100" />
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
                         <button id="ledgerEditSave" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Save</button>
                     </div>
                     <p id="ledgerEditFeedback" class="text-sm text-rose-300"></p>
@@ -811,7 +842,12 @@
                 dispatchQuantityLabel: "Transit Box Quantity",
                 ledgerEditTitle: "Edit Ledger Entry",
                 ledgerEditTargetLabel: "Target Project",
-                ledgerEditTotalLabel: "Total Shipped Boxes",
+                ledgerEditTotalLabel: "Shipped Box",
+                ledgerEditShipmentDateLabel: "Shipped Date",
+                ledgerEditArrivedBoxesLabel: "Arrived Box",
+                ledgerEditReceivedDateLabel: "Arrived Date",
+                ledgerEditDispatchedBoxesLabel: "Dispatched Box",
+                ledgerEditLastTransitDateLabel: "Dispatched Date",
                 pipelineEmpty: "No inbound pipeline entries yet.",
                 warehouseEmpty: "No warehouse shipments available for dispatch.",
                 ledgerEmpty: "No ledger records available.",
@@ -819,7 +855,7 @@
                 inboundManifestPlaceholder: "Add raw cargo manifest or notes (Optional)",
                 authGuestHint: "Guest users have read-only access. Login as Editor or Admin to modify records.",
                 successShipment: "Shipment registered into live dashboard!",
-                errorInvalidInput: "Please enter a valid WayBill and Shipped Boxes count.",
+                errorInvalidInput: "Please enter a valid WayBill and Box counts.",
                 errorDuplicateShipment: "This shipment has already been registered for this project.",
                 errorDatabase: "Database Error: ",
                 arrivalSuccess: "Arrival updated successfully.",
@@ -905,7 +941,12 @@
                 dispatchQuantityLabel: "ပို့ဆောင်မည့် ဂျက်ဖါအရေအတွက်",
                 ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
                 ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
-                ledgerEditTotalLabel: "စုစုပေါင်းဂျက်ဖါအရေအတွက်",
+                ledgerEditTotalLabel: "Shipped Box (ပေးပို့သည့်ဂျက်ဖါ)",
+                ledgerEditShipmentDateLabel: "Shipped Date (ပေးပို့သည့်ရက်)",
+                ledgerEditArrivedBoxesLabel: "Arrived Box (ရောက်ရှိသည့်ဂျက်ဖါ)",
+                ledgerEditReceivedDateLabel: "Arrived Date (ရောက်ရှိသည့်ရက်)",
+                ledgerEditDispatchedBoxesLabel: "Dispatched Box (ထုတ်ယူသည့်ဂျက်ဖါ)",
+                ledgerEditLastTransitDateLabel: "Dispatched Date (ထုတ်ယူသည့်ရက်)",
                 pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
                 warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
                 ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ။",
@@ -963,6 +1004,11 @@
             ledgerEditModal: document.getElementById('ledgerEditModal'),
             ledgerEditTarget: document.getElementById('ledgerEditTarget'),
             ledgerEditTotal: document.getElementById('ledgerEditTotal'),
+            ledgerEditShipmentDate: document.getElementById('ledgerEditShipmentDate'),
+            ledgerEditArrivedBoxes: document.getElementById('ledgerEditArrivedBoxes'),
+            ledgerEditReceivedDate: document.getElementById('ledgerEditReceivedDate'),
+            ledgerEditDispatchedBoxes: document.getElementById('ledgerEditDispatchedBoxes'),
+            ledgerEditLastTransitDate: document.getElementById('ledgerEditLastTransitDate'),
             ledgerEditSave: document.getElementById('ledgerEditSave'),
             ledgerEditCancel: document.getElementById('ledgerEditCancel'),
             ledgerEditFeedback: document.getElementById('ledgerEditFeedback'),
@@ -1187,6 +1233,11 @@
             set('ledgerEditTitle', dict.ledgerEditTitle);
             set('ledgerEditTargetLabel', dict.ledgerEditTargetLabel);
             set('ledgerEditTotalLabel', dict.ledgerEditTotalLabel);
+            set('ledgerEditShipmentDateLabel', dict.ledgerEditShipmentDateLabel);
+            set('ledgerEditArrivedBoxesLabel', dict.ledgerEditArrivedBoxesLabel);
+            set('ledgerEditReceivedDateLabel', dict.ledgerEditReceivedDateLabel);
+            set('ledgerEditDispatchedBoxesLabel', dict.ledgerEditDispatchedBoxesLabel);
+            set('ledgerEditLastTransitDateLabel', dict.ledgerEditLastTransitDateLabel);
 
             ui.inboundWaybill.placeholder = dict.inboundWaybillPlaceholder;
             ui.inboundManifest.placeholder = dict.inboundManifestPlaceholder;
@@ -1523,8 +1574,14 @@
             activeLedgerEditId = id;
             const row = entries.find(x => x.id === id);
             if (!row) return;
-            ui.ledgerEditTarget.value = row.targetProject;
-            ui.ledgerEditTotal.value = row.totalShippedBoxes;
+            ui.ledgerEditTarget.value = row.targetProject || 'Nanyun';
+            ui.ledgerEditTotal.value = row.totalShippedBoxes !== undefined ? row.totalShippedBoxes : 0;
+            ui.ledgerEditShipmentDate.value = row.shipmentDate ? row.shipmentDate.slice(0, 10) : '';
+            ui.ledgerEditArrivedBoxes.value = row.arrivedBoxes !== undefined ? row.arrivedBoxes : 0;
+            ui.ledgerEditReceivedDate.value = row.receivedDate ? row.receivedDate.slice(0, 10) : '';
+            ui.ledgerEditDispatchedBoxes.value = row.dispatchedBoxes !== undefined ? row.dispatchedBoxes : 0;
+            ui.ledgerEditLastTransitDate.value = row.lastTransitDate ? row.lastTransitDate.slice(0, 10) : '';
+            
             ui.ledgerEditModal.classList.remove('hidden');
             ui.ledgerEditModal.classList.add('flex');
         };
@@ -1540,18 +1597,47 @@
                 showFeedback(ui.ledgerEditFeedback, translations[currentLang].notAdmin, true);
                 return;
             }
-            const nextTarget = ui.ledgerEditTarget.value;
-            const nextTotal = parseInt(ui.ledgerEditTotal.value, 10);
-            if (isNaN(nextTotal) || nextTotal < 1) return;
             const row = entries.find(x => x.id === activeLedgerEditId);
             if (!row) return;
-            const delta = nextTotal - (row.totalShippedBoxes || 0);
-            const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) + delta);
+
+            const nextTarget = ui.ledgerEditTarget.value;
+            const shippedVal = parseInt(ui.ledgerEditTotal.value, 10);
+            const shipmentDateVal = ui.ledgerEditShipmentDate.value || null;
+            const arrivedVal = parseInt(ui.ledgerEditArrivedBoxes.value, 10);
+            const receivedDateVal = ui.ledgerEditReceivedDate.value || null;
+            const dispatchedVal = parseInt(ui.ledgerEditDispatchedBoxes.value, 10);
+            const lastTransitDateVal = ui.ledgerEditLastTransitDate.value || null;
+
+            if (isNaN(shippedVal) || shippedVal < 0 || isNaN(arrivedVal) || arrivedVal < 0 || isNaN(dispatchedVal) || dispatchedVal < 0) {
+                showFeedback(ui.ledgerEditFeedback, translations[currentLang].errorInvalidInput, true);
+                return;
+            }
+
+            const nextPipeline = Math.max(0, shippedVal - arrivedVal);
+            const nextWarehouse = Math.max(0, arrivedVal - dispatchedVal);
+
+            let nextStatus = 'In Pipeline';
+            if (dispatchedVal > 0 && nextWarehouse === 0 && nextPipeline === 0) {
+                nextStatus = 'Fully Dispatched';
+            } else if (nextWarehouse > 0) {
+                nextStatus = 'In Warehouse';
+            } else if (arrivedVal > 0 && nextPipeline > 0) {
+                nextStatus = 'Partial Arrival';
+            }
+
             db.ref(`${DB_NODE}/${activeLedgerEditId}`).update({
                 targetProject: nextTarget,
-                totalShippedBoxes: nextTotal,
-                pipelineBoxes: nextPipeline
-            }).then(() => closeLedgerEditModal());
+                totalShippedBoxes: shippedVal,
+                shipmentDate: shipmentDateVal,
+                arrivedBoxes: arrivedVal,
+                receivedDate: receivedDateVal,
+                dispatchedBoxes: dispatchedVal,
+                lastTransitDate: lastTransitDateVal,
+                pipelineBoxes: nextPipeline,
+                warehouseBoxes: nextWarehouse,
+                status: nextStatus
+            }).then(() => closeLedgerEditModal())
+              .catch(err => showFeedback(ui.ledgerEditFeedback, translations[currentLang].errorDatabase + err.message, true));
         }
 
         window.deleteLedgerEntry = function(id) {
