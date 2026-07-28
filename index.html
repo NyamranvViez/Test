@@ -717,7 +717,7 @@
                         </label>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div id="dispatchEditContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <label class="block text-sm text-slate-200">
                             <span id="ledgerEditDispatchedBoxesLabel">Dispatched Box</span>
                             <input id="ledgerEditDispatchedBoxes" type="number" min="0" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
@@ -1001,6 +1001,7 @@
             cancelDispatch: document.getElementById('cancelDispatch'),
             closeDispatchModal: document.getElementById('closeDispatchModal'),
             dispatchFeedback: document.getElementById('dispatchFeedback'),
+            dispatchEditContainer: document.getElementById('dispatchEditContainer'),
             ledgerEditModal: document.getElementById('ledgerEditModal'),
             ledgerEditTarget: document.getElementById('ledgerEditTarget'),
             ledgerEditTotal: document.getElementById('ledgerEditTotal'),
@@ -1582,6 +1583,11 @@
             ui.ledgerEditDispatchedBoxes.value = row.dispatchedBoxes !== undefined ? row.dispatchedBoxes : 0;
             ui.ledgerEditLastTransitDate.value = row.lastTransitDate ? row.lastTransitDate.slice(0, 10) : '';
             
+            // Toggle dispatch fields visibility
+            if (ui.dispatchEditContainer) {
+                ui.dispatchEditContainer.style.display = (ui.ledgerEditTarget.value === 'Nanyun') ? 'none' : 'grid';
+            }
+
             ui.ledgerEditModal.classList.remove('hidden');
             ui.ledgerEditModal.classList.add('flex');
         };
@@ -1605,8 +1611,15 @@
             const shipmentDateVal = ui.ledgerEditShipmentDate.value || null;
             const arrivedVal = parseInt(ui.ledgerEditArrivedBoxes.value, 10);
             const receivedDateVal = ui.ledgerEditReceivedDate.value || null;
-            const dispatchedVal = parseInt(ui.ledgerEditDispatchedBoxes.value, 10);
-            const lastTransitDateVal = ui.ledgerEditLastTransitDate.value || null;
+            
+            let dispatchedVal = parseInt(ui.ledgerEditDispatchedBoxes.value, 10);
+            let lastTransitDateVal = ui.ledgerEditLastTransitDate.value || null;
+
+            // Nanyun Project shouldn't have dispatch values, so reset them safely.
+            if (nextTarget === 'Nanyun') {
+                dispatchedVal = 0;
+                lastTransitDateVal = null;
+            }
 
             if (isNaN(shippedVal) || shippedVal < 0 || isNaN(arrivedVal) || arrivedVal < 0 || isNaN(dispatchedVal) || dispatchedVal < 0) {
                 showFeedback(ui.ledgerEditFeedback, translations[currentLang].errorInvalidInput, true);
@@ -1747,6 +1760,13 @@
         ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
         ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
         ui.logoutBtn.addEventListener('click', handleLogout);
+
+        // Edit target dropdown event listener to toggle dispatch fields dynamically
+        ui.ledgerEditTarget.addEventListener('change', (e) => {
+            if(ui.dispatchEditContainer) {
+                ui.dispatchEditContainer.style.display = (e.target.value === 'Nanyun') ? 'none' : 'grid';
+            }
+        });
 
         window.addEventListener('scroll', handleScroll, { passive: true });
 
