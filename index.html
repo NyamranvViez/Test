@@ -685,6 +685,16 @@
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
+                        <span id="ledgerEditWaybillLabel">WayBill Number</span>
+                        <input id="ledgerEditWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" />
+                    </label>
+                    
+                    <label class="block text-sm text-slate-200">
+                        <span id="ledgerEditManifestLabel">Description</span>
+                        <textarea id="ledgerEditManifest" rows="2" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500"></textarea>
+                    </label>
+
+                    <label class="block text-sm text-slate-200">
                         <span id="ledgerEditTargetLabel">Target Project</span>
                         <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
                             <option>Nanyun</option>
@@ -840,6 +850,8 @@
                 dispatchDestinationLabel: "Destination Location",
                 dispatchQuantityLabel: "Transit Box Quantity",
                 ledgerEditTitle: "Edit Ledger Entry",
+                ledgerEditWaybillLabel: "WayBill Number",
+                ledgerEditManifestLabel: "Description",
                 ledgerEditTargetLabel: "Target Project",
                 ledgerEditTotalLabel: "Shipped Box",
                 ledgerEditShipmentDateLabel: "Shipped Date",
@@ -939,6 +951,8 @@
                 dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
                 dispatchQuantityLabel: "ပို့ဆောင်မည့် ဂျက်ဖါအရေအတွက်",
                 ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
+                ledgerEditWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
+                ledgerEditManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
                 ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
                 ledgerEditTotalLabel: "Shipped Box (ပေးပို့သည့်ဂျက်ဖါ)",
                 ledgerEditShipmentDateLabel: "Shipped Date (ပေးပို့သည့်ရက်)",
@@ -1002,6 +1016,8 @@
             dispatchFeedback: document.getElementById('dispatchFeedback'),
             dispatchEditContainer: document.getElementById('dispatchEditContainer'),
             ledgerEditModal: document.getElementById('ledgerEditModal'),
+            ledgerEditWaybill: document.getElementById('ledgerEditWaybill'),
+            ledgerEditManifest: document.getElementById('ledgerEditManifest'),
             ledgerEditTarget: document.getElementById('ledgerEditTarget'),
             ledgerEditTotal: document.getElementById('ledgerEditTotal'),
             ledgerEditShipmentDate: document.getElementById('ledgerEditShipmentDate'),
@@ -1231,6 +1247,8 @@
             set('dispatchDestinationLabel', dict.dispatchDestinationLabel);
             set('dispatchQuantityLabel', dict.dispatchQuantityLabel);
             set('ledgerEditTitle', dict.ledgerEditTitle);
+            set('ledgerEditWaybillLabel', dict.ledgerEditWaybillLabel);
+            set('ledgerEditManifestLabel', dict.ledgerEditManifestLabel);
             set('ledgerEditTargetLabel', dict.ledgerEditTargetLabel);
             set('ledgerEditTotalLabel', dict.ledgerEditTotalLabel);
             set('ledgerEditShipmentDateLabel', dict.ledgerEditShipmentDateLabel);
@@ -1344,7 +1362,7 @@
             ui.pipelineEmpty.classList.toggle('hidden', targets.length > 0);
             ui.pipelineTableBody.innerHTML = targets.map(x => {
                 const action = perms.canTransit ?
-                    `<button onclick="openArrivalModal('${x.id}')" class="btn-3d btn-save rounded-xl px-3 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Receive Boxes' : 'သေတ္တာများလက်ခံရန်'}</button>` :
+                    `<button onclick="openArrivalModal('${x.id}')" class="btn-3d btn-save rounded-xl px-3 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Receive Boxes' : 'ဂျက်ဖါများလက်ခံရန်'}</button>` :
                     `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
                 return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
               <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
@@ -1573,6 +1591,8 @@
             activeLedgerEditId = id;
             const row = entries.find(x => x.id === id);
             if (!row) return;
+            ui.ledgerEditWaybill.value = row.waybill || '';
+            ui.ledgerEditManifest.value = row.manifestSummary || '';
             ui.ledgerEditTarget.value = row.targetProject || 'Nanyun';
             ui.ledgerEditTotal.value = row.totalShippedBoxes !== undefined ? row.totalShippedBoxes : 0;
             ui.ledgerEditShipmentDate.value = row.shipmentDate ? row.shipmentDate.slice(0, 10) : '';
@@ -1604,6 +1624,8 @@
             const row = entries.find(x => x.id === activeLedgerEditId);
             if (!row) return;
 
+            const nextWaybill = ui.ledgerEditWaybill.value.trim();
+            const nextManifest = ui.ledgerEditManifest.value.trim();
             const nextTarget = ui.ledgerEditTarget.value;
             const shippedVal = parseInt(ui.ledgerEditTotal.value, 10);
             const shipmentDateVal = ui.ledgerEditShipmentDate.value || null;
@@ -1637,6 +1659,8 @@
             }
 
             db.ref(`${DB_NODE}/${activeLedgerEditId}`).update({
+                waybill: nextWaybill || '-',
+                manifestSummary: nextManifest || '-',
                 targetProject: nextTarget,
                 totalShippedBoxes: shippedVal,
                 shipmentDate: shipmentDateVal,
@@ -1673,7 +1697,6 @@
                 Pipeline: x.pipelineBoxes,
                 Dispatched: x.dispatchedBoxes,
                 Status: x.status,
-                DispatchSummary: x.dispatchLogs || '-'
             }));
             const ws = XLSX.utils.json_to_sheet(rows);
             const wb = XLSX.utils.book_new();
