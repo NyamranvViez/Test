@@ -1405,7 +1405,6 @@
               <td class="px-3 py-2 text-purple-300">${x.dispatchedBoxes}</td>
               <td class="px-3 py-2 text-slate-300">${formatDate(x.lastTransitDate)}</td>
               <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
-              <td class="px-3 py-2 text-slate-400 truncate max-w-[140px]">${x.dispatchLogs || '-'}</td>
               <td class="px-3 py-2 flex flex-wrap gap-1">${actions}</td>
             </tr>`;
             }).join('');
