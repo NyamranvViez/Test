@@ -483,11 +483,7 @@
                     <form id="inboundForm" class="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
                         <div class="space-y-5">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label class="block text-sm text-slate-200">
-                                    <span id="inboundWaybillLabel">WayBill Number</span>
-                                    <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
-                                </label>
-                                <label class="block text-sm text-slate-200">
+                                    <label class="block text-sm text-slate-200">
                                     <span id="inboundTargetLabel">Target Project Allocation</span>
                                     <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
                                         <option>Nanyun</option>
@@ -497,14 +493,18 @@
                                     </select>
                                 </label>
                                 <label class="block text-sm text-slate-200">
-                                    <span id="shipmentDateLabel">Shipment Date</span>
-                                    <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
+                                    <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
+                                    <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
                                 </label>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="block text-sm text-slate-200">
-                                    <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
-                                    <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
+                                    <span id="inboundWaybillLabel">WayBill Number</span>
+                                    <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
+                                </label>
+                                <label class="block text-sm text-slate-200">
+                                    <span id="shipmentDateLabel">Shipment Date</span>
+                                    <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
                                 </label>
                             </div>
                             <label class="block text-sm text-slate-200">
