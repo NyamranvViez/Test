@@ -685,7 +685,15 @@
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditWaybillLabel">WayBill Number</span>
+                        <span id="ledgerEditWaybillLabel">WayBill Number                        
+                             <span id="ledgerEditTargetLabel">Target Project</span>
+                                <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                    <option>Nanyun</option>
+                                    <option>Lahe</option>
+                                    <option>Layshi</option>
+                                    <option>Hkamti</option>
+                                </select>
+                        </span>
                         <input id="ledgerEditWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" />
                     </label>
                     
@@ -695,13 +703,7 @@
                     </label>
 
                     <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditTargetLabel">Target Project</span>
-                        <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Nanyun</option>
-                            <option>Lahe</option>
-                            <option>Layshi</option>
-                            <option>Hkamti</option>
-                        </select>
+
                     </label>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
