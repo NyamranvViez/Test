@@ -416,12 +416,13 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- REPLACED: Nanyun Pipeline Dashboard -->
                             <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                                <p id="quickStatusLabel" class="text-sm uppercase tracking-[0.2em] text-slate-400">Quick Status</p>
+                                <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Nanyun Pipeline Dashboard</p>
                                 <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                                    <li class="flex items-center justify-between"><span id="countPipelineEntriesLabel">Active Pipeline Shipments</span><span id="countPipelineEntries">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="countWarehouseEntriesLabel">Active Warehouse Shipments</span><span id="countWarehouseEntries">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="countDispatchedEntriesLabel">Fully Dispatched Shipments</span><span id="countDispatchedEntries">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes Logged (Nanyun)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Nanyun)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Boxes in Warehouse (Nanyun)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -483,7 +484,17 @@
                     <form id="inboundForm" class="mt-6 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
                         <div class="space-y-5">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <label class="block text-sm text-slate-200">
+                                <label class="block text-sm text-slate-200">
+                                    <span id="inboundWaybillLabel">WayBill Number</span>
+                                    <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
+                                </label>
+                                <label class="block text-sm text-slate-200">
+                                    <span id="shipmentDateLabel">Shipment Date</span>
+                                    <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="block text-sm text-slate-200">
                                     <span id="inboundTargetLabel">Target Project Allocation</span>
                                     <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
                                         <option>Nanyun</option>
@@ -495,16 +506,6 @@
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
                                     <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
-                                </label>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label class="block text-sm text-slate-200">
-                                    <span id="inboundWaybillLabel">WayBill Number</span>
-                                    <input id="inboundWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Enter WayBill" required />
-                                </label>
-                                <label class="block text-sm text-slate-200">
-                                    <span id="shipmentDateLabel">Shipment Date</span>
-                                    <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
                                 </label>
                             </div>
                             <label class="block text-sm text-slate-200">
@@ -685,25 +686,21 @@
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditWaybillLabel">WayBill Number                        
-                             <span id="ledgerEditTargetLabel">Target Project</span>
-                                <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                                    <option>Nanyun</option>
-                                    <option>Lahe</option>
-                                    <option>Layshi</option>
-                                    <option>Hkamti</option>
-                                </select>
-                        </span>
+                        <span id="ledgerEditWaybillLabel">WayBill Number</span>
                         <input id="ledgerEditWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" />
                     </label>
-                    
+                    <label class="block text-sm text-slate-200">
+                        <span id="ledgerEditTargetLabel">Target Project</span>
+                        <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                            <option>Nanyun</option>
+                            <option>Lahe</option>
+                            <option>Layshi</option>
+                            <option>Hkamti</option>
+                        </select>
+                    </label>
                     <label class="block text-sm text-slate-200">
                         <span id="ledgerEditManifestLabel">Description</span>
                         <textarea id="ledgerEditManifest" rows="2" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500"></textarea>
-                    </label>
-
-                    <label class="block text-sm text-slate-200">
-
                     </label>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -802,10 +799,10 @@
                 barWarehouseTitle: "Warehouse",
                 barPipelineTitle: "Pipeline",
                 barDispatchedTitle: "Dispatched",
-                quickStatusLabel: "Quick Status",
-                countPipelineEntriesLabel: "Active Pipeline Shipments",
-                countWarehouseEntriesLabel: "Active Warehouse Shipments",
-                countDispatchedEntriesLabel: "Fully Dispatched Shipments",
+                nanyunDashboardLabel: "Nanyun Pipeline Dashboard",
+                nanyunTotalLoggedLabel: "Total Boxes Logged (Nanyun)",
+                nanyunPipelineBoxesLabel: "Boxes in Pipeline (Nanyun)",
+                nanyunWarehouseBoxesLabel: "Boxes in Warehouse (Nanyun)",
                 regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
                 regionalHeading: "Other Project Allocations",
                 regionalDesc: "Directly monitor the total number of boxes allocated to target projects.",
@@ -903,10 +900,10 @@
                 barWarehouseTitle: "ဂိုဒေါင်",
                 barPipelineTitle: "လမ်းကြောင်း",
                 barDispatchedTitle: "ပို့ဆောင်ပြီး",
-                quickStatusLabel: "အမြန်အခြေအနေ",
-                countPipelineEntriesLabel: "လမ်းကြောင်းတွင် ရှိသော ပို့ဆောင်မှုများ",
-                countWarehouseEntriesLabel: "ဂိုဒေါင်တွင် ရှိသော ပို့ဆောင်မှုများ",
-                countDispatchedEntriesLabel: "ပို့ဆောင်ပြီး ပို့ဆောင်မှုများ",
+                nanyunDashboardLabel: "နာန်ယွန်း လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
+                nanyunTotalLoggedLabel: "နာန်ယွန်း စုစုပေါင်း ဂျက်ဖါ",
+                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (နာန်ယွန်း)",
+                nanyunWarehouseBoxesLabel: "ဂိုဒေါင်ရှိ ဂျက်ဖါ (နာန်ယွန်း)",
                 regionalOverviewLabel: "ဒေသဆိုင်ရာ အကျဉ်းချုပ် (လမ်းကြောင်း + ဂိုဒေါင်)",
                 regionalHeading: "အခြားပရောဂျက်များ၏ ကုန်ပစ္စည်းခွဲတမ်း",
                 regionalDesc: "ပစ်မှတ်ပရောဂျက်များသို့ ထားရှိနေသော ဂျက်ဖါအရေအတွက်ကို တိုက်ရိုက်စောင့်ကြည့်နိုင်ပါသည်။",
@@ -1051,9 +1048,9 @@
             barPipelineLabel: document.getElementById('barPipelineLabel'),
             barDispatched: document.getElementById('barDispatched'),
             barDispatchedLabel: document.getElementById('barDispatchedLabel'),
-            countPipelineEntries: document.getElementById('countPipelineEntries'),
-            countWarehouseEntries: document.getElementById('countWarehouseEntries'),
-            countDispatchedEntries: document.getElementById('countDispatchedEntries'),
+            statNanyunTotalLogged: document.getElementById('statNanyunTotalLogged'),
+            statNanyunPipelineBoxes: document.getElementById('statNanyunPipelineBoxes'),
+            statNanyunWarehouseBoxes: document.getElementById('statNanyunWarehouseBoxes'),
             overviewLaheBoxes: document.getElementById('overviewLaheBoxes'),
             overviewLayshiBoxes: document.getElementById('overviewLayshiBoxes'),
             overviewHkamtiBoxes: document.getElementById('overviewHkamtiBoxes'),
@@ -1199,10 +1196,10 @@
             set('barWarehouseTitle', dict.barWarehouseTitle);
             set('barPipelineTitle', dict.barPipelineTitle);
             set('barDispatchedTitle', dict.barDispatchedTitle);
-            set('quickStatusLabel', dict.quickStatusLabel);
-            set('countPipelineEntriesLabel', dict.countPipelineEntriesLabel);
-            set('countWarehouseEntriesLabel', dict.countWarehouseEntriesLabel);
-            set('countDispatchedEntriesLabel', dict.countDispatchedEntriesLabel);
+            set('nanyunDashboardLabel', dict.nanyunDashboardLabel);
+            set('nanyunTotalLoggedLabel', dict.nanyunTotalLoggedLabel);
+            set('nanyunPipelineBoxesLabel', dict.nanyunPipelineBoxesLabel);
+            set('nanyunWarehouseBoxesLabel', dict.nanyunWarehouseBoxesLabel);
             set('regionalOverviewLabel', dict.regionalOverviewLabel);
             set('regionalHeading', dict.regionalHeading);
             set('regionalDesc', dict.regionalDesc);
@@ -1310,22 +1307,24 @@
                 tPipeline = 0,
                 tWarehouse = 0,
                 tDispatched = 0;
-            let cPipeline = 0,
-                cWarehouse = 0,
-                cDispatched = 0;
             let laheTotal = 0,
                 layshiTotal = 0,
                 hkamtiTotal = 0;
+            let nanyunLogged = 0,
+                nanyunPipeline = 0,
+                nanyunWarehouse = 0;
 
             entries.forEach(x => {
-                if (x.targetProject === 'Nanyun') return;
+                if (x.targetProject === 'Nanyun') {
+                    nanyunLogged += (x.totalShippedBoxes || 0);
+                    nanyunPipeline += (x.pipelineBoxes || 0);
+                    nanyunWarehouse += (x.warehouseBoxes || 0);
+                    return;
+                }
                 tLogged += (x.totalShippedBoxes || 0);
                 tPipeline += (x.pipelineBoxes || 0);
                 tWarehouse += (x.warehouseBoxes || 0);
                 tDispatched += (x.dispatchedBoxes || 0);
-                if (x.pipelineBoxes > 0) cPipeline++;
-                if (x.warehouseBoxes > 0) cWarehouse++;
-                if (x.status === 'Fully Dispatched') cDispatched++;
                 if (x.targetProject === 'Lahe') laheTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
                 if (x.targetProject === 'Layshi') layshiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
                 if (x.targetProject === 'Hkamti') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
@@ -1335,9 +1334,9 @@
             ui.statPipelineBoxes.innerText = tPipeline;
             ui.statWarehouseBoxes.innerText = tWarehouse;
             ui.statDispatchedBoxes.innerText = tDispatched;
-            ui.countPipelineEntries.innerText = cPipeline;
-            ui.countWarehouseEntries.innerText = cWarehouse;
-            ui.countDispatchedEntries.innerText = cDispatched;
+            if (ui.statNanyunTotalLogged) ui.statNanyunTotalLogged.innerText = nanyunLogged;
+            if (ui.statNanyunPipelineBoxes) ui.statNanyunPipelineBoxes.innerText = nanyunPipeline;
+            if (ui.statNanyunWarehouseBoxes) ui.statNanyunWarehouseBoxes.innerText = nanyunWarehouse;
             ui.pipelineEntryCount.innerText = `${entries.filter(x => x.pipelineBoxes > 0).length} ${currentLang === 'en' ? 'entries' : 'ခု'}`;
             const maxVal = Math.max(tWarehouse, tPipeline, tDispatched, 1);
             ui.barWarehouse.style.width = `${Math.min(100, (tWarehouse / maxVal) * 100)}%`;
@@ -1594,8 +1593,8 @@
             const row = entries.find(x => x.id === id);
             if (!row) return;
             ui.ledgerEditWaybill.value = row.waybill || '';
-            ui.ledgerEditManifest.value = row.manifestSummary || '';
             ui.ledgerEditTarget.value = row.targetProject || 'Nanyun';
+            ui.ledgerEditManifest.value = row.manifestSummary || '';
             ui.ledgerEditTotal.value = row.totalShippedBoxes !== undefined ? row.totalShippedBoxes : 0;
             ui.ledgerEditShipmentDate.value = row.shipmentDate ? row.shipmentDate.slice(0, 10) : '';
             ui.ledgerEditArrivedBoxes.value = row.arrivedBoxes !== undefined ? row.arrivedBoxes : 0;
