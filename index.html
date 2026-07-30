@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link class="fluid-favicon" rel="icon" type="image/png" href="favicon.png" />
-    <title>Nanyun Project</title>
-    <meta name="description" content="Nanyun Project - Local medical logistics dashboard" />
+    <title>Cargo Dashboard App - HKT</title>
+    <meta name="description" content="Hkamti Project - Local medical logistics dashboard" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -16,7 +16,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { nanyun: '#0b1f3c' }
+                    colors: { Hkamti: '#0b1f3c' }
                 }
             }
         };
@@ -319,7 +319,7 @@
         <header id="mainHeader" class="mb-6 rounded-[32px] p-6 glass shadow-deep flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between sticky-header">
             <!-- Left: Title -->
             <div class="space-y-1 flex-shrink-0 min-w-0">
-                <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">Nanyun Project</p>
+                <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">HKamti Project</p>
                 <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Logistics Command Center</h1>
                 <p id="headerDesc" class="max-w-3xl text-sm leading-6 text-slate-300">A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.</p>
             </div>
@@ -358,7 +358,7 @@
         <nav id="mainNavigation" class="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <button type="button" data-tab="dashboard" class="tab-btn rounded-3xl bg-slate-900/90 px-4 py-3 text-left text-sm font-semibold tab-active">Dashboard Overview</button>
             <button type="button" data-tab="inbound" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Intake (Inbound)</button>
-            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga (Outbound)</button>
+            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga & Nanyun (Outbound)</button>
             <button type="button" data-tab="ledger" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Data Ledger</button>
         </nav>
 
@@ -371,7 +371,7 @@
                     <div class="rounded-[32px] glass shadow-deep p-6">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Nanyun Project)</p>
+                                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Hkamti Project)</p>
                                 <h2 id="dashboardHeading" class="mt-2 text-2xl font-semibold">Executive Pipeline Dashboard</h2>
                             </div>
                             <span id="creatorBadge" class="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Created by Ran Aung</span>
@@ -418,11 +418,11 @@
                             </div>
                             <!-- REPLACED: Nanyun Pipeline Dashboard -->
                             <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                                <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Nanyun Pipeline Dashboard</p>
+                                <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Hkamti Pipeline Dashboard</p>
                                 <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes Logged (Nanyun)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Nanyun)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Nanyun)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes Logged (Hkamti)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Hkamti)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Hkamti)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -456,7 +456,7 @@
                                 </div>
                                 <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
                                     <div>
-                                        <h4 class="font-bold text-slate-100 text-base">Hkamti Project</h4>
+                                        <h4 class="font-bold text-slate-100 text-base">Nanyun Project</h4>
                                         <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
                                     </div>
                                     <div class="text-right">
@@ -497,10 +497,10 @@
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTargetLabel">Target Project Allocation</span>
                                     <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
-                                        <option>Nanyun</option>
+                                        <option>Hkamti</option>
                                         <option>Lahe</option>
                                         <option>Layshi</option>
-                                        <option>Hkamti</option>
+                                        <option>Nanyun</option>
                                     </select>
                                 </label>
                                 <label class="block text-sm text-slate-200">
@@ -562,7 +562,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <p id="transitSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Outbound</p>
-                            <h2 id="transitHeading" class="text-2xl font-semibold">Transit to Naga (Outbound)</h2>
+                            <h2 id="transitHeading" class="text-2xl font-semibold">Transit to Naga & Nanyun (Outbound)</h2>
                         </div>
                         <span id="dispatchFromWarehouseLabel" class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Transit from Warehouse</span>
                     </div>
@@ -661,7 +661,7 @@
                         <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
                             <option>Lahe</option>
                             <option>Layshi</option>
-                            <option>Hkamti</option>
+                            <option>Nanyun</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -692,10 +692,10 @@
                     <label class="block text-sm text-slate-200">
                         <span id="ledgerEditTargetLabel">Target Project</span>
                         <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Nanyun</option>
+                            <option>Hkamti</option>
                             <option>Lahe</option>
                             <option>Layshi</option>
-                            <option>Hkamti</option>
+                            <option>Nanyun</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -777,16 +777,16 @@
         // ===== TRANSLATIONS =====
         const translations = {
             en: {
-                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga (Outbound)",
+                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga & Nanyun (Outbound)",
                     ledger: "Data Ledger" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "Nanyun Project (Cargo Process Between Myitkyina and Naga Projects)",
+                projectLabel: "Hkamti Project (Cargo Process Between Mandalay and Naga Projects)",
                 headerTitle: "Medical Logistics Command Center",
-                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Myitkyina to Naga Projects)",
+                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Mandalay to Naga Projects)",
                 authenticatedUserLabel: "Account Information",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "Viewer" },
                 authStatusNote: "Guest users see read-only content.",
-                dashboardSectionLabel: "Overview (Except Nanyun Project)",
+                dashboardSectionLabel: "Overview (Except Hkamti Project)",
                 dashboardHeading: "Executive Pipeline Dashboard",
                 creatorBadge: "Created by Ran Aung",
                 statTotalLoggedLabel: "Total Boxes Logged",
@@ -799,10 +799,10 @@
                 barWarehouseTitle: "Warehouse",
                 barPipelineTitle: "Pipeline",
                 barDispatchedTitle: "Dispatched",
-                nanyunDashboardLabel: "Nanyun Pipeline Dashboard",
-                nanyunTotalLoggedLabel: "Total Boxes Logged (Nanyun)",
-                nanyunPipelineBoxesLabel: "Boxes in Pipeline (Nanyun)",
-                nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Nanyun)",
+                nanyunDashboardLabel: "Hkamti Pipeline Dashboard",
+                nanyunTotalLoggedLabel: "Total Boxes Logged (Hkamti)",
+                nanyunPipelineBoxesLabel: "Boxes in Pipeline (Hkamti)",
+                nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Hkamti)",
                 regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
                 regionalHeading: "Other Project Allocations",
                 regionalDesc: "Directly monitor the total number of boxes allocated to target projects.",
@@ -831,8 +831,8 @@
                 thStatus: "Status",
                 thAction: "Action",
                 transitSectionLabel: "Outbound",
-                transitHeading: "Transit to Naga (Outbound)",
-                dispatchFromWarehouseLabel: "Transit from Nanyun Warehouse",
+                transitHeading: "Transit to Naga & Nanyun (Outbound)",
+                dispatchFromWarehouseLabel: "Transit from Hkamti Warehouse",
                 thTransitWaybill: "WayBill",
                 thTransitProject: "Project",
                 thTransitWarehouse: "In Warehouse",
@@ -878,32 +878,32 @@
                 noTransitRequired: "Not required"
             },
             mm: {
-                tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
+                tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
                     ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "နန်းယွန်း ပရောဂျက် (မြစ်ကြီးနားနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
+                projectLabel: "ခန္တီး ပရောဂျက် (မန္တလေးနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
                 headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
-                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (မြစ်ကြီးနားမှ နာဂပရောဂျက်များသို့)",
+                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (မန္တလေးမှ နာဂပရောဂျက်များသို့)",
                 authenticatedUserLabel: "Account အချက်အလက်များ",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
                 authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
-                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (နန်းယွန်း ပရောဂျက်မပါဝင်ပါ)",
+                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (ခန္တီး ပရောဂျက်မပါဝင်ပါ)",
                 dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
                 creatorBadge: "Ran Aung မှ ဖန်တီးခဲ့သည်",
                 statTotalLoggedLabel: "စုစုပေါင်း ဂျက်ဖါစာရင်းသွင်းပြီး",
                 statPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ",
                 statWarehouseBoxesLabel: "ဂိုဒေါင်တွင် သိမ်းဆည်းထားသော ဂျက်ဖါစုစုပေါင်း",
                 statDispatchedBoxesLabel: "ပို့ဆောင်ပြီး ဂျက်ဖါစုစုပေါင်း",
-                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက် ((From MKN)၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
+                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက် ((From MDL)၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
                 exportDashboardBtn: "Excel မှတ်တမ်းထုတ်ရန်",
                 pipelineVisualLabel: "လမ်းကြောင်း အမြင်ချင်း",
                 barWarehouseTitle: "ဂိုဒေါင်",
                 barPipelineTitle: "လမ်းကြောင်း",
                 barDispatchedTitle: "ပို့ဆောင်ပြီး",
-                nanyunDashboardLabel: "နန်းယွန်း လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
-                nanyunTotalLoggedLabel: "နန်းယွန်း စုစုပေါင်း ဂျက်ဖါ",
-                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (နန်းယွန်း)",
-                nanyunWarehouseBoxesLabel: "ရောက်ရှိသည့် စုစုပေါင်းဂျက်ဖါ (နန်းယွန်း)",
+                nanyunDashboardLabel: "ခန္တီး လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
+                nanyunTotalLoggedLabel: "ခန္တီး စုစုပေါင်း ဂျက်ဖါ",
+                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (ခန္တီး)",
+                nanyunWarehouseBoxesLabel: "ရောက်ရှိသည့် စုစုပေါင်းဂျက်ဖါ (ခန္တီး)",
                 regionalOverviewLabel: "ဒေသဆိုင်ရာ အကျဉ်းချုပ် (လမ်းကြောင်း + ဂိုဒေါင်)",
                 regionalHeading: "အခြားပရောဂျက်များ၏ ကုန်ပစ္စည်းခွဲတမ်း",
                 regionalDesc: "ပစ်မှတ်ပရောဂျက်များသို့ ထားရှိနေသော ဂျက်ဖါအရေအတွက်ကို တိုက်ရိုက်စောင့်ကြည့်နိုင်ပါသည်။",
@@ -913,7 +913,7 @@
                 inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
                 originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
                 inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
-                shipmentDateLabel: "ပို့ဆောင်ရက် ((From MKN)",
+                shipmentDateLabel: "ပို့ဆောင်ရက် ((From MDL)",
                 inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
                 inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော ဂျက်ဖါအရေအတွက်",
                 inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
@@ -927,18 +927,18 @@
                 thShipped: "ပေးပို့ပြီး",
                 thArrived: "ရောက်ရှိပြီး",
                 thPipeline: "လမ်းကြောင်း",
-                thShipDate: "ပို့ဆောင်ရက် ((From MKN)",
+                thShipDate: "ပို့ဆောင်ရက် ((From MDL)",
                 thRcvDate: "ရရှိရက်",
                 thStatus: "အခြေအနေ",
                 thAction: "လုပ်ဆောင်ချက်",
                 transitSectionLabel: "အထွက်",
-                transitHeading: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
-                dispatchFromWarehouseLabel: "နန်းယွန်းဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
+                transitHeading: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
+                dispatchFromWarehouseLabel: "ခန္တီးဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
                 thTransitWaybill: "WayBill",
                 thTransitProject: "ပရောဂျက်",
                 thTransitWarehouse: "ဂိုဒေါင်ထဲရှိ",
                 thTransitDesc: "အသေးစိတ်ဖော်ပြချက်",
-                thTransitShipDate: "ပို့ဆောင်ရက် (From MKN)",
+                thTransitShipDate: "ပို့ဆောင်ရက် (From MDL)",
                 thTransitRcvDate: "ရရှိရက်",
                 thTransitLastLog: "နောက်ဆုံး ပို့ဆောင်ခြင်း",
                 thTransitAction: "လုပ်ဆောင်ချက်",
@@ -1315,7 +1315,7 @@
                 nanyunWarehouse = 0;
 
             entries.forEach(x => {
-                if (x.targetProject === 'Nanyun') {
+                if (x.targetProject === 'Hkamti') {
                     nanyunLogged += (x.totalShippedBoxes || 0);
                     nanyunPipeline += (x.pipelineBoxes || 0);
                     nanyunWarehouse += (x.warehouseBoxes || 0);
@@ -1327,7 +1327,7 @@
                 tDispatched += (x.dispatchedBoxes || 0);
                 if (x.targetProject === 'Lahe') laheTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
                 if (x.targetProject === 'Layshi') layshiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
-                if (x.targetProject === 'Hkamti') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
+                if (x.targetProject === 'Nanyun') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
             });
 
             ui.statTotalLogged.innerText = tLogged;
@@ -1384,7 +1384,7 @@
             const targets = entries.filter(x => x.warehouseBoxes > 0);
             ui.warehouseEmpty.classList.toggle('hidden', targets.length > 0);
             ui.warehouseTableBody.innerHTML = targets.map(x => {
-                const action = x.targetProject === 'Nanyun' ?
+                const action = x.targetProject === 'Hkamti' ?
                     `<span class="disabled-action">${translations[currentLang].noTransitRequired}</span>` :
                     perms.canTransit ?
                     `<button onclick="openDispatchModal('${x.id}')" class="btn-3d btn-dispatch rounded-xl px-4 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Transit To' : 'လွှဲပြောင်းရန်'}</button>` :
@@ -1593,7 +1593,7 @@
             const row = entries.find(x => x.id === id);
             if (!row) return;
             ui.ledgerEditWaybill.value = row.waybill || '';
-            ui.ledgerEditTarget.value = row.targetProject || 'Nanyun';
+            ui.ledgerEditTarget.value = row.targetProject || 'Hkamti';
             ui.ledgerEditManifest.value = row.manifestSummary || '';
             ui.ledgerEditTotal.value = row.totalShippedBoxes !== undefined ? row.totalShippedBoxes : 0;
             ui.ledgerEditShipmentDate.value = row.shipmentDate ? row.shipmentDate.slice(0, 10) : '';
@@ -1604,7 +1604,7 @@
             
             // Toggle dispatch fields visibility
             if (ui.dispatchEditContainer) {
-                ui.dispatchEditContainer.style.display = (ui.ledgerEditTarget.value === 'Nanyun') ? 'none' : 'grid';
+                ui.dispatchEditContainer.style.display = (ui.ledgerEditTarget.value === 'Hkamti') ? 'none' : 'grid';
             }
 
             ui.ledgerEditModal.classList.remove('hidden');
@@ -1637,7 +1637,7 @@
             let lastTransitDateVal = ui.ledgerEditLastTransitDate.value || null;
 
             // Nanyun Project shouldn't have dispatch values, so reset them safely.
-            if (nextTarget === 'Nanyun') {
+            if (nextTarget === 'Hkamti') {
                 dispatchedVal = 0;
                 lastTransitDateVal = null;
             }
@@ -1786,7 +1786,7 @@
         // Edit target dropdown event listener to toggle dispatch fields dynamically
         ui.ledgerEditTarget.addEventListener('change', (e) => {
             if(ui.dispatchEditContainer) {
-                ui.dispatchEditContainer.style.display = (e.target.value === 'Nanyun') ? 'none' : 'grid';
+                ui.dispatchEditContainer.style.display = (e.target.value === 'Hkamti') ? 'none' : 'grid';
             }
         });
 
