@@ -422,7 +422,7 @@
                                 <ul class="mt-4 space-y-3 text-sm text-slate-300">
                                     <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes Logged (Nanyun)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
                                     <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Nanyun)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Boxes in Warehouse (Nanyun)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Nanyun)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -749,14 +749,14 @@
     <script>
         // ===== FIREBASE =====
         const firebaseConfig = {
-            apiKey: "AIzaSyA5GuDLb-BG6BNfJG7nbB_PARXZlmeavaA",
-            authDomain: "ran-space-social.firebaseapp.com",
-            databaseURL: "https://ran-space-social-default-rtdb.firebaseio.com/",
-            projectId: "ran-space-social",
-            storageBucket: "ran-space-social.firebasestorage.app",
-            messagingSenderId: "682950893913",
-            appId: "1:682950893913:web:02a311cb9434317d1a6c48",
-            measurementId: "G-LXHLZTBF1H"
+            apiKey: "AIzaSyDvgj4lJ4z-Q6xTvEZBtatfTl7n8h0YRNk",
+            authDomain: "hkamti-6e470.firebaseapp.com",
+            databaseURL: "https://hkamti-6e470-default-rtdb.firebaseio.com/",
+            projectId: "hkamti-6e470",
+            storageBucket: "hkamti-6e470.firebasestorage.app",
+            messagingSenderId: "119822790200",
+            appId: "1:119822790200:web:e721236004437cb9c640cd",
+            measurementId: "G-LWENEG47K7"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -802,7 +802,7 @@
                 nanyunDashboardLabel: "Nanyun Pipeline Dashboard",
                 nanyunTotalLoggedLabel: "Total Boxes Logged (Nanyun)",
                 nanyunPipelineBoxesLabel: "Boxes in Pipeline (Nanyun)",
-                nanyunWarehouseBoxesLabel: "Boxes in Warehouse (Nanyun)",
+                nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Nanyun)",
                 regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
                 regionalHeading: "Other Project Allocations",
                 regionalDesc: "Directly monitor the total number of boxes allocated to target projects.",
@@ -881,13 +881,13 @@
                 tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂသို့ ပို့ဆောင်ရန် (Outbound)",
                     ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "နာန်ယွန်း ပရောဂျက် (မြစ်ကြီးနားနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
+                projectLabel: "နန်းယွန်း ပရောဂျက် (မြစ်ကြီးနားနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
                 headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
                 headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (မြစ်ကြီးနားမှ နာဂပရောဂျက်များသို့)",
                 authenticatedUserLabel: "Account အချက်အလက်များ",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
                 authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
-                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (နာန်ယွန်း ပရောဂျက်မပါဝင်ပါ)",
+                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (နန်းယွန်း ပရောဂျက်မပါဝင်ပါ)",
                 dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
                 creatorBadge: "Ran Aung မှ ဖန်တီးခဲ့သည်",
                 statTotalLoggedLabel: "စုစုပေါင်း ဂျက်ဖါစာရင်းသွင်းပြီး",
@@ -900,10 +900,10 @@
                 barWarehouseTitle: "ဂိုဒေါင်",
                 barPipelineTitle: "လမ်းကြောင်း",
                 barDispatchedTitle: "ပို့ဆောင်ပြီး",
-                nanyunDashboardLabel: "နာန်ယွန်း လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
-                nanyunTotalLoggedLabel: "နာန်ယွန်း စုစုပေါင်း ဂျက်ဖါ",
-                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (နာန်ယွန်း)",
-                nanyunWarehouseBoxesLabel: "ဂိုဒေါင်ရှိ ဂျက်ဖါ (နာန်ယွန်း)",
+                nanyunDashboardLabel: "နန်းယွန်း လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
+                nanyunTotalLoggedLabel: "နန်းယွန်း စုစုပေါင်း ဂျက်ဖါ",
+                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (နန်းယွန်း)",
+                nanyunWarehouseBoxesLabel: "ရောက်ရှိသည့် စုစုပေါင်းဂျက်ဖါ (နန်းယွန်း)",
                 regionalOverviewLabel: "ဒေသဆိုင်ရာ အကျဉ်းချုပ် (လမ်းကြောင်း + ဂိုဒေါင်)",
                 regionalHeading: "အခြားပရောဂျက်များ၏ ကုန်ပစ္စည်းခွဲတမ်း",
                 regionalDesc: "ပစ်မှတ်ပရောဂျက်များသို့ ထားရှိနေသော ဂျက်ဖါအရေအတွက်ကို တိုက်ရိုက်စောင့်ကြည့်နိုင်ပါသည်။",
