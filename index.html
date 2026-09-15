@@ -74,10 +74,10 @@
         }
         .tab-btn:hover {
             transform: translateY(-2px);
-            background: rgba(15, 23, 42, 0.95);
+            background: linear-gradient(40deg, #00f808 0%, #ff008c8c 100%);
         }
         .tab-active {
-            background: linear-gradient(90deg, #14b8a6 0%, #0ea5e9 100%);
+            background: linear-gradient(40deg, #51ff00cd 0%, #ff99008c 100%);
             color: #ecfeff;
             box-shadow: 0 18px 48px rgba(16, 185, 129, 0.22);
         }
@@ -90,19 +90,53 @@
         .btn-3d:active {
             transform: scale(.98);
         }
-        .btn-save {
-            background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+        .btn-reset:hover {
+            background: linear-gradient(90deg, #0072ff 0%, #d1ff4b 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-reset {
+            background: linear-gradient(90deg, #a3daa3 0%, #8079ef 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
+        .btn-cancel:hover {
+            background: linear-gradient(90deg, #0072ff 0%, #d1ff4b 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-cancel {
+            background: linear-gradient(90deg, #a3daa3 0%, #8079ef 100%);
+            color: #052e16;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-save:hover {
+            background: linear-gradient(40deg, #e3ff14 0%, #e56306 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-save {
+            background: linear-gradient(40deg, #66f804 0%, #9bf79d 100%);
+            color: #052e16;
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
+        }
+        .btn-dispatch:hover {
+            background: linear-gradient(50deg, #0250F7 0%, #A3FD2D 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
+        }    
         .btn-dispatch {
-            background: linear-gradient(90deg, #38bdf8 0%, #0ea5e9 100%);
+            background: linear-gradient(50deg, #2400ff 0%, #b5f267 100%);
             color: #082f49;
             box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
         }
+        .btn-export:hover {
+            background: linear-gradient(100deg, #38ff00 0%, #001dff 100%);
+            box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
+        }
         .btn-export {
-            background: linear-gradient(90deg, #f59e0b 0%, #fb923c 100%);
-            color: #431407;
+            background: linear-gradient(100deg, #0d9a08 0%, #be6216 100%);
+            color: #FFFFFF;
             box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
         }
         .form-disabled {
@@ -396,7 +430,7 @@
                         </div>
                         <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
                             <p id="exportDescText" class="text-sm text-slate-400 max-w-2xl">Current process data including shipping dates, arrival dates, and dispatch history can be exported to Excel.</p>
-                            <button id="exportDashboardBtn" type="button" class="btn-3d btn-export rounded-3xl px-5 py-3 text-sm font-semibold">Export Live Ledger</button>
+                            <button id="exportDashboardBtn" type="button" class="btn-3d btn-export rounded-3xl px-5 py-3 text-sm font-semibold">Export Data</button>
                         </div>
                         <div class="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
                             <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
@@ -420,7 +454,7 @@
                             <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
                                 <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Hkamti Pipeline Dashboard</p>
                                 <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes Logged (Hkamti)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes (Hkamti)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
                                     <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Hkamti)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
                                     <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Hkamti)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
                                 </ul>
@@ -514,7 +548,7 @@
                             </label>
                             <div class="flex flex-wrap gap-3 items-center">
                                 <button id="inboundRegisterBtn" type="submit" class="btn-3d btn-save rounded-2xl px-5 py-3 text-sm font-semibold text-slate-950">Register Shipment</button>
-                                <button id="inboundReset" type="button" class="rounded-2xl border border-slate-700 px-5 py-3 text-sm font-semibold">Reset</button>
+                                <button id="inboundReset" type="button" class="rounded-2xl border btn-reset border-slate-700 px-5 py-3 text-sm font-semibold">Reset</button>
                                 <span id="inboundAccessNote" class="rounded-2xl border border-rose-500/15 bg-rose-500/10 px-4 py-3 text-sm text-rose-200 hidden">Guest users have read-only access. Login as Editor or Admin to modify records.</span>
                             </div>
                             <p id="inboundFeedback" class="text-sm font-semibold transition-all duration-300"></p>
@@ -597,7 +631,7 @@
                         </div>
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <input id="ledgerSearchInput" type="text" class="w-full max-w-xs rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-500" placeholder="Search by WayBill...(eg. 012345)" />
-                            <button id="exportLedgerBtn" type="button" class="btn-3d btn-export rounded-2xl px-4 py-3 text-sm font-semibold">Export Live Ledger</button>
+                            <button id="exportLedgerBtn" type="button" class="btn-3d btn-export rounded-2xl px-4 py-3 text-sm font-semibold">Export Data</button>
                         </div>
                     </div>
                     <div class="mt-6 table-wrapper">
@@ -633,7 +667,6 @@
             <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
                 <div class="flex items-center justify-between">
                     <h3 id="arrivalTitle" class="text-xl font-semibold">Update Arrival</h3>
-                    <button id="closeArrivalModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
@@ -653,7 +686,6 @@
             <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
                 <div class="flex items-center justify-between">
                     <h3 id="dispatchTitle" class="text-xl font-semibold">Dispatch Transit</h3>
-                    <button id="closeDispatchModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Close</button>
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
@@ -669,7 +701,7 @@
                         <input id="dispatchQuantityInput" type="number" min="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3" />
                     </label>
                     <div class="flex justify-end gap-3">
-                        <button id="cancelDispatch" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm">Cancel</button>
+                        <button id="cancelDispatch" class="rounded-2xl border border-slate-700 px-4 py-2 text-sm" id="closeDispatchModal" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Cancel</button>
                         <button id="confirmDispatchBtn" class="btn-3d btn-dispatch rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Dispatch</button>
                     </div>
                     <p id="dispatchFeedback" class="text-sm text-rose-300"></p>
@@ -682,7 +714,6 @@
             <div class="w-full max-w-lg rounded-[32px] glass shadow-deep p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
                     <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Ledger Entry</h3>
-                    <button id="ledgerEditCancel" class="rounded-2xl border border-slate-700 px-3 py-2 text-sm">Cancel</button>
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
@@ -737,6 +768,7 @@
                     </div>
 
                     <div class="flex justify-end gap-3 pt-2">
+                        <button id="ledgerEditCancel" class="rounded-2xl border btn-cancel border-slate-700 px-3 py-2 text-sm">Cancel</button>
                         <button id="ledgerEditSave" class="btn-3d btn-save rounded-2xl px-4 py-2 text-sm font-semibold text-slate-950">Save</button>
                     </div>
                     <p id="ledgerEditFeedback" class="text-sm text-rose-300"></p>
@@ -780,9 +812,9 @@
                 tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga & Nanyun (Outbound)",
                     ledger: "Data Ledger" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "Hkamti Project (Cargo Process Between Mandalay and Naga Projects)",
+                projectLabel: "Hkamti Project (Cargo Process Between Yangon, Mandalay, Homalin and Naga Projects)",
                 headerTitle: "Medical Logistics Command Center",
-                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Mandalay to Naga Projects)",
+                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Yangon, Mandalay, and Homalin to Naga Projects)",
                 authenticatedUserLabel: "Account Information",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "Viewer" },
                 authStatusNote: "Guest users see read-only content.",
@@ -794,13 +826,13 @@
                 statWarehouseBoxesLabel: "Total Boxes in Warehouse",
                 statDispatchedBoxesLabel: "Total Boxes Dispatched",
                 exportDescText: "Current process data including shipping dates, arrival dates, and dispatch history can be exported to Excel.",
-                exportDashboardBtn: "Export Live Ledger",
+                exportDashboardBtn: "Export Data",
                 pipelineVisualLabel: "Pipeline Visualization",
                 barWarehouseTitle: "Warehouse",
                 barPipelineTitle: "Pipeline",
                 barDispatchedTitle: "Dispatched",
                 nanyunDashboardLabel: "Hkamti Pipeline Dashboard",
-                nanyunTotalLoggedLabel: "Total Boxes Logged (Hkamti)",
+                nanyunTotalLoggedLabel: "Total Boxes (Hkamti)",
                 nanyunPipelineBoxesLabel: "Boxes in Pipeline (Hkamti)",
                 nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Hkamti)",
                 regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
@@ -881,9 +913,9 @@
                 tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
                     ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "ခန္တီး ပရောဂျက် (မန္တလေးနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
+                projectLabel: "ခန္တီး ပရောဂျက် (ရန်ကုန်၊ မန္တလေး၊ ဟုမ္မလင်းနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
                 headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ",
-                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (မန္တလေးမှ နာဂပရောဂျက်များသို့)",
+                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (ရန်ကုန်၊ မန္တလေး၊ ဟုမ္မလင်းတို့မှ နာဂပရောဂျက်များသို့)",
                 authenticatedUserLabel: "Account အချက်အလက်များ",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
                 authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
@@ -894,8 +926,8 @@
                 statPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ",
                 statWarehouseBoxesLabel: "ဂိုဒေါင်တွင် သိမ်းဆည်းထားသော ဂျက်ဖါစုစုပေါင်း",
                 statDispatchedBoxesLabel: "ပို့ဆောင်ပြီး ဂျက်ဖါစုစုပေါင်း",
-                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက် ((From MDL)၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
-                exportDashboardBtn: "Excel မှတ်တမ်းထုတ်ရန်",
+                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက်၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
+                exportDashboardBtn: "Export Data",
                 pipelineVisualLabel: "လမ်းကြောင်း အမြင်ချင်း",
                 barWarehouseTitle: "ဂိုဒေါင်",
                 barPipelineTitle: "လမ်းကြောင်း",
