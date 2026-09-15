@@ -1035,14 +1035,12 @@
             arrivalInput: document.getElementById('arrivalInput'),
             confirmArrival: document.getElementById('confirmArrival'),
             cancelArrival: document.getElementById('cancelArrival'),
-            closeArrivalModal: document.getElementById('closeArrivalModal'),
             arrivalFeedback: document.getElementById('arrivalFeedback'),
             dispatchModal: document.getElementById('dispatchModal'),
             dispatchDestination: document.getElementById('dispatchDestination'),
             dispatchQuantityInput: document.getElementById('dispatchQuantityInput'),
             confirmDispatchBtn: document.getElementById('confirmDispatchBtn'),
             cancelDispatch: document.getElementById('cancelDispatch'),
-            closeDispatchModal: document.getElementById('closeDispatchModal'),
             dispatchFeedback: document.getElementById('dispatchFeedback'),
             dispatchEditContainer: document.getElementById('dispatchEditContainer'),
             ledgerEditModal: document.getElementById('ledgerEditModal'),
@@ -1319,9 +1317,6 @@
             // Fixed Double Cancel Buttons
             const cancelBtns = ['cancelArrival', 'cancelDispatch', 'ledgerEditCancel'];
             cancelBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang === 'en' ? 'Cancel' : 'မလုပ်တော့ပါ'; });
-            
-            const closeBtns = ['closeArrivalModal', 'closeDispatchModal'];
-            closeBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang === 'en' ? 'Close' : 'ပိတ်ရန်'; });
 
             const confirmBtns = ['confirmArrival', 'confirmDispatchBtn', 'ledgerEditSave'];
             confirmBtns.forEach(id => {
@@ -1818,10 +1813,8 @@
             ui.inboundForm.addEventListener('submit', handleInboundSubmit);
             ui.inboundReset.addEventListener('click', clearInboundForm);
             ui.cancelArrival.addEventListener('click', closeArrivalModal);
-            ui.closeArrivalModal.addEventListener('click', closeArrivalModal);
             ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
             ui.cancelDispatch.addEventListener('click', closeDispatchModal);
-            ui.closeDispatchModal.addEventListener('click', closeDispatchModal);
             ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
             ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
             ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
