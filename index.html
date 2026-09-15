@@ -662,7 +662,6 @@
         </main>
 
         <!-- MODALS -->
-        <!-- ARRIVAL MODAL (CLOSE BUTTON REMOVED) -->
         <div id="arrivalModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
             <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
                 <div class="flex items-center justify-between">
@@ -682,7 +681,6 @@
             </div>
         </div>
 
-        <!-- DISPATCH MODAL (CLOSE BUTTON REMOVED) -->
         <div id="dispatchModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
             <div class="w-full max-w-md rounded-[32px] glass shadow-deep p-6">
                 <div class="flex items-center justify-between">
@@ -1037,12 +1035,14 @@
             arrivalInput: document.getElementById('arrivalInput'),
             confirmArrival: document.getElementById('confirmArrival'),
             cancelArrival: document.getElementById('cancelArrival'),
+            closeArrivalModal: document.getElementById('closeArrivalModal'),
             arrivalFeedback: document.getElementById('arrivalFeedback'),
             dispatchModal: document.getElementById('dispatchModal'),
             dispatchDestination: document.getElementById('dispatchDestination'),
             dispatchQuantityInput: document.getElementById('dispatchQuantityInput'),
             confirmDispatchBtn: document.getElementById('confirmDispatchBtn'),
             cancelDispatch: document.getElementById('cancelDispatch'),
+            closeDispatchModal: document.getElementById('closeDispatchModal'),
             dispatchFeedback: document.getElementById('dispatchFeedback'),
             dispatchEditContainer: document.getElementById('dispatchEditContainer'),
             ledgerEditModal: document.getElementById('ledgerEditModal'),
@@ -1320,6 +1320,9 @@
             const cancelBtns = ['cancelArrival', 'cancelDispatch', 'ledgerEditCancel'];
             cancelBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang === 'en' ? 'Cancel' : 'မလုပ်တော့ပါ'; });
             
+            const closeBtns = ['closeArrivalModal', 'closeDispatchModal'];
+            closeBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang === 'en' ? 'Close' : 'ပိတ်ရန်'; });
+
             const confirmBtns = ['confirmArrival', 'confirmDispatchBtn', 'ledgerEditSave'];
             confirmBtns.forEach(id => {
                 const el = document.getElementById(id);
@@ -1769,65 +1772,75 @@
                 if (!navPlaceholder) {
                     navPlaceholder = document.createElement('div');
                     navPlaceholder.id = 'navPlaceholder';
-                    navPlaceholder.style.height = nav.offsetHeight + 'px';
-                    navPlaceholder.style.marginBottom = window.getComputedStyle(nav).marginBottom;
+                    navPlaceholder.style.display = 'none';
+                    nav.parentNode.insertBefore(navPlaceholder, nav);
                 }
 
-                if (scrolled > 50) {
+                if (scrolled > 120) {
                     if (!header.classList.contains('scrolled-header')) {
+                        navPlaceholder.style.height = nav.offsetHeight + 'px';
+                        const navStyle = window.getComputedStyle(nav);
+                        navPlaceholder.style.marginTop = navStyle.marginTop;
+                        navPlaceholder.style.marginBottom = navStyle.marginBottom;
+                        navPlaceholder.style.display = 'block';
+
                         header.classList.add('scrolled-header');
-                        nav.parentNode.insertBefore(navPlaceholder, nav);
-                        target.appendChild(nav);
                         nav.classList.add('scrolled-nav');
+                        
                         target.style.display = 'flex';
+                        
+                        if (nav.parentNode !== target) {
+                            target.appendChild(nav);
+                        }
                         updateNavigationLabels();
                     }
-                } else {
+                } else if (scrolled < 30) {
                     if (header.classList.contains('scrolled-header')) {
                         header.classList.remove('scrolled-header');
-                        if (navPlaceholder.parentNode) {
-                            navPlaceholder.parentNode.insertBefore(nav, navPlaceholder);
-                            navPlaceholder.parentNode.removeChild(navPlaceholder);
-                        }
                         nav.classList.remove('scrolled-nav');
+                        
                         target.style.display = 'none';
+                        
+                        if (nav.parentNode === target) {
+                            navPlaceholder.parentNode.insertBefore(nav, navPlaceholder);
+                        }
+                        navPlaceholder.style.display = 'none';
                         updateNavigationLabels();
                     }
                 }
             }, 10);
         }
 
-        window.addEventListener('scroll', handleScroll);
-
-        // ===== EVENT LISTENERS =====
-        if (ui.langToggleBtn) ui.langToggleBtn.addEventListener('click', () => {
-            currentLang = currentLang === 'en' ? 'mm' : 'en';
+        // ===== INIT =====
+        window.addEventListener('DOMContentLoaded', () => {
             applyTranslations();
-            renderAllTables();
+            ui.tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+            ui.inboundForm.addEventListener('submit', handleInboundSubmit);
+            ui.inboundReset.addEventListener('click', clearInboundForm);
+            ui.cancelArrival.addEventListener('click', closeArrivalModal);
+            ui.closeArrivalModal.addEventListener('click', closeArrivalModal);
+            ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
+            ui.cancelDispatch.addEventListener('click', closeDispatchModal);
+            ui.closeDispatchModal.addEventListener('click', closeDispatchModal);
+            ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
+            ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
+            ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
+            ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
+            ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
+            ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
+            ui.langToggleBtn.addEventListener('click', () => { currentLang = currentLang === 'en' ? 'mm' : 'en'; applyTranslations(); renderAllTables(); });
+            ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
+            ui.logoutBtn.addEventListener('click', handleLogout);
+            
+            // Adjust Ledger target selection behavior dynamically
+            ui.ledgerEditTarget.addEventListener('change', (e) => {
+                if (ui.dispatchEditContainer) {
+                    ui.dispatchEditContainer.style.display = (e.target.value === 'Nanyun') ? 'none' : 'grid';
+                }
+            });
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
         });
-
-        ui.tabs.forEach(btn => btn.addEventListener('click', (e) => switchTab(e.target.dataset.tab)));
-        if (ui.authGoogleBtn) ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
-        if (ui.logoutBtn) ui.logoutBtn.addEventListener('click', handleLogout);
-        if (ui.inboundForm) ui.inboundForm.addEventListener('submit', handleInboundSubmit);
-        if (ui.inboundReset) ui.inboundReset.addEventListener('click', clearInboundForm);
-
-        if (ui.cancelArrival) ui.cancelArrival.addEventListener('click', closeArrivalModal);
-        if (ui.confirmArrival) ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
-
-        if (ui.cancelDispatch) ui.cancelDispatch.addEventListener('click', closeDispatchModal);
-        if (ui.confirmDispatchBtn) ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
-
-        if (ui.ledgerEditCancel) ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
-        if (ui.ledgerEditSave) ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
-        if (ui.ledgerSearchInput) ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
-
-        if (ui.exportDashboardBtn) ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
-        if (ui.exportLedgerBtn) ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
-
-        // Init
-        applyTranslations();
-        switchTab('dashboard');
     </script>
 </body>
 </html>
