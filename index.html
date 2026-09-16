@@ -354,7 +354,7 @@
             <!-- Left: Title -->
             <div class="space-y-1 flex-shrink-0 min-w-0">
                 <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">HKamti Project</p>
-                <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Logistics Command Center - Hkamti</h1>
+                <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Action Myanmar (Cargo Dashboard) - Hkamti</h1>
                 <p id="headerDesc" class="max-w-3xl text-sm leading-6 text-slate-300">A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.</p>
             </div>
 
@@ -392,7 +392,7 @@
         <nav id="mainNavigation" class="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <button type="button" data-tab="dashboard" class="tab-btn rounded-3xl bg-slate-900/90 px-4 py-3 text-left text-sm font-semibold tab-active">Dashboard Overview</button>
             <button type="button" data-tab="inbound" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Intake (Inbound)</button>
-            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga & Nanyun (Outbound)</button>
+            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Dispatch (Outbound)</button>
             <button type="button" data-tab="ledger" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Data Ledger</button>
         </nav>
 
@@ -531,37 +531,36 @@
                                 <label class="block text-sm text-slate-200">
                                     <span id="shipmentFromLabel">Shipment From</span>
                                     <select id="shipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                        <option>Layshi</option>
+                                        <option>Nanyun</option>
+                                        <option>Hkamti</option>
+                                        <option>Lahe</option>
+                                        <option>Homalin</option>
+                                        <option>Monywa</option>
                                         <option>Yangon</option>
                                         <option>Mandalay</option>
                                         <option>Myitkyina</option>
                                         <option>Tanai</option>
                                         <option>Hpakant</option>
-                                        <option>Puta-O</option>
-                                        <option>Hkamti</option>
-                                        <option>Layshi</option>
-                                        <option>Lahe</option>
-                                        <option>Homalin</option>
-                                        <option>Monywa</option>
-                                        <option>Nanyun</option>
+                                        <option>Puta-O</option>  
                                     </select>
                                 </label>
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTargetLabel">Target Project Allocation</span>
                                     <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
-                                        <option>Yangon</option>
-                                        <option>Mandalay</option>
-                                        <option>Myitkyina</option>
-                                        <option>Tanai</option>
-                                        <option>Hpakant</option>
-                                        <option>Puta-O</option>
                                         <option>Hkamti</option>
                                         <option>Layshi</option>
                                         <option>Lahe</option>
+                                        <option>Nanyun</option>
+                                        <option>Naga</option>
+                                        <option>Myitkyina</option>
+                                        <option>Yangon</option>
+                                        <option>Mandalay</option>
+                                        <option>Tanai</option>
+                                        <option>Hpakant</option>
+                                        <option>Puta-O</option>
                                         <option>Homalin</option>
                                         <option>Monywa</option>
-                                        <option>Naga</option>
-                                        <option>Nanyun</option>
-                                        <option>Nayun</option>
                                     </select>
                                 </label>
                             </div>
@@ -723,20 +722,17 @@
                     <label class="block text-sm text-slate-200">
                         <span id="dispatchDestinationLabel">Destination Location</span>
                         <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                            <option>Lahe</option>
+                            <option>Nanyun</option>
+                            <option>Layshi</option>
+                            <option>Myitkyina</option>
                             <option>Yangon</option>
                             <option>Mandalay</option>
-                            <option>Myitkyina</option>
+                            <option>Homalin</option>
+                            <option>Monywa</option>
                             <option>Tanai</option>
                             <option>Hpakant</option>
                             <option>Puta-O</option>
-                            <option>Hkamti</option>
-                            <option>Layshi</option>
-                            <option>Lahe</option>
-                            <option>Homalin</option>
-                            <option>Monywa</option>
-                            <option>Naga</option>
-                            <option>Nanyun</option>
-                            <option>Nayun</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -767,37 +763,36 @@
                         <label class="block text-sm text-slate-200">
                             <span id="ledgerEditShipmentFromLabel">Shipment From</span>
                             <select id="ledgerEditShipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                <option>Layshi</option>
+                                <option>Nanyun</option>
+                                <option>Hkamti</option>
+                                <option>Lahe</option>
+                                <option>Homalin</option>
+                                <option>Monywa</option>
                                 <option>Yangon</option>
                                 <option>Mandalay</option>
                                 <option>Myitkyina</option>
                                 <option>Tanai</option>
                                 <option>Hpakant</option>
-                                <option>Puta-O</option>
-                                <option>Hkamti</option>
-                                <option>Layshi</option>
-                                <option>Lahe</option>
-                                <option>Homalin</option>
-                                <option>Monywa</option>
-                                <option>Nanyun</option>
+                                <option>Puta-O</option>  
                             </select>
                         </label>
                         <label class="block text-sm text-slate-200">
                             <span id="ledgerEditTargetLabel">Target Project</span>
                             <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                                <option>Yangon</option>
-                                <option>Mandalay</option>
-                                <option>Myitkyina</option>
-                                <option>Tanai</option>
-                                <option>Hpakant</option>
-                                <option>Puta-O</option>
                                 <option>Hkamti</option>
                                 <option>Layshi</option>
                                 <option>Lahe</option>
+                                <option>Nanyun</option>
+                                <option>Naga</option>
+                                <option>Myitkyina</option>
+                                <option>Yangon</option>
+                                <option>Mandalay</option>
+                                <option>Tanai</option>
+                                <option>Hpakant</option>
+                                <option>Puta-O</option>
                                 <option>Homalin</option>
                                 <option>Monywa</option>
-                                <option>Naga</option>
-                                <option>Nanyun</option>
-                                <option>Nayun</option>
                             </select>
                         </label>
                     </div>
@@ -881,12 +876,12 @@
         // ===== TRANSLATIONS =====
         const translations = {
             en: {
-                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga & Nanyun (Outbound)",
+                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Cargo Dispatch (Outbound)",
                     ledger: "Data Ledger" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "Hkamti Project (Cargo Process Between Yangon, Mandalay, Homalin and Naga Projects)",
-                headerTitle: "Medical Logistics Command Center - Hkamti",
-                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.(From Yangon, Mandalay, and Homalin to Naga Projects)",
+                projectLabel: "Hkamti Project (Medical Action Myanmar)",
+                headerTitle: "Medical Action Myanmar (Cargo Dashboard) - Hkamti",
+                headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.",
                 authenticatedUserLabel: "Account Information",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "Viewer" },
                 authStatusNote: "Guest users see read-only content.",
@@ -937,7 +932,7 @@
                 thStatus: "Status",
                 thAction: "Action",
                 transitSectionLabel: "Outbound",
-                transitHeading: "Transit to Naga & Nanyun (Outbound)",
+                transitHeading: "Cargo Dispatch (Outbound)",
                 dispatchFromWarehouseLabel: "Transit from Hkamti Warehouse",
                 thTransitWaybill: "WayBill",
                 thTransitShipmentFrom: "Shipment From",
@@ -987,12 +982,12 @@
                 noTransitRequired: "Not required"
             },
             mm: {
-                tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
+                tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "ကုန်ပစ္စည်းလွှဲပို့ရန် (Outbound)",
                     ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "ခန္တီး ပရောဂျက် (ရန်ကုန်၊ မန္တလေး၊ ဟုမ္မလင်းနှင့် နာဂပရောဂျက်များအကြား ကုန်ပစ္စည်းလုပ်ငန်းစဉ်)",
-                headerTitle: "ဆေးဘက်ဆိုင်ရာ ထောက်ပံ့ပို့ဆောင်ရေး ကွပ်ကဲမှုစင်တာ - ခန္တီး",
-                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ် (ရန်ကုန်၊ မန္တလေး၊ ဟုမ္မလင်းတို့မှ နာဂပရောဂျက်များသို့)",
+                projectLabel: "ခန္တီး ပရောဂျက် (မက်ဒီကယ်အက်ရှင်မြန်မာ)",
+                headerTitle: "ဆမက်ဒီကယ်အက်ရှင်မြန်မာ (ကုန်စည်စီမံခန့်ခွဲမှု ဒက်ရှ်ဘုတ်) - ခန္တီး",
+                headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ်",
                 authenticatedUserLabel: "Account အချက်အလက်များ",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
                 authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
@@ -1038,19 +1033,19 @@
                 thShipped: "ပေးပို့ပြီး",
                 thArrived: "ရောက်ရှိပြီး",
                 thPipeline: "လမ်းကြောင်း",
-                thShipDate: "ပို့ဆောင်ရက် ((From MDL)",
+                thShipDate: "ပို့ဆောင်သည့်ရက်",
                 thRcvDate: "ရရှိရက်",
                 thStatus: "အခြေအနေ",
                 thAction: "လုပ်ဆောင်ချက်",
                 transitSectionLabel: "အထွက်",
-                transitHeading: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
+                transitHeading: "ကုန်ပစ္စည်းလွှဲပို့ရန် (Outbound)",
                 dispatchFromWarehouseLabel: "ခန္တီးဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
                 thTransitWaybill: "WayBill",
-                thTransitShipmentFrom: "စတင် ပေးပို့သည့် နေရာ",
+                thTransitShipmentFrom: "စတင်ပေးပို့သည့်နေရာ",
                 thTransitProject: "ပရောဂျက်",
                 thTransitWarehouse: "ဂိုဒေါင်ထဲရှိ",
                 thTransitDesc: "အသေးစိတ်ဖော်ပြချက်",
-                thTransitShipDate: "ပို့ဆောင်ရက် (From MDL)",
+                thTransitShipDate: "ပို့ဆောင်သည့်ရက်",
                 thTransitRcvDate: "ရရှိရက်",
                 thTransitLastLog: "နောက်ဆုံး ပို့ဆောင်ခြင်း",
                 thTransitAction: "လုပ်ဆောင်ချက်",
