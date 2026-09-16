@@ -529,14 +529,40 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="block text-sm text-slate-200">
-                                    <span id="inboundTargetLabel">Target Project Allocation</span>
-                                    <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                    <span id="shipmentFromLabel">Shipment From</span>
+                                    <select id="shipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                        <option>Yangon</option>
+                                        <option>Mandalay</option>
+                                        <option>Myitkyina</option>
+                                        <option>Tanai</option>
+                                        <option>Hpakant</option>
+                                        <option>Puta-O</option>
                                         <option>Hkamti</option>
-                                        <option>Lahe</option>
                                         <option>Layshi</option>
-                                        <option>Nanyun</option>
+                                        <option>Lahe</option>
+                                        <option>Homalin</option>
+                                        <option>Monywa</option>
                                     </select>
                                 </label>
+                                <label class="block text-sm text-slate-200">
+                                    <span id="inboundTargetLabel">Target Project Allocation</span>
+                                    <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                        <option>Yangon</option>
+                                        <option>Mandalay</option>
+                                        <option>Myitkyina</option>
+                                        <option>Tanai</option>
+                                        <option>Hpakant</option>
+                                        <option>Puta-O</option>
+                                        <option>Hkamti</option>
+                                        <option>Layshi</option>
+                                        <option>Lahe</option>
+                                        <option>Homalin</option>
+                                        <option>Monywa</option>
+                                        <option>Naga</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
                                     <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
@@ -573,6 +599,7 @@
                             <thead class="bg-slate-900 text-slate-400">
                                 <tr>
                                     <th id="thWaybill" class="px-3 py-3">WayBill</th>
+                                    <th id="thShipmentFrom" class="px-3 py-3">Shipment From</th>
                                     <th id="thProject" class="px-3 py-3">Project</th>
                                     <th id="thShipped" class="px-3 py-3">Shipped</th>
                                     <th id="thArrived" class="px-3 py-3">Arrived</th>
@@ -605,6 +632,7 @@
                             <thead class="bg-slate-900 text-slate-400">
                                 <tr>
                                     <th id="thTransitWaybill" class="px-3 py-3">WayBill</th>
+                                    <th id="thTransitShipmentFrom" class="px-3 py-3">Shipment From</th>
                                     <th id="thTransitProject" class="px-3 py-3">Project</th>
                                     <th id="thTransitWarehouse" class="px-3 py-3">In Warehouse</th>
                                     <th id="thTransitDesc" class="px-3 py-3">Description</th>
@@ -638,19 +666,20 @@
                         <table class="data-table text-left text-sm">
                             <thead class="bg-slate-900 text-slate-400">
                                 <tr>
-                                    <th class="px-3 py-3">WayBill</th>
-                                    <th class="px-3 py-3">Project</th>
-                                    <th class="px-3 py-3">Description</th>
-                                    <th class="px-3 py-3">Shipped</th>
-                                    <th class="px-3 py-3">Arrived</th>
-                                    <th class="px-3 py-3">Ship Date</th>
-                                    <th class="px-3 py-3">Received Date</th>
-                                    <th class="px-3 py-3">Warehouse</th>
-                                    <th class="px-3 py-3">Pipeline</th>
-                                    <th class="px-3 py-3">Dispatched</th>
-                                    <th class="px-3 py-3">Transit Date</th>
-                                    <th class="px-3 py-3">Status</th>
-                                    <th class="px-3 py-3">Actions</th>
+                                    <th id="thLedgerWaybill" class="px-3 py-3">WayBill</th>
+                                    <th id="thLedgerShipmentFrom" class="px-3 py-3">Shipment From</th>
+                                    <th id="thLedgerProject" class="px-3 py-3">Project</th>
+                                    <th id="thLedgerDesc" class="px-3 py-3">Description</th>
+                                    <th id="thLedgerShipped" class="px-3 py-3">Shipped</th>
+                                    <th id="thLedgerArrived" class="px-3 py-3">Arrived</th>
+                                    <th id="thLedgerShipDate" class="px-3 py-3">Ship Date</th>
+                                    <th id="thLedgerRcvDate" class="px-3 py-3">Received Date</th>
+                                    <th id="thLedgerWarehouse" class="px-3 py-3">Warehouse</th>
+                                    <th id="thLedgerPipeline" class="px-3 py-3">Pipeline</th>
+                                    <th id="thLedgerDispatched" class="px-3 py-3">Dispatched</th>
+                                    <th id="thLedgerTransitDate" class="px-3 py-3">Transit Date</th>
+                                    <th id="thLedgerStatus" class="px-3 py-3">Status</th>
+                                    <th id="thLedgerActions" class="px-3 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ledgerTableBody" class="bg-slate-950/60"></tbody>
@@ -691,9 +720,18 @@
                     <label class="block text-sm text-slate-200">
                         <span id="dispatchDestinationLabel">Destination Location</span>
                         <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Lahe</option>
+                            <option>Yangon</option>
+                            <option>Mandalay</option>
+                            <option>Myitkyina</option>
+                            <option>Tanai</option>
+                            <option>Hpakant</option>
+                            <option>Puta-O</option>
+                            <option>Hkamti</option>
                             <option>Layshi</option>
-                            <option>Nanyun</option>
+                            <option>Lahe</option>
+                            <option>Homalin</option>
+                            <option>Monywa</option>
+                            <option>Naga</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -720,15 +758,41 @@
                         <span id="ledgerEditWaybillLabel">WayBill Number</span>
                         <input id="ledgerEditWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" />
                     </label>
-                    <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditTargetLabel">Target Project</span>
-                        <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Hkamti</option>
-                            <option>Lahe</option>
-                            <option>Layshi</option>
-                            <option>Nanyun</option>
-                        </select>
-                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditShipmentFromLabel">Shipment From</span>
+                            <select id="ledgerEditShipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                <option>Yangon</option>
+                                <option>Mandalay</option>
+                                <option>Myitkyina</option>
+                                <option>Tanai</option>
+                                <option>Hpakant</option>
+                                <option>Puta-O</option>
+                                <option>Hkamti</option>
+                                <option>Layshi</option>
+                                <option>Lahe</option>
+                                <option>Homalin</option>
+                                <option>Monywa</option>
+                            </select>
+                        </label>
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditTargetLabel">Target Project</span>
+                            <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                <option>Yangon</option>
+                                <option>Mandalay</option>
+                                <option>Myitkyina</option>
+                                <option>Tanai</option>
+                                <option>Hpakant</option>
+                                <option>Puta-O</option>
+                                <option>Hkamti</option>
+                                <option>Layshi</option>
+                                <option>Lahe</option>
+                                <option>Homalin</option>
+                                <option>Monywa</option>
+                                <option>Naga</option>
+                            </select>
+                        </label>
+                    </div>
                     <label class="block text-sm text-slate-200">
                         <span id="ledgerEditManifestLabel">Description</span>
                         <textarea id="ledgerEditManifest" rows="2" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500"></textarea>
@@ -843,6 +907,7 @@
                 inboundSectionLabel: "Inbound",
                 inboundHeading: "Cargo Intake (Inbound)",
                 originLabel: "Cargo Process",
+                shipmentFromLabel: "Shipment From",
                 inboundWaybillLabel: "WayBill Number",
                 shipmentDateLabel: "Shipment Date",
                 inboundTargetLabel: "Target Project Allocation",
@@ -854,6 +919,7 @@
                 pipelineSectionLabel: "Pipeline List",
                 pendingArrivalsTitle: "Pending Arrivals",
                 thWaybill: "WayBill",
+                thShipmentFrom: "Shipment From",
                 thProject: "Project",
                 thShipped: "Shipped",
                 thArrived: "Arrived",
@@ -866,6 +932,7 @@
                 transitHeading: "Transit to Naga & Nanyun (Outbound)",
                 dispatchFromWarehouseLabel: "Transit from Hkamti Warehouse",
                 thTransitWaybill: "WayBill",
+                thTransitShipmentFrom: "Shipment From",
                 thTransitProject: "Project",
                 thTransitWarehouse: "In Warehouse",
                 thTransitDesc: "Description",
@@ -883,6 +950,7 @@
                 ledgerEditTitle: "Edit Ledger Entry",
                 ledgerEditWaybillLabel: "WayBill Number",
                 ledgerEditManifestLabel: "Description",
+                ledgerEditShipmentFromLabel: "Shipment From",
                 ledgerEditTargetLabel: "Target Project",
                 ledgerEditTotalLabel: "Shipped Box",
                 ledgerEditShipmentDateLabel: "Shipped Date",
@@ -944,6 +1012,7 @@
                 inboundSectionLabel: "အဝင်",
                 inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
                 originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
+                shipmentFromLabel: "စတင် ပေးပို့သည့် နေရာ",
                 inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
                 shipmentDateLabel: "ပို့ဆောင်ရက် ((From MDL)",
                 inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
@@ -955,6 +1024,7 @@
                 pipelineSectionLabel: "လမ်းကြောင်းစာရင်း",
                 pendingArrivalsTitle: "ရောက်ရှိရန် စောင့်ဆိုင်းနေသော ပစ္စည်းများ",
                 thWaybill: "WayBill",
+                thShipmentFrom: "စတင် ပေးပို့သည့် နေရာ",
                 thProject: "ပရောဂျက်",
                 thShipped: "ပေးပို့ပြီး",
                 thArrived: "ရောက်ရှိပြီး",
@@ -967,6 +1037,7 @@
                 transitHeading: "နာဂနှင့် နန်းယွန်းသို့ ပို့ဆောင်ရန် (Outbound)",
                 dispatchFromWarehouseLabel: "ခန္တီးဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
                 thTransitWaybill: "WayBill",
+                thTransitShipmentFrom: "စတင် ပေးပို့သည့် နေရာ",
                 thTransitProject: "ပရောဂျက်",
                 thTransitWarehouse: "ဂိုဒေါင်ထဲရှိ",
                 thTransitDesc: "အသေးစိတ်ဖော်ပြချက်",
@@ -984,6 +1055,7 @@
                 ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
                 ledgerEditWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
                 ledgerEditManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
+                ledgerEditShipmentFromLabel: "စတင် ပေးပို့သည့် နေရာ",
                 ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
                 ledgerEditTotalLabel: "Shipped Box (ပေးပို့သည့်ဂျက်ဖါ)",
                 ledgerEditShipmentDateLabel: "Shipped Date (ပေးပို့သည့်ရက်)",
@@ -1018,6 +1090,7 @@
             panels: document.querySelectorAll('main .tab-panel'),
             inboundForm: document.getElementById('inboundForm'),
             inboundWaybill: document.getElementById('inboundWaybill'),
+            shipmentFrom: document.getElementById('shipmentFrom'),
             inboundTarget: document.getElementById('inboundTarget'),
             inboundTotalBoxes: document.getElementById('inboundTotalBoxes'),
             inboundManifest: document.getElementById('inboundManifest'),
@@ -1047,6 +1120,7 @@
             ledgerEditModal: document.getElementById('ledgerEditModal'),
             ledgerEditWaybill: document.getElementById('ledgerEditWaybill'),
             ledgerEditManifest: document.getElementById('ledgerEditManifest'),
+            ledgerEditShipmentFrom: document.getElementById('ledgerEditShipmentFrom'),
             ledgerEditTarget: document.getElementById('ledgerEditTarget'),
             ledgerEditTotal: document.getElementById('ledgerEditTotal'),
             ledgerEditShipmentDate: document.getElementById('ledgerEditShipmentDate'),
@@ -1169,7 +1243,7 @@
                 `Signed in as ${currentDisplayName} (${translations[currentLang].activeRoleBadge[currentRole] || currentRole})` :
                 translations[currentLang].authStatusNote;
             const readOnly = perms.isViewer;
-            ['inboundWaybill', 'inboundTarget', 'inboundTotalBoxes', 'inboundManifest', 'shipmentDate'].forEach(id => {
+            ['inboundWaybill', 'shipmentFrom', 'inboundTarget', 'inboundTotalBoxes', 'inboundManifest', 'shipmentDate'].forEach(id => {
                 const field = document.getElementById(id);
                 if (field) field.disabled = readOnly;
             });
@@ -1238,6 +1312,7 @@
             set('inboundSectionLabel', dict.inboundSectionLabel);
             set('inboundHeading', dict.inboundHeading);
             set('originLabel', dict.originLabel);
+            set('shipmentFromLabel', dict.shipmentFromLabel);
             set('inboundWaybillLabel', dict.inboundWaybillLabel);
             set('shipmentDateLabel', dict.shipmentDateLabel);
             set('inboundTargetLabel', dict.inboundTargetLabel);
@@ -1249,6 +1324,7 @@
             set('pipelineSectionLabel', dict.pipelineSectionLabel);
             set('pendingArrivalsTitle', dict.pendingArrivalsTitle);
             set('thWaybill', dict.thWaybill);
+            set('thShipmentFrom', dict.thShipmentFrom);
             set('thProject', dict.thProject);
             set('thShipped', dict.thShipped);
             set('thArrived', dict.thArrived);
@@ -1261,6 +1337,7 @@
             set('transitHeading', dict.transitHeading);
             set('dispatchFromWarehouseLabel', dict.dispatchFromWarehouseLabel);
             set('thTransitWaybill', dict.thTransitWaybill);
+            set('thTransitShipmentFrom', dict.thTransitShipmentFrom);
             set('thTransitProject', dict.thTransitProject);
             set('thTransitWarehouse', dict.thTransitWarehouse);
             set('thTransitDesc', dict.thTransitDesc);
@@ -1270,6 +1347,20 @@
             set('thTransitAction', dict.thTransitAction);
             set('ledgerSectionLabel', dict.ledgerSectionLabel);
             set('ledgerHeading', dict.ledgerHeading);
+            set('thLedgerWaybill', dict.thWaybill);
+            set('thLedgerShipmentFrom', dict.thLedgerShipmentFrom);
+            set('thLedgerProject', dict.thProject);
+            set('thLedgerDesc', dict.inboundManifestLabel);
+            set('thLedgerShipped', dict.thShipped);
+            set('thLedgerArrived', dict.thArrived);
+            set('thLedgerShipDate', dict.thShipDate);
+            set('thLedgerRcvDate', dict.thRcvDate);
+            set('thLedgerWarehouse', dict.barWarehouseTitle);
+            set('thLedgerPipeline', dict.thPipeline);
+            set('thLedgerDispatched', dict.barDispatchedTitle);
+            set('thLedgerTransitDate', dict.thTransitLastLog);
+            set('thLedgerStatus', dict.thStatus);
+            set('thLedgerActions', dict.thAction);
             set('arrivalTitle', dict.arrivalTitle);
             set('arrivalBoxesLabel', dict.arrivalBoxesLabel);
             set('dispatchTitle', dict.dispatchTitle);
@@ -1278,6 +1369,7 @@
             set('ledgerEditTitle', dict.ledgerEditTitle);
             set('ledgerEditWaybillLabel', dict.ledgerEditWaybillLabel);
             set('ledgerEditManifestLabel', dict.ledgerEditManifestLabel);
+            set('ledgerEditShipmentFromLabel', dict.ledgerEditShipmentFromLabel);
             set('ledgerEditTargetLabel', dict.ledgerEditTargetLabel);
             set('ledgerEditTotalLabel', dict.ledgerEditTotalLabel);
             set('ledgerEditShipmentDateLabel', dict.ledgerEditShipmentDateLabel);
@@ -1397,6 +1489,7 @@
                     `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
                 return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
               <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
+              <td class="px-3 py-3 text-slate-300">${x.shipmentFrom || '-'}</td>
               <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
               <td class="px-3 py-3 text-slate-300">${x.totalShippedBoxes}</td>
               <td class="px-3 py-3 text-emerald-300">${x.arrivedBoxes}</td>
@@ -1421,6 +1514,7 @@
                     `<span class="disabled-action">${translations[currentLang].readOnlyAction}</span>`;
                 return `<tr class="border-b border-slate-800 hover:bg-slate-900/40">
               <td class="px-3 py-3 font-semibold text-emerald-400">${x.waybill}</td>
+              <td class="px-3 py-3 text-slate-300">${x.shipmentFrom || '-'}</td>
               <td class="px-3 py-3 text-slate-300">${x.targetProject}</td>
               <td class="px-3 py-3 font-bold text-emerald-300">${x.warehouseBoxes}</td>
               <td class="px-3 py-3 text-slate-400 truncate max-w-[150px]">${x.manifestSummary}</td>
@@ -1443,6 +1537,7 @@
                     `<span class="disabled-action">${translations[currentLang].noPermissionForAction}</span>`;
                 return `<tr class="border-b border-slate-800 text-xs hover:bg-slate-900/40">
               <td class="px-3 py-2 font-mono text-emerald-400 font-bold">${x.waybill}</td>
+              <td class="px-3 py-2 text-slate-300">${x.shipmentFrom || '-'}</td>
               <td class="px-3 py-2 text-slate-300">${x.targetProject}</td>
               <td class="px-3 py-2 text-slate-400 truncate max-w-[120px]">${x.manifestSummary}</td>
               <td class="px-3 py-2 font-bold">${x.totalShippedBoxes}</td>
