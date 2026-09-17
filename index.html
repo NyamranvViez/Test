@@ -382,7 +382,7 @@
                             </button>
                             <button id="logoutBtn" type="button" class="btn-3d rounded-2xl bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-200 hover:bg-rose-500/15 hidden w-full">Log Out</button>
                         </div>
-                        <button id="langToggleBtn" type="button" class="btn-3d btn-lang rounded-2xl bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-slate-100 w-full text-center">မြန်မာဘာသာ</button>
+                        <button id="langToggleBtn" type="button" class="btn-3d btn-lang tab-btn tab-active rounded-2xl bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-slate-100 w-full text-center">မြန်မာဘာသာ</button>
                     </div>
                 </div>
             </div>
@@ -542,7 +542,9 @@
                                         <option>Myitkyina</option>
                                         <option>Tanai</option>
                                         <option>Hpakant</option>
-                                        <option>Puta-O</option>  
+                                        <option>Puta-O</option>
+                                        <option>Kale</option>
+                                        <option>Other</option>
                                     </select>
                                 </label>
                                 <label class="block text-sm text-slate-200">
@@ -561,6 +563,7 @@
                                         <option>Puta-O</option>
                                         <option>Homalin</option>
                                         <option>Monywa</option>
+                                        <option>Kale</option>
                                     </select>
                                 </label>
                             </div>
@@ -733,6 +736,7 @@
                             <option>Tanai</option>
                             <option>Hpakant</option>
                             <option>Puta-O</option>
+                            <option>Kale</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -752,7 +756,7 @@
         <div id="ledgerEditModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
             <div class="w-full max-w-lg rounded-[32px] glass shadow-deep p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
-                    <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Ledger Entry</h3>
+                    <h3 id="ledgerEditTitle" class="text-xl font-semibold">Edit Transaction</h3>
                 </div>
                 <div class="mt-5 space-y-4">
                     <label class="block text-sm text-slate-200">
@@ -774,7 +778,9 @@
                                 <option>Myitkyina</option>
                                 <option>Tanai</option>
                                 <option>Hpakant</option>
-                                <option>Puta-O</option>  
+                                <option>Puta-O</option>
+                                <option>Kale</option>
+                                <option>Other</option>
                             </select>
                         </label>
                         <label class="block text-sm text-slate-200">
@@ -793,6 +799,7 @@
                                 <option>Puta-O</option>
                                 <option>Homalin</option>
                                 <option>Monywa</option>
+                                <option>Kale</option>
                             </select>
                         </label>
                     </div>
@@ -951,7 +958,7 @@
                 dispatchTitle: "Dispatch Transit",
                 dispatchDestinationLabel: "Destination Location",
                 dispatchQuantityLabel: "Transit Box Quantity",
-                ledgerEditTitle: "Edit Ledger Entry",
+                ledgerEditTitle: "Edit Transaction",
                 ledgerEditWaybillLabel: "WayBill Number",
                 ledgerEditManifestLabel: "Description",
                 ledgerEditShipmentFromLabel: "Shipment From",
@@ -998,7 +1005,7 @@
                 statPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ",
                 statWarehouseBoxesLabel: "ဂိုဒေါင်တွင် သိမ်းဆည်းထားသော ဂျက်ဖါစုစုပေါင်း",
                 statDispatchedBoxesLabel: "ပို့ဆောင်ပြီး ဂျက်ဖါစုစုပေါင်း",
-                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို ပို့ဆောင်ရက်၊ ရောက်ရှိရက်၊ ပို့ဆောင်သမိုင်းများပါဝင်စွာ Excel ဖြင့် ထုတ်ယူနိုင်ပါသည်။",
+                exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို Excel File အဖြင့် ထုတ်ယူနိုင်ပါသည်။",
                 exportDashboardBtn: "Export Data",
                 pipelineVisualLabel: "လမ်းကြောင်း အမြင်ချင်း",
                 barWarehouseTitle: "ဂိုဒေါင်",
@@ -1016,19 +1023,19 @@
                 inboundSectionLabel: "အဝင်",
                 inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
                 originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
-                shipmentFromLabel: "စတင် ပေးပို့သည့် နေရာ",
+                shipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
                 inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
-                shipmentDateLabel: "ပို့ဆောင်ရက် ((From MDL)",
+                shipmentDateLabel: "ပို့ဆောင်သည့်ရက်",
                 inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
                 inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော ဂျက်ဖါအရေအတွက်",
                 inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
-                inboundRegisterBtn: "ဒေတာ မှတ်ပုံတင်ရန်",
+                inboundRegisterBtn: "ဒေတာ တင်သွင်းရန်",
                 inboundReset: "ပြန်စတင်ရန်",
                 pipelineInventoryLabel: "လမ်းခရီးရောက်ပစ္စည်းစာရင်း",
                 pipelineSectionLabel: "လမ်းကြောင်းစာရင်း",
                 pendingArrivalsTitle: "ရောက်ရှိရန် စောင့်ဆိုင်းနေသော ပစ္စည်းများ",
                 thWaybill: "WayBill",
-                thShipmentFrom: "စတင် ပေးပို့သည့် နေရာ",
+                thShipmentFrom: "စတင်ပေးပို့သည့်နေရာ",
                 thProject: "ပရောဂျက်",
                 thShipped: "ပေးပို့ပြီး",
                 thArrived: "ရောက်ရှိပြီး",
@@ -1058,34 +1065,34 @@
                 dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
                 dispatchQuantityLabel: "ပို့ဆောင်မည့် ဂျက်ဖါအရေအတွက်",
                 ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
-                ledgerEditWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
+                ledgerEditWaybillLabel: "ဝေဘေလ်နံပါတ် (WayBill)",
                 ledgerEditManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
-                ledgerEditShipmentFromLabel: "စတင် ပေးပို့သည့် နေရာ",
+                ledgerEditShipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
                 ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
-                ledgerEditTotalLabel: "Shipped Box (ပေးပို့သည့်ဂျက်ဖါ)",
-                ledgerEditShipmentDateLabel: "Shipped Date (ပေးပို့သည့်ရက်)",
-                ledgerEditArrivedBoxesLabel: "Arrived Box (ရောက်ရှိသည့်ဂျက်ဖါ)",
-                ledgerEditReceivedDateLabel: "Arrived Date (ရောက်ရှိသည့်ရက်)",
-                ledgerEditDispatchedBoxesLabel: "Dispatched Box (ထုတ်ယူသည့်ဂျက်ဖါ)",
-                ledgerEditLastTransitDateLabel: "Dispatched Date (ထုတ်ယူသည့်ရက်)",
+                ledgerEditTotalLabel: "ပေးပို့သည့်ဂျက်ဖါ",
+                ledgerEditShipmentDateLabel: "စတင်ပို့သည့်ရက်",
+                ledgerEditArrivedBoxesLabel: "ရောက်ရှိသည့်ဂျက်ဖါ",
+                ledgerEditReceivedDateLabel: "ရောက်ရှိသည့်ရက်",
+                ledgerEditDispatchedBoxesLabel: "လွှဲပို့သည့်ဂျက်ဖါ",
+                ledgerEditLastTransitDateLabel: "လွှဲပို့သည့်ရက်",
                 pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
                 warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
-                ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ။",
+                ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ",
                 inboundWaybillPlaceholder: "WayBill နံပါတ်ရိုက်ထည့်ပါ",
                 inboundManifestPlaceholder: "ပစ္စည်းအမျိုးအမည် သို့မဟုတ် မှတ်စုများ ထည့်ရန် (မထည့်လဲရပါ)",
                 authGuestHint: "Guest များသည် ဖတ်ရှုခွင့်သာရှိသည်။ ဒေတာများ ပြင်ဆင်ရန် Editor သို့မဟုတ် Admin အကောင့်ဖြင့် ဝင်ပါ။",
                 successShipment: "Shipment ကို ဒက်ရှ်ဘုတ်ထဲသို့ ထည့်သွင်းပြီးပါပြီ။",
                 errorInvalidInput: "ကျေးဇူးပြု၍ မှန်ကန်သော WayBill နှင့် အရေအတွက်ကို ရိုက်ထည့်ပါ။",
                 errorDuplicateShipment: "ဤ shipment သည် သတ်မှတ်ချက်ထဲတွင် ရှိပြီးသားဖြစ်နေသည်။",
-                errorDatabase: "ဒေတာဘေ့စ်ချို့ယွင်းချက်: ",
-                arrivalSuccess: "ပစ္စည်းရောက်ရှိမှုကို အောင်မြင်စွာ အပ်ဒိတ်လုပ်ပြီးပါပြီ။",
-                dispatchSuccess: "ကုန်ပစ္စည်းလွှဲပြောင်းမှု အောင်မြင်ပါသည်။",
+                errorDatabase: "ဒေတာဘေ့စ်ချို့ယွင်းချက်:",
+                arrivalSuccess: "ပစ္စည်းရောက်ရှိမှုကို အောင်မြင်စွာ အပ်ဒိတ်လုပ်ပြီးပါပြီ",
+                dispatchSuccess: "ကုန်ပစ္စည်းလွှဲပြောင်းမှု အောင်မြင်ပါသည်",
                 notAuthorized: "လုပ်ဆောင်ခွင့် မရှိပါ။ Editor သို့မဟုတ် Admin သာ ခွင့်ပြုသည်။",
                 notAdmin: "Admin အဆင့်သာ ပြင်ဆင်/ဖျက်ပိုင်ခွင့်ရှိသည်။",
-                deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား။",
-                readOnlyAction: "ဝင်ရောက်ခွင့်မရှိပါ။",
-                noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ။",
-                noTransitRequired: "မလိုပါ။ "
+                deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား?",
+                readOnlyAction: "ဝင်ရောက်ခွင့်မရှိပါ",
+                noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ",
+                noTransitRequired: "မလိုအပ်ပါ"
             }
         };
 
@@ -1538,7 +1545,7 @@
             ui.ledgerEmpty.classList.toggle('hidden', filtered.length > 0);
             ui.ledgerTableBody.innerHTML = filtered.map(x => {
                 const actions = perms.canEdit ?
-                    `<button onclick="openLedgerEditModal('${x.id}')" class="rounded bg-slate-800 px-2 py-1 hover:bg-slate-700 text-slate-200">Edit</button><button onclick="deleteLedgerEntry('${x.id}')" class="rounded bg-rose-950/40 text-rose-300 px-2 py-1 hover:bg-rose-900/60">Delete</button>` :
+                    `<button onclick="openLedgerEditModal('${x.id}')" class="rounded bg-slate-800 px-2 py-1 hover:bg-green-700 text-slate-200">Edit</button><button onclick="deleteLedgerEntry('${x.id}')" class="rounded bg-rose-950/40 text-white-300 px-2 py-1 hover:bg-red-600">Delete</button>` :
                     `<span class="disabled-action">${translations[currentLang].noPermissionForAction}</span>`;
                 return `<tr class="border-b border-slate-800 text-xs hover:bg-slate-900/40">
               <td class="px-3 py-2 font-mono text-emerald-400 font-bold">${x.waybill}</td>
