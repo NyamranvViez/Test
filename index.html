@@ -74,10 +74,10 @@
         }
         .tab-btn:hover {
             transform: translateY(-2px);
-            background: linear-gradient(50deg, #9d00fc 0%, #cfff7f8c 100%);
+            background: linear-gradient(1deg, #9d00fc 0%, #cfff7f8c 100%);
         }
         .tab-active {
-            background: linear-gradient(50deg, #141bb8 0%, #e90ec88c 100%);
+            background: linear-gradient(1deg, #141bb8 0%, #e90ec88c 100%);
             color: #ecfeff;
             box-shadow: 0 18px 48px rgba(16, 185, 129, 0.22);
         }
@@ -91,51 +91,51 @@
             transform: scale(.98);
         }
         .btn-reset:hover {
-            background: linear-gradient(90deg, #d33441 0%, #ddf1a3 100%);
+            background: linear-gradient(1deg, #d33441 0%, #ddf1a3 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-reset {
-            background: linear-gradient(90deg, #d33441 0%, #8eb910 100%);
+            background: linear-gradient(1deg, #d33441 0%, #8eb910 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-cancel:hover {
-            background: linear-gradient(90deg, #d33441 0%, #ddf1a3 100%);
+            background: linear-gradient(1deg, #d33441 0%, #ddf1a3 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-cancel {
-            background: linear-gradient(90deg, #d33441 0%, #8eb910 100%);
+            background: linear-gradient(1deg, #d33441 0%, #8eb910 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-save:hover {
-            background: linear-gradient(50deg, #6E6AE6 0%, #00FF04 100%);
+            background: linear-gradient(1deg, #6E6AE6 0%, #00FF04 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-save {
-            background: linear-gradient(90deg, #c0d334 0%, #10b981 100%);
+            background: linear-gradient(1deg, #c0d334 0%, #10b981 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-dispatch:hover {
-            background: linear-gradient(50deg, #6E6AE6 0%, #00FF04 100%);
+            background: linear-gradient(1deg, #6E6AE6 0%, #00FF04 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
         }
         .btn-dispatch {
-            background: linear-gradient(50deg, #ffd307 0%, #00ff97 100%);
+            background: linear-gradient(1deg, #ffd307 0%, #00ff97 100%);
             color: #082f49;
             box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
         }
         .btn-export:hover {
-            background: linear-gradient(100deg, #fd00ff 0%, #2f44ce 100%);
+            background: linear-gradient(1deg, #fd00ff 0%, #2f44ce 100%);
             box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
         }
         .btn-export {
-            background: linear-gradient(100deg, #24fb32 0%, #ff0000 100%);
+            background: linear-gradient(1deg, #24fb32 0%, #ff0000 100%);
             box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
         }
         .form-disabled {
@@ -325,6 +325,31 @@
         .data-table td {
             vertical-align: top;
         }
+        /* Pinned transaction header row (Cargo Intake, Cargo Dispatch, Data Ledger).
+           The wrapper scrolls horizontally, so the header row is mirrored into this fixed
+           overlay once the table reaches the top of the page (see syncPinnedHeader). */
+        #pinnedTableHeader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            display: none;
+            overflow: hidden;
+            pointer-events: none;
+            background: #0f172a;
+            box-shadow: 0 10px 24px -14px rgba(2, 10, 25, 0.95);
+        }
+        #pinnedTableHeader table {
+            margin: 0;
+        }
+        #pinnedTableHeader .data-table thead th {
+            box-shadow: inset 0 -1px 0 rgba(148, 163, 184, 0.10);
+        }
+        @media print {
+            #pinnedTableHeader {
+                display: none !important;
+            }
+        }
         .disabled-action {
             border-radius: 999px;
             padding: 0.55rem 0.85rem;
@@ -391,7 +416,7 @@
         <nav id="mainNavigation" class="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <button type="button" data-tab="dashboard" class="tab-btn rounded-3xl bg-slate-900/90 px-4 py-3 text-left text-sm font-semibold tab-active">Dashboard Overview</button>
             <button type="button" data-tab="inbound" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Intake (Inbound)</button>
-            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Transit to Naga (Outbound)</button>
+            <button type="button" data-tab="transit" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Cargo Dispatch (Outbound)</button>
             <button type="button" data-tab="ledger" class="tab-btn rounded-3xl bg-slate-800/70 px-4 py-3 text-left text-sm font-semibold">Data Ledger</button>
         </nav>
 
@@ -625,7 +650,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <p id="transitSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Outbound</p>
-                            <h2 id="transitHeading" class="text-2xl font-semibold">Transit to Naga (Outbound)</h2>
+                            <h2 id="transitHeading" class="text-2xl font-semibold">Cargo Dispatch (Outbound)</h2>
                         </div>
                         <span id="dispatchFromWarehouseLabel" class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Transit from Warehouse</span>
                     </div>
@@ -879,7 +904,7 @@
         // ===== TRANSLATIONS =====
         const translations = {
             en: {
-                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Transit to Naga (Outbound)",
+                tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Cargo Dispatch (Outbound)",
                     ledger: "Data Ledger" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
                 projectLabel: "Nanyun Project (Medical Action Myanmar)",
@@ -935,7 +960,7 @@
                 thStatus: "Status",
                 thAction: "Action",
                 transitSectionLabel: "Outbound",
-                transitHeading: "Transit to Naga (Outbound)",
+                transitHeading: "Cargo Dispatch (Outbound)",
                 dispatchFromWarehouseLabel: "Transit from Nanyun Warehouse",
                 thTransitWaybill: "WayBill",
                 thTransitShipmentFrom: "Shipment From",
@@ -1096,6 +1121,7 @@
         const ui = {
             tabs: document.querySelectorAll('nav [data-tab]'),
             panels: document.querySelectorAll('main .tab-panel'),
+            tableWrappers: document.querySelectorAll('.table-wrapper'),
             inboundForm: document.getElementById('inboundForm'),
             inboundWaybill: document.getElementById('inboundWaybill'),
             inboundShipmentFrom: document.getElementById('inboundShipmentFrom'),
@@ -1903,6 +1929,114 @@
             }, 10);
         }
 
+        // ===== PINNED TRANSACTION HEADER ROW =====
+        // The transaction tables need horizontal scrolling, so their wrapper is a scroll
+        // container and CSS "position: sticky" can never pin the header row to the page.
+        // Instead the real header row is mirrored into a fixed overlay once the table
+        // reaches the top of the page, so the page keeps scrolling normally
+        // (Cargo Intake, Cargo Dispatch, Data Ledger).
+        let pinnedHeaderEl = null;
+        let pinnedHeaderSignature = '';
+        let pinnedHeaderFrame = null;
+        let pinnedHeaderTimer = null;
+
+        function getPinnedHeaderEl() {
+            if (!pinnedHeaderEl) {
+                pinnedHeaderEl = document.createElement('div');
+                pinnedHeaderEl.id = 'pinnedTableHeader';
+                document.body.appendChild(pinnedHeaderEl);
+            }
+            return pinnedHeaderEl;
+        }
+
+        function stopPinnedHeaderWatch() {
+            if (pinnedHeaderTimer) {
+                window.clearInterval(pinnedHeaderTimer);
+                pinnedHeaderTimer = null;
+            }
+        }
+
+        // Column metrics can settle a moment after a language switch or a data update
+        // (web font swap), so the mirror is verified again while it stays pinned.
+        function startPinnedHeaderWatch() {
+            if (!pinnedHeaderTimer) {
+                pinnedHeaderTimer = window.setInterval(schedulePinnedHeader, 500);
+            }
+        }
+
+        function hidePinnedHeader() {
+            stopPinnedHeaderWatch();
+            if (pinnedHeaderEl && pinnedHeaderEl.style.display !== 'none') {
+                pinnedHeaderEl.style.display = 'none';
+            }
+        }
+
+        function syncPinnedHeader() {
+            const panel = document.querySelector('main .tab-panel:not(.hidden)');
+            const wrapper = panel ? panel.querySelector('.table-wrapper') : null;
+            const table = wrapper ? wrapper.querySelector('table') : null;
+            const thead = table ? table.querySelector('thead') : null;
+            const headerHeight = thead ? thead.offsetHeight : 0;
+
+            if (!wrapper || !table || !thead || !headerHeight) {
+                hidePinnedHeader();
+                return;
+            }
+
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const pinTop = ui.mainHeader.getBoundingClientRect().bottom;
+
+            // Only pin while the table spans the top edge of the page, and release it
+            // again as soon as the last row has scrolled past the header row.
+            if (wrapperRect.top >= pinTop || wrapperRect.bottom <= pinTop + headerHeight) {
+                hidePinnedHeader();
+                return;
+            }
+
+            const pin = getPinnedHeaderEl();
+            const columnWidths = [...thead.querySelectorAll('th')]
+                .map(th => Math.round(th.getBoundingClientRect().width * 100) / 100);
+            const signature = currentLang + '|' + headerHeight + '|' + columnWidths.join(',') + '|' + thead.innerHTML;
+
+            if (signature !== pinnedHeaderSignature) {
+                // Mirror the measured column widths of the real header row, otherwise the body
+                // content of the source table would distribute the columns differently.
+                const headClone = thead.cloneNode(true);
+                headClone.querySelectorAll('th').forEach((th, index) => {
+                    if (columnWidths[index] !== undefined) {
+                        th.style.width = columnWidths[index] + 'px';
+                    }
+                });
+
+                const tableClone = table.cloneNode(false);
+                const tableWidth = columnWidths.reduce((total, width) => total + width, 0);
+                tableClone.style.width = tableWidth + 'px';
+                tableClone.style.minWidth = tableWidth + 'px';
+                tableClone.style.tableLayout = 'fixed';
+                tableClone.appendChild(headClone);
+
+                pin.innerHTML = '';
+                pin.appendChild(tableClone);
+                pinnedHeaderSignature = signature;
+            }
+
+            pin.style.display = 'block';
+            pin.style.top = pinTop + 'px';
+            pin.style.left = wrapperRect.left + 'px';
+            pin.style.width = wrapper.clientWidth + 'px';
+            pin.style.height = headerHeight + 'px';
+            pin.firstChild.style.transform = 'translateX(' + (-wrapper.scrollLeft) + 'px)';
+            startPinnedHeaderWatch();
+        }
+
+        function schedulePinnedHeader() {
+            if (pinnedHeaderFrame) return;
+            pinnedHeaderFrame = window.requestAnimationFrame(() => {
+                pinnedHeaderFrame = null;
+                syncPinnedHeader();
+            });
+        }
+
         // ===== INIT =====
         window.addEventListener('DOMContentLoaded', () => {
             applyTranslations();
@@ -1930,6 +2064,16 @@
             });
 
             window.addEventListener('scroll', handleScroll, { passive: true });
+
+            // Keep the pinned transaction header row in sync with page, table & data changes
+            window.addEventListener('scroll', schedulePinnedHeader, { passive: true });
+            window.addEventListener('resize', schedulePinnedHeader);
+            ui.mainHeader.addEventListener('transitionend', schedulePinnedHeader);
+            ui.tableWrappers.forEach(wrapper => {
+                wrapper.addEventListener('scroll', schedulePinnedHeader, { passive: true });
+                new ResizeObserver(schedulePinnedHeader).observe(wrapper);
+            });
+            schedulePinnedHeader();
         });
     </script>
 </body>
