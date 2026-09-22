@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link class="fluid-favicon" rel="icon" type="image/png" href="favicon.png" />
-    <title>Cargo Dashboard App - NYN</title>
-    <meta name="description" content="Nanyun Project - Local medical logistics dashboard" />
+    <title>Cargo Dashboard App - HKT</title>
+    <meta name="description" content="Hkamti Project - Local medical logistics dashboard" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -16,7 +16,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { nanyun: '#0b1f3c' }
+                    colors: { Hkamti: '#0b1f3c' }
                 }
             }
         };
@@ -26,6 +26,8 @@
             color-scheme: dark;
             --bg-layer: rgba(8, 17, 34, 0.88);
             --glass-border: rgba(148, 163, 184, 0.08);
+            /* Sticky offset for the table header rows: matches the compact app header height */
+            --cargo-table-top: 74px;
         }
         * {
             box-sizing: border-box;
@@ -74,10 +76,10 @@
         }
         .tab-btn:hover {
             transform: translateY(-2px);
-            background: linear-gradient(1deg, #9d00fc 0%, #cfff7f8c 100%);
+            background: linear-gradient(1deg, #00f808 0%, #ff008c8c 100%);
         }
         .tab-active {
-            background: linear-gradient(1deg, #141bb8 0%, #e90ec88c 100%);
+            background: linear-gradient(1deg, #51ff00cd 0%, #ff99008c 100%);
             color: #ecfeff;
             box-shadow: 0 18px 48px rgba(16, 185, 129, 0.22);
         }
@@ -91,51 +93,52 @@
             transform: scale(.98);
         }
         .btn-reset:hover {
-            background: linear-gradient(1deg, #d33441 0%, #ddf1a3 100%);
+            background: linear-gradient(1deg, #0072ff 0%, #d1ff4b 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-reset {
-            background: linear-gradient(1deg, #d33441 0%, #8eb910 100%);
+            background: linear-gradient(1deg, #a3daa3 0%, #8079ef 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-cancel:hover {
-            background: linear-gradient(1deg, #d33441 0%, #ddf1a3 100%);
+            background: linear-gradient(1deg, #0072ff 0%, #d1ff4b 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-cancel {
-            background: linear-gradient(1deg, #d33441 0%, #8eb910 100%);
+            background: linear-gradient(1deg, #a3daa3 0%, #8079ef 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-save:hover {
-            background: linear-gradient(1deg, #6E6AE6 0%, #00FF04 100%);
+            background: linear-gradient(1deg, #e3ff14 0%, #e56306 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-save {
-            background: linear-gradient(1deg, #c0d334 0%, #10b981 100%);
+            background: linear-gradient(1deg, #66f804 0%, #9bf79d 100%);
             color: #052e16;
             box-shadow: 0 12px 24px rgba(16, 185, 129, 0.24);
         }
         .btn-dispatch:hover {
-            background: linear-gradient(1deg, #6E6AE6 0%, #00FF04 100%);
+            background: linear-gradient(1deg, #0250F7 0%, #A3FD2D 100%);
             color: #ffffff;
             box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
-        }
+        }    
         .btn-dispatch {
-            background: linear-gradient(1deg, #ffd307 0%, #00ff97 100%);
+            background: linear-gradient(1deg, #2400ff 0%, #b5f267 100%);
             color: #082f49;
             box-shadow: 0 12px 24px rgba(14, 165, 233, 0.24);
         }
         .btn-export:hover {
-            background: linear-gradient(1deg, #fd00ff 0%, #2f44ce 100%);
+            background: linear-gradient(1deg, #38ff00 0%, #001dff 100%);
             box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
         }
         .btn-export {
-            background: linear-gradient(1deg, #24fb32 0%, #ff0000 100%);
+            background: linear-gradient(1deg, #0d9a08 0%, #be6216 100%);
+            color: #FFFFFF;
             box-shadow: 0 12px 24px rgba(251, 146, 60, 0.22);
         }
         .form-disabled {
@@ -305,13 +308,22 @@
             }
         }
 
+        /* Table area: deliberately NOT a scroll container, so the page keeps scrolling
+           normally (mouse wheel included) and the header row can pin to the page.
+           A horizontal scrollbar is only switched on for tables that are genuinely
+           wider than their panel - see syncTableOverflow() in the script. */
         .table-wrapper {
+            overflow: visible;
+        }
+        .table-wrapper.table-h-scroll {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .data-table {
             min-width: 1000px;
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
         }
         .data-table th,
         .data-table td {
@@ -322,33 +334,17 @@
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
+        /* Sticky transaction header row (WayBill, Shipment From, Project, ... Actions).
+           It pins under the compact app header once the page is scrolled down to it. */
+        .data-table thead th {
+            position: sticky;
+            top: var(--cargo-table-top, 74px);
+            z-index: 20;
+            background-color: #0f172a;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+        }
         .data-table td {
             vertical-align: top;
-        }
-        /* Pinned transaction header row (Cargo Intake, Cargo Dispatch, Data Ledger).
-           The wrapper scrolls horizontally, so the header row is mirrored into this fixed
-           overlay once the table reaches the top of the page (see syncPinnedHeader). */
-        #pinnedTableHeader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 40;
-            display: none;
-            overflow: hidden;
-            pointer-events: none;
-            background: #0f172a;
-            box-shadow: 0 10px 24px -14px rgba(2, 10, 25, 0.95);
-        }
-        #pinnedTableHeader table {
-            margin: 0;
-        }
-        #pinnedTableHeader .data-table thead th {
-            box-shadow: inset 0 -1px 0 rgba(148, 163, 184, 0.10);
-        }
-        @media print {
-            #pinnedTableHeader {
-                display: none !important;
-            }
         }
         .disabled-action {
             border-radius: 999px;
@@ -377,8 +373,8 @@
         <header id="mainHeader" class="mb-6 rounded-[32px] p-6 glass shadow-deep flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between sticky-header">
             <!-- Left: Title -->
             <div class="space-y-1 flex-shrink-0 min-w-0">
-                <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">Nanyun Project</p>
-                <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Action Myanmar (Cargo Dashboard) - Nanyun</h1>
+                <p id="projectLabel" class="text-[11px] uppercase tracking-[0.18em] text-emerald-300">HKamti Project</p>
+                <h1 id="headerTitle" class="text-2xl md:text-3xl font-semibold truncate">Medical Action Myanmar (Cargo Dashboard) - Hkamti</h1>
                 <p id="headerDesc" class="max-w-3xl text-sm leading-6 text-slate-300">A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.</p>
             </div>
 
@@ -406,7 +402,7 @@
                             </button>
                             <button id="logoutBtn" type="button" class="btn-3d rounded-2xl bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-200 hover:bg-rose-500/15 hidden w-full">Log Out</button>
                         </div>
-                        <button id="langToggleBtn" type="button" class="btn-3d btn-lang rounded-2xl bg-slate-900/80 px-3 py-1.5 tab-active tab-btn text-xs font-semibold text-slate-100 w-full text-center">မြန်မာဘာသာ</button>
+                        <button id="langToggleBtn" type="button" class="btn-3d btn-lang tab-btn tab-active rounded-2xl bg-slate-900/80 px-3 py-1.5 text-xs font-semibold text-slate-100 w-full text-center">မြန်မာဘာသာ</button>
                     </div>
                 </div>
             </div>
@@ -429,7 +425,7 @@
                     <div class="rounded-[32px] glass shadow-deep p-6">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Nanyun Project)</p>
+                                <p id="dashboardSectionLabel" class="text-xs uppercase tracking-[0.35em] text-emerald-300">Overview (Except Hkamti Project)</p>
                                 <h2 id="dashboardHeading" class="mt-2 text-2xl font-semibold">Executive Pipeline Dashboard</h2>
                             </div>
                             <span id="creatorBadge" class="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Created by Ran Aung</span>
@@ -476,11 +472,11 @@
                             </div>
                             <!-- REPLACED: Nanyun Pipeline Dashboard -->
                             <div class="rounded-3xl border border-slate-700 bg-slate-950/90 p-5">
-                                <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Nanyun Pipeline Dashboard</p>
+                                <p id="nanyunDashboardLabel" class="text-sm uppercase tracking-[0.2em] text-emerald-300 font-semibold">Hkamti Pipeline Dashboard</p>
                                 <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes (Nanyun)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Nanyun)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
-                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Nanyun)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunTotalLoggedLabel">Total Boxes (Hkamti)</span><span id="statNanyunTotalLogged" class="font-bold text-emerald-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunPipelineBoxesLabel">Boxes in Pipeline (Hkamti)</span><span id="statNanyunPipelineBoxes" class="font-bold text-sky-300 text-base">0</span></li>
+                                    <li class="flex items-center justify-between"><span id="nanyunWarehouseBoxesLabel">Total Arrived Boxes (Hkamti)</span><span id="statNanyunWarehouseBoxes" class="font-bold text-emerald-200 text-base">0</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -514,7 +510,7 @@
                                 </div>
                                 <div class="rounded-2xl border border-slate-700 bg-slate-900/60 p-4 flex items-center justify-between">
                                     <div>
-                                        <h4 class="font-bold text-slate-100 text-base">Hkamti Project</h4>
+                                        <h4 class="font-bold text-slate-100 text-base">Nanyun Project</h4>
                                         <p class="text-xs text-slate-400 mt-0.5">Total Pipeline & Warehouse</p>
                                     </div>
                                     <div class="text-right">
@@ -551,45 +547,47 @@
                                     <input id="shipmentDate" type="date" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" required />
                                 </label>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="block text-sm text-slate-200">
-                                    <span id="inboundShipmentFromLabel">Shipment From</span>
-                                    <select id="inboundShipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
-                                        <option>Myitkyina</option>
-                                        <option>Yangon</option>
+                                    <span id="shipmentFromLabel">Shipment From</span>
+                                    <select id="shipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
+                                        <option>Layshi</option>
                                         <option>Nanyun</option>
                                         <option>Hkamti</option>
-                                        <option>Layshi</option>
                                         <option>Lahe</option>
+                                        <option>Homalin</option>
+                                        <option>Monywa</option>
+                                        <option>Yangon</option>
                                         <option>Mandalay</option>
+                                        <option>Myitkyina</option>
                                         <option>Tanai</option>
                                         <option>Hpakant</option>
                                         <option>Puta-O</option>
-                                        <option>Homalin</option>
-                                        <option>Monywa</option>
-					<option>Kale</option>
-					<option>Other</option>
+                                        <option>Kale</option>
+                                        <option>Other</option>
                                     </select>
                                 </label>
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTargetLabel">Target Project Allocation</span>
                                     <select id="inboundTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500">
-                                        <option>Nanyun</option>
-                                        <option>Lahe</option>
                                         <option>Hkamti</option>
                                         <option>Layshi</option>
+                                        <option>Lahe</option>
+                                        <option>Nanyun</option>
                                         <option>Naga</option>
+                                        <option>Myitkyina</option>
                                         <option>Yangon</option>
                                         <option>Mandalay</option>
-                                        <option>Myitkyina</option>
                                         <option>Tanai</option>
                                         <option>Hpakant</option>
                                         <option>Puta-O</option>
                                         <option>Homalin</option>
                                         <option>Monywa</option>
-					<option>Kale</option>
+                                        <option>Kale</option>
                                     </select>
                                 </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="block text-sm text-slate-200">
                                     <span id="inboundTotalBoxesLabel">Total Shipped Boxes</span>
                                     <input id="inboundTotalBoxes" type="number" min="1" value="1" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none" required />
@@ -650,7 +648,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <p id="transitSectionLabel" class="text-xs uppercase tracking-[0.25em] text-emerald-300">Outbound</p>
-                            <h2 id="transitHeading" class="text-2xl font-semibold">Cargo Dispatch (Outbound)</h2>
+                            <h2 id="transitHeading" class="text-2xl font-semibold">Transit to Naga & Nanyun (Outbound)</h2>
                         </div>
                         <span id="dispatchFromWarehouseLabel" class="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-300">Transit from Warehouse</span>
                     </div>
@@ -693,20 +691,20 @@
                         <table class="data-table text-left text-sm">
                             <thead class="bg-slate-900 text-slate-400">
                                 <tr>
-                                    <th class="px-3 py-3">WayBill</th>
+                                    <th id="thLedgerWaybill" class="px-3 py-3">WayBill</th>
                                     <th id="thLedgerShipmentFrom" class="px-3 py-3">Shipment From</th>
-                                    <th class="px-3 py-3">Project</th>
-                                    <th class="px-3 py-3">Description</th>
-                                    <th class="px-3 py-3">Shipped</th>
-                                    <th class="px-3 py-3">Arrived</th>
-                                    <th class="px-3 py-3">Ship Date</th>
-                                    <th class="px-3 py-3">Received Date</th>
-                                    <th class="px-3 py-3">Warehouse</th>
-                                    <th class="px-3 py-3">Pipeline</th>
-                                    <th class="px-3 py-3">Dispatched</th>
-                                    <th class="px-3 py-3">Transit Date</th>
-                                    <th class="px-3 py-3">Status</th>
-                                    <th class="px-3 py-3">Actions</th>
+                                    <th id="thLedgerProject" class="px-3 py-3">Project</th>
+                                    <th id="thLedgerDesc" class="px-3 py-3">Description</th>
+                                    <th id="thLedgerShipped" class="px-3 py-3">Shipped</th>
+                                    <th id="thLedgerArrived" class="px-3 py-3">Arrived</th>
+                                    <th id="thLedgerShipDate" class="px-3 py-3">Ship Date</th>
+                                    <th id="thLedgerRcvDate" class="px-3 py-3">Received Date</th>
+                                    <th id="thLedgerWarehouse" class="px-3 py-3">Warehouse</th>
+                                    <th id="thLedgerPipeline" class="px-3 py-3">Pipeline</th>
+                                    <th id="thLedgerDispatched" class="px-3 py-3">Dispatched</th>
+                                    <th id="thLedgerTransitDate" class="px-3 py-3">Transit Date</th>
+                                    <th id="thLedgerStatus" class="px-3 py-3">Status</th>
+                                    <th id="thLedgerActions" class="px-3 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ledgerTableBody" class="bg-slate-950/60"></tbody>
@@ -748,18 +746,17 @@
                         <span id="dispatchDestinationLabel">Destination Location</span>
                         <select id="dispatchDestination" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
                             <option>Lahe</option>
-                            <option>Hkamti</option>
+                            <option>Nanyun</option>
                             <option>Layshi</option>
-                            <option>Naga</option>
+                            <option>Myitkyina</option>
                             <option>Yangon</option>
                             <option>Mandalay</option>
-                            <option>Myitkyina</option>
+                            <option>Homalin</option>
+                            <option>Monywa</option>
                             <option>Tanai</option>
                             <option>Hpakant</option>
                             <option>Puta-O</option>
-                            <option>Homalin</option>
-                            <option>Monywa</option>
-			<option>Kale</option>
+                            <option>Kale</option>
                         </select>
                     </label>
                     <label class="block text-sm text-slate-200">
@@ -775,7 +772,7 @@
             </div>
         </div>
 
-        <!-- LEDGER EDIT MODAL -->
+        <!-- LEDGER EDIT MODAL (UPDATED WITH ALL REQUIRED EDIT FIELDS) -->
         <div id="ledgerEditModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4 z-50">
             <div class="w-full max-w-lg rounded-[32px] glass shadow-deep p-6 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between">
@@ -786,44 +783,46 @@
                         <span id="ledgerEditWaybillLabel">WayBill Number</span>
                         <input id="ledgerEditWaybill" type="text" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500" />
                     </label>
-                    <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditShipmentFromLabel">Shipment From</span>
-                        <select id="ledgerEditShipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Myitkyina</option>
-                            <option>Yangon</option>
-                            <option>Nanyun</option>
-                            <option>Hkamti</option>
-                            <option>Layshi</option>
-                            <option>Lahe</option>
-                            <option>Mandalay</option>
-                            <option>Tanai</option>
-                            <option>Hpakant</option>
-                            <option>Puta-O</option>
-                            <option>Homalin</option>
-                            <option>Monywa</option>
-				<option>Kale</option>
-			<option>Other</option>
-                        </select>
-                    </label>
-                    <label class="block text-sm text-slate-200">
-                        <span id="ledgerEditTargetLabel">Target Project</span>
-                        <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
-                            <option>Nanyun</option>
-                            <option>Lahe</option>
-                            <option>Hkamti</option>
-                            <option>Layshi</option>
-                            <option>Naga</option>
-                            <option>Yangon</option>
-                            <option>Mandalay</option>
-                            <option>Myitkyina</option>
-                            <option>Tanai</option>
-                            <option>Hpakant</option>
-                            <option>Puta-O</option>
-                            <option>Homalin</option>
-                            <option>Monywa</option>
-			<option>Kale</option>
-                        </select>
-                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditShipmentFromLabel">Shipment From</span>
+                            <select id="ledgerEditShipmentFrom" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                <option>Layshi</option>
+                                <option>Nanyun</option>
+                                <option>Hkamti</option>
+                                <option>Lahe</option>
+                                <option>Homalin</option>
+                                <option>Monywa</option>
+                                <option>Yangon</option>
+                                <option>Mandalay</option>
+                                <option>Myitkyina</option>
+                                <option>Tanai</option>
+                                <option>Hpakant</option>
+                                <option>Puta-O</option>
+                                <option>Kale</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+                        <label class="block text-sm text-slate-200">
+                            <span id="ledgerEditTargetLabel">Target Project</span>
+                            <select id="ledgerEditTarget" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100">
+                                <option>Hkamti</option>
+                                <option>Layshi</option>
+                                <option>Lahe</option>
+                                <option>Nanyun</option>
+                                <option>Naga</option>
+                                <option>Myitkyina</option>
+                                <option>Yangon</option>
+                                <option>Mandalay</option>
+                                <option>Tanai</option>
+                                <option>Hpakant</option>
+                                <option>Puta-O</option>
+                                <option>Homalin</option>
+                                <option>Monywa</option>
+                                <option>Kale</option>
+                            </select>
+                        </label>
+                    </div>
                     <label class="block text-sm text-slate-200">
                         <span id="ledgerEditManifestLabel">Description</span>
                         <textarea id="ledgerEditManifest" rows="2" class="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500"></textarea>
@@ -876,14 +875,14 @@
     <script>
         // ===== FIREBASE =====
         const firebaseConfig = {
-            apiKey: "AIzaSyA5GuDLb-BG6BNfJG7nbB_PARXZlmeavaA",
-            authDomain: "ran-space-social.firebaseapp.com",
-            databaseURL: "https://ran-space-social-default-rtdb.firebaseio.com/",
-            projectId: "ran-space-social",
-            storageBucket: "ran-space-social.firebasestorage.app",
-            messagingSenderId: "682950893913",
-            appId: "1:682950893913:web:02a311cb9434317d1a6c48",
-            measurementId: "G-LXHLZTBF1H"
+            apiKey: "AIzaSyDvgj41j4z-Q6xTvEZBtatfTl7n8h0YRNk",
+            authDomain: "hkamti-6e470.firebaseapp.com",
+            databaseURL: "https://hkamti-6e470-default-rtdb.firebaseio.com/",
+            projectId: "hkamti-6e470",
+            storageBucket: "hkamti-6e470.firebasestorage.app",
+            messagingSenderId: "119822790200",
+            appId: "1:119822790200:web:e721236004437cb9c640cd",
+            measurementId: "G-LWENEG47K7"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -907,13 +906,13 @@
                 tabs: { dashboard: "Dashboard Overview", inbound: "Cargo Intake (Inbound)", transit: "Cargo Dispatch (Outbound)",
                     ledger: "Data Ledger" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "Nanyun Project (Medical Action Myanmar)",
-                headerTitle: "Medical Action Myanmar (Cargo Dashboard) - Nanyun",
+                projectLabel: "Hkamti Project (Medical Action Myanmar)",
+                headerTitle: "Medical Action Myanmar (Cargo Dashboard) - Hkamti",
                 headerDesc: "A local browser-based logistics system for partial arrivals, warehouse inventory, split dispatch, and audit-ready tracking.",
                 authenticatedUserLabel: "Account Information",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "Viewer" },
                 authStatusNote: "Guest users see read-only content.",
-                dashboardSectionLabel: "Overview (Except Nanyun Project)",
+                dashboardSectionLabel: "Overview (Except Hkamti Project)",
                 dashboardHeading: "Executive Pipeline Dashboard",
                 creatorBadge: "Created by Ran Aung",
                 statTotalLoggedLabel: "Total Boxes Logged",
@@ -926,10 +925,10 @@
                 barWarehouseTitle: "Warehouse",
                 barPipelineTitle: "Pipeline",
                 barDispatchedTitle: "Dispatched",
-                nanyunDashboardLabel: "Nanyun Pipeline Dashboard",
-                nanyunTotalLoggedLabel: "Total Boxes (Nanyun)",
-                nanyunPipelineBoxesLabel: "Boxes in Pipeline (Nanyun)",
-                nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Nanyun)",
+                nanyunDashboardLabel: "Hkamti Pipeline Dashboard",
+                nanyunTotalLoggedLabel: "Total Boxes (Hkamti)",
+                nanyunPipelineBoxesLabel: "Boxes in Pipeline (Hkamti)",
+                nanyunWarehouseBoxesLabel: "Total Arrived Boxes (Hkamti)",
                 regionalOverviewLabel: "Regional Overview (Pipeline + Warehouse)",
                 regionalHeading: "Other Project Allocations",
                 regionalDesc: "Directly monitor the total number of boxes allocated to target projects.",
@@ -938,9 +937,9 @@
                 inboundSectionLabel: "Inbound",
                 inboundHeading: "Cargo Intake (Inbound)",
                 originLabel: "Cargo Process",
+                shipmentFromLabel: "Shipment From",
                 inboundWaybillLabel: "WayBill Number",
                 shipmentDateLabel: "Shipment Date",
-                inboundShipmentFromLabel: "Shipment From",
                 inboundTargetLabel: "Target Project Allocation",
                 inboundTotalBoxesLabel: "Total Shipped Boxes",
                 inboundManifestLabel: "Description",
@@ -961,7 +960,7 @@
                 thAction: "Action",
                 transitSectionLabel: "Outbound",
                 transitHeading: "Cargo Dispatch (Outbound)",
-                dispatchFromWarehouseLabel: "Transit from Nanyun Warehouse",
+                dispatchFromWarehouseLabel: "Transit from Hkamti Warehouse",
                 thTransitWaybill: "WayBill",
                 thTransitShipmentFrom: "Shipment From",
                 thTransitProject: "Project",
@@ -973,6 +972,7 @@
                 thTransitAction: "Action",
                 ledgerSectionLabel: "Data Ledger",
                 ledgerHeading: "History Records",
+                thLedgerShipmentFrom: "Shipment From",
                 arrivalTitle: "Update Arrival",
                 arrivalBoxesLabel: "Boxes Arrived",
                 dispatchTitle: "Dispatch Transit",
@@ -989,7 +989,6 @@
                 ledgerEditReceivedDateLabel: "Arrived Date",
                 ledgerEditDispatchedBoxesLabel: "Dispatched Box",
                 ledgerEditLastTransitDateLabel: "Dispatched Date",
-                thLedgerShipmentFrom: "Shipment From",
                 pipelineEmpty: "No inbound pipeline entries yet.",
                 warehouseEmpty: "No warehouse shipments available for dispatch.",
                 ledgerEmpty: "No ledger records available.",
@@ -1013,13 +1012,13 @@
                 tabs: { dashboard: "Dashboard အကျဉ်းချုပ်", inbound: "ကုန်ပစ္စည်းစာရင်းသွင်းရန်", transit: "ကုန်ပစ္စည်းလွှဲပို့ရန် (Outbound)",
                     ledger: "ဒေတာမှတ်တမ်းစာအုပ်" },
                 tabsShort: { dashboard: "Dashboard", inbound: "Cargo Intake", transit: "To Transit", ledger: "Data Ledger" },
-                projectLabel: "နန်းယွန်း ပရောဂျက် (Medical Action Myanmar)",
-                headerTitle: "မက်ဒီကယ်အက်ရှင်မြန်မာ (ကုန်စည်စီမံခန့်ခွဲမှု ဒက်ရှ်ဘုတ်) - နန်းယွန်း",
+                projectLabel: "ခန္တီး ပရောဂျက် (Medical Action Myanmar)",
+                headerTitle: "ဆမက်ဒီကယ်အက်ရှင်မြန်မာ (ကုန်စည်စီမံခန့်ခွဲမှု ဒက်ရှ်ဘုတ်) - ခန္တီး",
                 headerDesc: "ကုန်ပစ္စည်းတစ်စိတ်တစ်ပိုင်းရောက်ရှိခြင်း၊ ဂိုဒေါင်လက်ကျန်၊ ခွဲဝေပို့ဆောင်ခြင်းလုပ်ငန်းစဉ်",
                 authenticatedUserLabel: "Account အချက်အလက်များ",
                 activeRoleBadge: { Admin: "Admin", Editor: "Editor", Viewer: "ကြည့်ရှုသူ" },
                 authStatusNote: "Guest အနေနဲ့ ဖတ်ရှုခွင့်သာ ရရှိပါမည်။",
-                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (နန်းယွန်း ပရောဂျက်မပါဝင်ပါ)",
+                dashboardSectionLabel: "အထွေထွေသုံးသပ်ချက် (ခန္တီး ပရောဂျက်မပါဝင်ပါ)",
                 dashboardHeading: "အလုပ်အမှုဆောင် ဒက်ရှ်ဘုတ်",
                 creatorBadge: "Ran Aung မှ ဖန်တီးခဲ့သည်",
                 statTotalLoggedLabel: "စုစုပေါင်း ဂျက်ဖါစာရင်းသွင်းပြီး",
@@ -1027,15 +1026,15 @@
                 statWarehouseBoxesLabel: "ဂိုဒေါင်တွင် သိမ်းဆည်းထားသော ဂျက်ဖါစုစုပေါင်း",
                 statDispatchedBoxesLabel: "ပို့ဆောင်ပြီး ဂျက်ဖါစုစုပေါင်း",
                 exportDescText: "လက်ရှိ လုပ်ငန်းစဉ်ဒေတာကို Excel File အဖြင့် ထုတ်ယူနိုင်ပါသည်။",
-                exportDashboardBtn: "ဒေတာထုတ်ရန်",
+                exportDashboardBtn: "Export Data",
                 pipelineVisualLabel: "လမ်းကြောင်း အမြင်ချင်း",
                 barWarehouseTitle: "ဂိုဒေါင်",
                 barPipelineTitle: "လမ်းကြောင်း",
                 barDispatchedTitle: "ပို့ဆောင်ပြီး",
-                nanyunDashboardLabel: "နန်းယွန်း လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
-                nanyunTotalLoggedLabel: "နန်းယွန်း စုစုပေါင်း ဂျက်ဖါ",
-                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (နန်းယွန်း)",
-                nanyunWarehouseBoxesLabel: "ရောက်ရှိသည့် စုစုပေါင်းဂျက်ဖါ (နန်းယွန်း)",
+                nanyunDashboardLabel: "ခန္တီး လမ်းကြောင်း ဒက်ရှ်ဘုတ်",
+                nanyunTotalLoggedLabel: "ခန္တီး စုစုပေါင်း ဂျက်ဖါ",
+                nanyunPipelineBoxesLabel: "လက်ရှိ လမ်းကြောင်းရှိ ဂျက်ဖါ (ခန္တီး)",
+                nanyunWarehouseBoxesLabel: "ရောက်ရှိသည့် စုစုပေါင်းဂျက်ဖါ (ခန္တီး)",
                 regionalOverviewLabel: "ဒေသဆိုင်ရာ အကျဉ်းချုပ် (လမ်းကြောင်း + ဂိုဒေါင်)",
                 regionalHeading: "အခြားပရောဂျက်များ၏ ကုန်ပစ္စည်းခွဲတမ်း",
                 regionalDesc: "ပစ်မှတ်ပရောဂျက်များသို့ ထားရှိနေသော ဂျက်ဖါအရေအတွက်ကို တိုက်ရိုက်စောင့်ကြည့်နိုင်ပါသည်။",
@@ -1044,9 +1043,9 @@
                 inboundSectionLabel: "အဝင်",
                 inboundHeading: "ကုန်ပစ္စည်းစာရင်းသွင်းခြင်း (Data Entry)",
                 originLabel: "ကုန်ပစ္စည်းလုပ်ငန်းစဉ်",
+                shipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
                 inboundWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
                 shipmentDateLabel: "ပို့ဆောင်သည့်ရက်",
-                inboundShipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
                 inboundTargetLabel: "သတ်မှတ်ထားသော ပရောဂျက်",
                 inboundTotalBoxesLabel: "စုစုပေါင်း ပေးပို့လိုက်သော ဂျက်ဖါအရေအတွက်",
                 inboundManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
@@ -1067,7 +1066,7 @@
                 thAction: "လုပ်ဆောင်ချက်",
                 transitSectionLabel: "အထွက်",
                 transitHeading: "ကုန်ပစ္စည်းလွှဲပို့ရန် (Outbound)",
-                dispatchFromWarehouseLabel: "နန်းယွန်းဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
+                dispatchFromWarehouseLabel: "ခန္တီးဂိုဒေါင်မှ ပစ္စည်းထုတ်ယူ ပို့ဆောင်ခြင်း",
                 thTransitWaybill: "WayBill",
                 thTransitShipmentFrom: "စတင်ပေးပို့သည့်နေရာ",
                 thTransitProject: "ပရောဂျက်",
@@ -1079,15 +1078,16 @@
                 thTransitAction: "လုပ်ဆောင်ချက်",
                 ledgerSectionLabel: "ဒေတာမှတ်တမ်း",
                 ledgerHeading: "ကုန်ပစ္စည်းမှတ်တမ်းများ",
+                thLedgerShipmentFrom: "စတင် ပေးပို့သည့် နေရာ",
                 arrivalTitle: "ပစ္စည်းရောက်ရှိမှု အဆင့်မြှင့်တင်ရန်",
                 arrivalBoxesLabel: "ရောက်ရှိလာသော ဂျက်ဖါအရေအတွက်",
                 dispatchTitle: "နောက်ထပ် ပို့ဆောင်မည့်နေရာ",
                 dispatchDestinationLabel: "ပို့ဆောင်မည့် ပရောဂျက်",
                 dispatchQuantityLabel: "ပို့ဆောင်မည့် ဂျက်ဖါအရေအတွက်",
                 ledgerEditTitle: "မှတ်တမ်းပြင်ဆင်ရန်",
-                ledgerEditWaybillLabel: "ဝေဘေလ် နံပါတ် (WayBill)",
-                ledgerEditShipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
+                ledgerEditWaybillLabel: "ဝေဘေလ်နံပါတ် (WayBill)",
                 ledgerEditManifestLabel: "အသေးစိတ် ဖော်ပြချက်",
+                ledgerEditShipmentFromLabel: "စတင်ပေးပို့သည့်နေရာ",
                 ledgerEditTargetLabel: "ပြောင်းလဲမည့်ပရောဂျက်",
                 ledgerEditTotalLabel: "ပေးပို့သည့်ဂျက်ဖါ",
                 ledgerEditShipmentDateLabel: "စတင်ပို့သည့်ရက်",
@@ -1095,7 +1095,6 @@
                 ledgerEditReceivedDateLabel: "ရောက်ရှိသည့်ရက်",
                 ledgerEditDispatchedBoxesLabel: "လွှဲပို့သည့်ဂျက်ဖါ",
                 ledgerEditLastTransitDateLabel: "လွှဲပို့သည့်ရက်",
-                thLedgerShipmentFrom: "စတင်ပေးပို့သည့်နေရာ",
                 pipelineEmpty: "လမ်းခရီးတွင် ပစ္စည်းစာရင်းမရှိသေးပါ။",
                 warehouseEmpty: "ဂိုဒေါင်ထဲတွင် ပို့ဆောင်ရန် ပစ္စည်းမရှိသေးပါ။",
                 ledgerEmpty: "မှတ်တမ်းများ မရှိသေးပါ",
@@ -1113,7 +1112,7 @@
                 deleteConfirm: "ဤမှတ်တမ်းကို အမြဲတမ်းဖျက်ပစ်ရန် သေချာပါသလား?",
                 readOnlyAction: "ဝင်ရောက်ခွင့်မရှိပါ",
                 noPermissionForAction: "ခွင့်ပြုချက်မရှိပါ",
-                noTransitRequired: "မလိုအပ်ပါ "
+                noTransitRequired: "မလိုအပ်ပါ"
             }
         };
 
@@ -1121,10 +1120,9 @@
         const ui = {
             tabs: document.querySelectorAll('nav [data-tab]'),
             panels: document.querySelectorAll('main .tab-panel'),
-            tableWrappers: document.querySelectorAll('.table-wrapper'),
             inboundForm: document.getElementById('inboundForm'),
             inboundWaybill: document.getElementById('inboundWaybill'),
-            inboundShipmentFrom: document.getElementById('inboundShipmentFrom'),
+            shipmentFrom: document.getElementById('shipmentFrom'),
             inboundTarget: document.getElementById('inboundTarget'),
             inboundTotalBoxes: document.getElementById('inboundTotalBoxes'),
             inboundManifest: document.getElementById('inboundManifest'),
@@ -1153,8 +1151,8 @@
             dispatchEditContainer: document.getElementById('dispatchEditContainer'),
             ledgerEditModal: document.getElementById('ledgerEditModal'),
             ledgerEditWaybill: document.getElementById('ledgerEditWaybill'),
-            ledgerEditShipmentFrom: document.getElementById('ledgerEditShipmentFrom'),
             ledgerEditManifest: document.getElementById('ledgerEditManifest'),
+            ledgerEditShipmentFrom: document.getElementById('ledgerEditShipmentFrom'),
             ledgerEditTarget: document.getElementById('ledgerEditTarget'),
             ledgerEditTotal: document.getElementById('ledgerEditTotal'),
             ledgerEditShipmentDate: document.getElementById('ledgerEditShipmentDate'),
@@ -1277,7 +1275,7 @@
                 `Signed in as ${currentDisplayName} (${translations[currentLang].activeRoleBadge[currentRole] || currentRole})` :
                 translations[currentLang].authStatusNote;
             const readOnly = perms.isViewer;
-            ['inboundWaybill', 'inboundShipmentFrom', 'inboundTarget', 'inboundTotalBoxes', 'inboundManifest', 'shipmentDate'].forEach(id => {
+            ['inboundWaybill', 'shipmentFrom', 'inboundTarget', 'inboundTotalBoxes', 'inboundManifest', 'shipmentDate'].forEach(id => {
                 const field = document.getElementById(id);
                 if (field) field.disabled = readOnly;
             });
@@ -1346,9 +1344,9 @@
             set('inboundSectionLabel', dict.inboundSectionLabel);
             set('inboundHeading', dict.inboundHeading);
             set('originLabel', dict.originLabel);
+            set('shipmentFromLabel', dict.shipmentFromLabel);
             set('inboundWaybillLabel', dict.inboundWaybillLabel);
             set('shipmentDateLabel', dict.shipmentDateLabel);
-            set('inboundShipmentFromLabel', dict.inboundShipmentFromLabel);
             set('inboundTargetLabel', dict.inboundTargetLabel);
             set('inboundTotalBoxesLabel', dict.inboundTotalBoxesLabel);
             set('inboundManifestLabel', dict.inboundManifestLabel);
@@ -1381,7 +1379,20 @@
             set('thTransitAction', dict.thTransitAction);
             set('ledgerSectionLabel', dict.ledgerSectionLabel);
             set('ledgerHeading', dict.ledgerHeading);
+            set('thLedgerWaybill', dict.thWaybill);
             set('thLedgerShipmentFrom', dict.thLedgerShipmentFrom);
+            set('thLedgerProject', dict.thProject);
+            set('thLedgerDesc', dict.inboundManifestLabel);
+            set('thLedgerShipped', dict.thShipped);
+            set('thLedgerArrived', dict.thArrived);
+            set('thLedgerShipDate', dict.thShipDate);
+            set('thLedgerRcvDate', dict.thRcvDate);
+            set('thLedgerWarehouse', dict.barWarehouseTitle);
+            set('thLedgerPipeline', dict.thPipeline);
+            set('thLedgerDispatched', dict.barDispatchedTitle);
+            set('thLedgerTransitDate', dict.thTransitLastLog);
+            set('thLedgerStatus', dict.thStatus);
+            set('thLedgerActions', dict.thAction);
             set('arrivalTitle', dict.arrivalTitle);
             set('arrivalBoxesLabel', dict.arrivalBoxesLabel);
             set('dispatchTitle', dict.dispatchTitle);
@@ -1389,8 +1400,8 @@
             set('dispatchQuantityLabel', dict.dispatchQuantityLabel);
             set('ledgerEditTitle', dict.ledgerEditTitle);
             set('ledgerEditWaybillLabel', dict.ledgerEditWaybillLabel);
-            set('ledgerEditShipmentFromLabel', dict.ledgerEditShipmentFromLabel);
             set('ledgerEditManifestLabel', dict.ledgerEditManifestLabel);
+            set('ledgerEditShipmentFromLabel', dict.ledgerEditShipmentFromLabel);
             set('ledgerEditTargetLabel', dict.ledgerEditTargetLabel);
             set('ledgerEditTotalLabel', dict.ledgerEditTotalLabel);
             set('ledgerEditShipmentDateLabel', dict.ledgerEditShipmentDateLabel);
@@ -1427,11 +1438,11 @@
             setElementText('pipelineEmpty', translations[currentLang].pipelineEmpty);
             setElementText('warehouseEmpty', translations[currentLang].warehouseEmpty);
             setElementText('ledgerEmpty', translations[currentLang].ledgerEmpty);
-            
-            // Fixed Double Cancel Buttons
-            const cancelBtns = ['cancelArrival', 'cancelDispatch', 'ledgerEditCancel'];
-            cancelBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang === 'en' ? 'Cancel' : 'မလုပ်တော့ပါ'; });
-
+            const cancelBtns = ['cancelArrival', 'cancelDispatch',
+                'ledgerEditCancel'
+            ];
+            cancelBtns.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = currentLang ===
+                    'en' ? 'Cancel' : 'မလုပ်တော့ပါ'; });
             const confirmBtns = ['confirmArrival', 'confirmDispatchBtn', 'ledgerEditSave'];
             confirmBtns.forEach(id => {
                 const el = document.getElementById(id);
@@ -1458,7 +1469,7 @@
                 nanyunWarehouse = 0;
 
             entries.forEach(x => {
-                if (x.targetProject === 'Nanyun') {
+                if (x.targetProject === 'Hkamti') {
                     nanyunLogged += (x.totalShippedBoxes || 0);
                     nanyunPipeline += (x.pipelineBoxes || 0);
                     nanyunWarehouse += (x.warehouseBoxes || 0);
@@ -1470,7 +1481,7 @@
                 tDispatched += (x.dispatchedBoxes || 0);
                 if (x.targetProject === 'Lahe') laheTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
                 if (x.targetProject === 'Layshi') layshiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
-                if (x.targetProject === 'Hkamti') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
+                if (x.targetProject === 'Nanyun') hkamtiTotal += (x.pipelineBoxes || 0) + (x.warehouseBoxes || 0);
             });
 
             ui.statTotalLogged.innerText = tLogged;
@@ -1498,6 +1509,26 @@
             renderPipelineTable();
             renderWarehouseTable();
             renderLedgerTable();
+            syncTableOverflow();
+        }
+
+        // Keeps .table-wrapper a NON-scrolling element whenever a table fits its panel,
+        // which is what allows the sticky header row to stay pinned to the page.
+        // A horizontal scrollbar is only switched on for tables that are truly wider.
+        function syncTableOverflow() {
+            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                if (!wrapper.clientWidth) return; // hidden tab: keep its current state
+                wrapper.classList.toggle('table-h-scroll', wrapper.scrollWidth > wrapper.clientWidth + 1);
+            });
+        }
+
+        // Hkamti is the final destination (nothing is dispatched onwards from it), so a
+        // Hkamti shipment that has left the pipeline is Completed, not In Warehouse.
+        function getDisplayStatus(row) {
+            if (row.targetProject === 'Hkamti' && !(row.pipelineBoxes > 0) && row.status === 'In Warehouse') {
+                return 'Completed';
+            }
+            return row.status;
         }
 
         function renderPipelineTable() {
@@ -1517,7 +1548,7 @@
               <td class="px-3 py-3 text-sky-300 font-bold">${x.pipelineBoxes}</td>
               <td class="px-3 py-3 text-slate-300">${formatDate(x.shipmentDate)}</td>
               <td class="px-3 py-3 text-slate-300">${formatDate(x.receivedDate)}</td>
-              <td class="px-3 py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${x.status === 'Fully Dispatched' || x.status === 'Completed' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
+              <td class="px-3 py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${getDisplayStatus(x)}</span></td>
               <td class="px-3 py-3">${action}</td>
             </tr>`;
             }).join('');
@@ -1528,7 +1559,7 @@
             const targets = entries.filter(x => x.warehouseBoxes > 0);
             ui.warehouseEmpty.classList.toggle('hidden', targets.length > 0);
             ui.warehouseTableBody.innerHTML = targets.map(x => {
-                const action = x.targetProject === 'Nanyun' ?
+                const action = x.targetProject === 'Hkamti' ?
                     `<span class="disabled-action">${translations[currentLang].noTransitRequired}</span>` :
                     perms.canTransit ?
                     `<button onclick="openDispatchModal('${x.id}')" class="btn-3d btn-dispatch rounded-xl px-4 py-1 text-xs font-bold text-slate-950">${currentLang === 'en' ? 'Transit To' : 'လွှဲပြောင်းရန်'}</button>` :
@@ -1569,7 +1600,7 @@
               <td class="px-3 py-2 text-sky-300">${x.pipelineBoxes}</td>
               <td class="px-3 py-2 text-purple-300">${x.dispatchedBoxes}</td>
               <td class="px-3 py-2 text-slate-300">${formatDate(x.lastTransitDate)}</td>
-              <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${x.status === 'Fully Dispatched' || x.status === 'Completed' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${x.status}</span></td>
+              <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${x.status === 'Fully Dispatched' ? 'bg-purple-500/10 text-purple-300' : x.status === 'In Warehouse' ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300'}">${getDisplayStatus(x)}</span></td>
               <td class="px-3 py-2 flex flex-wrap gap-1">${actions}</td>
             </tr>`;
             }).join('');
@@ -1585,6 +1616,7 @@
         function switchTab(id) {
             ui.tabs.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === id));
             ui.panels.forEach(panel => panel.classList.toggle('hidden', panel.id !== id));
+            syncTableOverflow();
         }
 
         // ===== INBOUND =====
@@ -1596,8 +1628,8 @@
                 return;
             }
             const waybill = ui.inboundWaybill.value.trim();
-            const shipmentFrom = ui.inboundShipmentFrom ? ui.inboundShipmentFrom.value : 'Yangon';
             const target = ui.inboundTarget.value;
+            const shipmentFrom = ui.shipmentFrom.value || 'Yangon';
             const total = parseInt(ui.inboundTotalBoxes.value, 10);
             const manifest = ui.inboundManifest.value.trim();
             const shipDate = ui.shipmentDate.value || new Date().toISOString().slice(0, 10);
@@ -1611,8 +1643,8 @@
             }
             const payload = {
                 waybill,
-                shipmentFrom,
                 targetProject: target,
+                shipmentFrom,
                 totalShippedBoxes: total,
                 arrivedBoxes: 0,
                 warehouseBoxes: 0,
@@ -1637,6 +1669,7 @@
 
         function clearInboundForm() {
             ui.inboundWaybill.value = '';
+            ui.shipmentFrom.value = 'Yangon';
             ui.inboundTotalBoxes.value = '1';
             ui.inboundManifest.value = '';
             ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
@@ -1676,15 +1709,7 @@
             const nextArrived = (row.arrivedBoxes || 0) + amt;
             const nextWarehouse = (row.warehouseBoxes || 0) + amt;
             const nextPipeline = Math.max(0, (row.pipelineBoxes || 0) - amt);
-            
-            // Adjusted logic for Nanyun Status
-            let nextStatus = '';
-            if (row.targetProject === 'Nanyun') {
-                nextStatus = nextPipeline === 0 ? 'Completed' : 'Partial Arrival';
-            } else {
-                nextStatus = nextPipeline === 0 ? 'In Warehouse' : 'Partial Arrival';
-            }
-            
+            const nextStatus = nextPipeline === 0 ? 'In Warehouse' : 'Partial Arrival';
             db.ref(`${DB_NODE}/${activeArrivalId}`).update({
                 arrivedBoxes: nextArrived,
                 warehouseBoxes: nextWarehouse,
@@ -1749,8 +1774,8 @@
             const row = entries.find(x => x.id === id);
             if (!row) return;
             ui.ledgerEditWaybill.value = row.waybill || '';
-            if (ui.ledgerEditShipmentFrom) ui.ledgerEditShipmentFrom.value = row.shipmentFrom || 'Yangon';
-            ui.ledgerEditTarget.value = row.targetProject || 'Nanyun';
+            ui.ledgerEditTarget.value = row.targetProject || 'Hkamti';
+            ui.ledgerEditShipmentFrom.value = row.shipmentFrom || 'Yangon';
             ui.ledgerEditManifest.value = row.manifestSummary || '';
             ui.ledgerEditTotal.value = row.totalShippedBoxes !== undefined ? row.totalShippedBoxes : 0;
             ui.ledgerEditShipmentDate.value = row.shipmentDate ? row.shipmentDate.slice(0, 10) : '';
@@ -1761,7 +1786,7 @@
             
             // Toggle dispatch fields visibility
             if (ui.dispatchEditContainer) {
-                ui.dispatchEditContainer.style.display = (ui.ledgerEditTarget.value === 'Nanyun') ? 'none' : 'grid';
+                ui.dispatchEditContainer.style.display = (ui.ledgerEditTarget.value === 'Hkamti') ? 'none' : 'grid';
             }
 
             ui.ledgerEditModal.classList.remove('hidden');
@@ -1783,9 +1808,9 @@
             if (!row) return;
 
             const nextWaybill = ui.ledgerEditWaybill.value.trim();
-            const nextShipmentFrom = ui.ledgerEditShipmentFrom ? ui.ledgerEditShipmentFrom.value : (row.shipmentFrom || 'Yangon');
             const nextManifest = ui.ledgerEditManifest.value.trim();
             const nextTarget = ui.ledgerEditTarget.value;
+            const nextShipmentFrom = ui.ledgerEditShipmentFrom.value;
             const shippedVal = parseInt(ui.ledgerEditTotal.value, 10);
             const shipmentDateVal = ui.ledgerEditShipmentDate.value || null;
             const arrivedVal = parseInt(ui.ledgerEditArrivedBoxes.value, 10);
@@ -1795,7 +1820,7 @@
             let lastTransitDateVal = ui.ledgerEditLastTransitDate.value || null;
 
             // Nanyun Project shouldn't have dispatch values, so reset them safely.
-            if (nextTarget === 'Nanyun') {
+            if (nextTarget === 'Hkamti') {
                 dispatchedVal = 0;
                 lastTransitDateVal = null;
             }
@@ -1808,29 +1833,20 @@
             const nextPipeline = Math.max(0, shippedVal - arrivedVal);
             const nextWarehouse = Math.max(0, arrivedVal - dispatchedVal);
 
-            // Adjusted logic for Nanyun Status in Ledger
             let nextStatus = 'In Pipeline';
-            if (nextTarget === 'Nanyun') {
-                if (arrivedVal > 0 && nextPipeline === 0) {
-                    nextStatus = 'Completed';
-                } else if (arrivedVal > 0 && nextPipeline > 0) {
-                    nextStatus = 'Partial Arrival';
-                }
-            } else {
-                if (dispatchedVal > 0 && nextWarehouse === 0 && nextPipeline === 0) {
-                    nextStatus = 'Fully Dispatched';
-                } else if (nextWarehouse > 0) {
-                    nextStatus = 'In Warehouse';
-                } else if (arrivedVal > 0 && nextPipeline > 0) {
-                    nextStatus = 'Partial Arrival';
-                }
+            if (dispatchedVal > 0 && nextWarehouse === 0 && nextPipeline === 0) {
+                nextStatus = 'Fully Dispatched';
+            } else if (nextWarehouse > 0) {
+                nextStatus = 'In Warehouse';
+            } else if (arrivedVal > 0 && nextPipeline > 0) {
+                nextStatus = 'Partial Arrival';
             }
 
             db.ref(`${DB_NODE}/${activeLedgerEditId}`).update({
                 waybill: nextWaybill || '-',
-                shipmentFrom: nextShipmentFrom,
                 manifestSummary: nextManifest || '-',
                 targetProject: nextTarget,
+                shipmentFrom: nextShipmentFrom,
                 totalShippedBoxes: shippedVal,
                 shipmentDate: shipmentDateVal,
                 arrivedBoxes: arrivedVal,
@@ -1856,7 +1872,7 @@
             if (!entries.length) return;
             const rows = entries.map(x => ({
                 WayBill: x.waybill,
-                ShipmentFrom: x.shipmentFrom || '-',
+                'Shipment From': x.shipmentFrom || '-',
                 Project: x.targetProject,
                 TotalShipped: x.totalShippedBoxes,
                 ShipmentDate: formatDate(x.shipmentDate),
@@ -1866,7 +1882,7 @@
                 Warehouse: x.warehouseBoxes,
                 Pipeline: x.pipelineBoxes,
                 Dispatched: x.dispatchedBoxes,
-                Status: x.status,
+                Status: getDisplayStatus(x),
             }));
             const ws = XLSX.utils.json_to_sheet(rows);
             const wb = XLSX.utils.book_new();
@@ -1919,162 +1935,63 @@
                         
                         target.style.display = 'none';
                         
-                        if (nav.parentNode === target) {
-                            navPlaceholder.parentNode.insertBefore(nav, navPlaceholder);
+                        if (nav.parentNode !== header.parentNode) {
+                            navPlaceholder.parentNode.insertBefore(nav, navPlaceholder.nextSibling);
                         }
                         navPlaceholder.style.display = 'none';
                         updateNavigationLabels();
                     }
                 }
-            }, 10);
+            }, 16);
         }
 
-        // ===== PINNED TRANSACTION HEADER ROW =====
-        // The transaction tables need horizontal scrolling, so their wrapper is a scroll
-        // container and CSS "position: sticky" can never pin the header row to the page.
-        // Instead the real header row is mirrored into a fixed overlay once the table
-        // reaches the top of the page, so the page keeps scrolling normally
-        // (Cargo Intake, Cargo Dispatch, Data Ledger).
-        let pinnedHeaderEl = null;
-        let pinnedHeaderSignature = '';
-        let pinnedHeaderFrame = null;
-        let pinnedHeaderTimer = null;
+        // ===== EVENT LISTENERS =====
+        ui.tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        ui.langToggleBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'mm' : 'en';
+            applyTranslations();
+            updateAuthUI();
+            syncTableOverflow();
+        });
+        ui.inboundForm.addEventListener('submit', handleInboundSubmit);
+        ui.inboundReset.addEventListener('click', clearInboundForm);
+        ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
+        ui.cancelArrival.addEventListener('click', closeArrivalModal);
+        ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
+        ui.cancelDispatch.addEventListener('click', closeDispatchModal);
+        ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
+        ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
+        ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
+        ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
+        ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
+        ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
+        ui.logoutBtn.addEventListener('click', handleLogout);
 
-        function getPinnedHeaderEl() {
-            if (!pinnedHeaderEl) {
-                pinnedHeaderEl = document.createElement('div');
-                pinnedHeaderEl.id = 'pinnedTableHeader';
-                document.body.appendChild(pinnedHeaderEl);
+        // Edit target dropdown event listener to toggle dispatch fields dynamically
+        ui.ledgerEditTarget.addEventListener('change', (e) => {
+            if(ui.dispatchEditContainer) {
+                ui.dispatchEditContainer.style.display = (e.target.value === 'Hkamti') ? 'none' : 'grid';
             }
-            return pinnedHeaderEl;
-        }
+        });
 
-        function stopPinnedHeaderWatch() {
-            if (pinnedHeaderTimer) {
-                window.clearInterval(pinnedHeaderTimer);
-                pinnedHeaderTimer = null;
-            }
-        }
-
-        // Column metrics can settle a moment after a language switch or a data update
-        // (web font swap), so the mirror is verified again while it stays pinned.
-        function startPinnedHeaderWatch() {
-            if (!pinnedHeaderTimer) {
-                pinnedHeaderTimer = window.setInterval(schedulePinnedHeader, 500);
-            }
-        }
-
-        function hidePinnedHeader() {
-            stopPinnedHeaderWatch();
-            if (pinnedHeaderEl && pinnedHeaderEl.style.display !== 'none') {
-                pinnedHeaderEl.style.display = 'none';
-            }
-        }
-
-        function syncPinnedHeader() {
-            const panel = document.querySelector('main .tab-panel:not(.hidden)');
-            const wrapper = panel ? panel.querySelector('.table-wrapper') : null;
-            const table = wrapper ? wrapper.querySelector('table') : null;
-            const thead = table ? table.querySelector('thead') : null;
-            const headerHeight = thead ? thead.offsetHeight : 0;
-
-            if (!wrapper || !table || !thead || !headerHeight) {
-                hidePinnedHeader();
-                return;
-            }
-
-            const wrapperRect = wrapper.getBoundingClientRect();
-            const pinTop = ui.mainHeader.getBoundingClientRect().bottom;
-
-            // Only pin while the table spans the top edge of the page, and release it
-            // again as soon as the last row has scrolled past the header row.
-            if (wrapperRect.top >= pinTop || wrapperRect.bottom <= pinTop + headerHeight) {
-                hidePinnedHeader();
-                return;
-            }
-
-            const pin = getPinnedHeaderEl();
-            const columnWidths = [...thead.querySelectorAll('th')]
-                .map(th => Math.round(th.getBoundingClientRect().width * 100) / 100);
-            const signature = currentLang + '|' + headerHeight + '|' + columnWidths.join(',') + '|' + thead.innerHTML;
-
-            if (signature !== pinnedHeaderSignature) {
-                // Mirror the measured column widths of the real header row, otherwise the body
-                // content of the source table would distribute the columns differently.
-                const headClone = thead.cloneNode(true);
-                headClone.querySelectorAll('th').forEach((th, index) => {
-                    if (columnWidths[index] !== undefined) {
-                        th.style.width = columnWidths[index] + 'px';
-                    }
-                });
-
-                const tableClone = table.cloneNode(false);
-                const tableWidth = columnWidths.reduce((total, width) => total + width, 0);
-                tableClone.style.width = tableWidth + 'px';
-                tableClone.style.minWidth = tableWidth + 'px';
-                tableClone.style.tableLayout = 'fixed';
-                tableClone.appendChild(headClone);
-
-                pin.innerHTML = '';
-                pin.appendChild(tableClone);
-                pinnedHeaderSignature = signature;
-            }
-
-            pin.style.display = 'block';
-            pin.style.top = pinTop + 'px';
-            pin.style.left = wrapperRect.left + 'px';
-            pin.style.width = wrapper.clientWidth + 'px';
-            pin.style.height = headerHeight + 'px';
-            pin.firstChild.style.transform = 'translateX(' + (-wrapper.scrollLeft) + 'px)';
-            startPinnedHeaderWatch();
-        }
-
-        function schedulePinnedHeader() {
-            if (pinnedHeaderFrame) return;
-            pinnedHeaderFrame = window.requestAnimationFrame(() => {
-                pinnedHeaderFrame = null;
-                syncPinnedHeader();
-            });
-        }
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('resize', syncTableOverflow);
 
         // ===== INIT =====
-        window.addEventListener('DOMContentLoaded', () => {
+        function initialize() {
+            ui.shipmentDate.value = new Date().toISOString().slice(0, 10);
             applyTranslations();
-            ui.tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
-            ui.inboundForm.addEventListener('submit', handleInboundSubmit);
-            ui.inboundReset.addEventListener('click', clearInboundForm);
-            ui.cancelArrival.addEventListener('click', closeArrivalModal);
-            ui.confirmArrival.addEventListener('click', handleArrivalConfirm);
-            ui.cancelDispatch.addEventListener('click', closeDispatchModal);
-            ui.confirmDispatchBtn.addEventListener('click', handleDispatchConfirm);
-            ui.ledgerEditCancel.addEventListener('click', closeLedgerEditModal);
-            ui.ledgerEditSave.addEventListener('click', handleLedgerEditSave);
-            ui.exportDashboardBtn.addEventListener('click', exportInventoryToExcel);
-            ui.exportLedgerBtn.addEventListener('click', exportInventoryToExcel);
-            ui.ledgerSearchInput.addEventListener('input', renderLedgerTable);
-            ui.langToggleBtn.addEventListener('click', () => { currentLang = currentLang === 'en' ? 'mm' : 'en'; applyTranslations(); renderAllTables(); });
-            ui.authGoogleBtn.addEventListener('click', handleGoogleSignIn);
-            ui.logoutBtn.addEventListener('click', handleLogout);
+            updateAuthUI();
             
-            // Adjust Ledger target selection behavior dynamically
-            ui.ledgerEditTarget.addEventListener('change', (e) => {
-                if (ui.dispatchEditContainer) {
-                    ui.dispatchEditContainer.style.display = (e.target.value === 'Nanyun') ? 'none' : 'grid';
-                }
-            });
+            const target = ui.scrollNavTarget;
+            const nav = ui.mainNavigation;
+            if (nav.parentNode === target) {
+                target.style.display = 'none';
+                ui.mainHeader.parentNode.insertBefore(nav, ui.mainHeader.nextSibling);
+            }
+        }
 
-            window.addEventListener('scroll', handleScroll, { passive: true });
-
-            // Keep the pinned transaction header row in sync with page, table & data changes
-            window.addEventListener('scroll', schedulePinnedHeader, { passive: true });
-            window.addEventListener('resize', schedulePinnedHeader);
-            ui.mainHeader.addEventListener('transitionend', schedulePinnedHeader);
-            ui.tableWrappers.forEach(wrapper => {
-                wrapper.addEventListener('scroll', schedulePinnedHeader, { passive: true });
-                new ResizeObserver(schedulePinnedHeader).observe(wrapper);
-            });
-            schedulePinnedHeader();
-        });
+        initialize();
     </script>
 </body>
 </html>
